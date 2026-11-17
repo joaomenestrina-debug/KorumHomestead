@@ -96,6 +96,14 @@ function F:PlantAll(plantId)
     return n, why
 end
 
+-- Pulls up what is growing, so another seed can go in. The seed is lost: nothing comes back.
+function F:Clear(index)
+    if self:Status(index) ~= "growing" then return false, "notGrowing" end
+    local plant = KH.db.plots[index].plant
+    KH.db.plots[index] = nil
+    return true, plant
+end
+
 function F:Harvest(index)
     local db = KH.db
     if self:Status(index) ~= "ready" then return 0 end

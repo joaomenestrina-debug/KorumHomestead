@@ -66,6 +66,14 @@ local function BuildGarden(win)
         t:SetScript("OnEnter", function(self) self.hover = true; PaintTile(self) end)
         t:SetScript("OnLeave", function(self) self.hover = false; PaintTile(self) end)
         t:SetScript("OnClick", function() Kit.ClickSound(); s:Click(i) end)
+        -- the x of a growing plot: planted the wrong seed? pull it up (two clicks, the seed is lost)
+        t.clear = Kit.Button(t, 24, 24, "×", function() s:Clear(i) end)
+        t.clear:SetPoint("TOPRIGHT", -6, -6)
+        t.clear:SetFrameLevel(t:GetFrameLevel() + 5)
+        local enter, leave = t.clear:GetScript("OnEnter"), t.clear:GetScript("OnLeave")
+        t.clear:SetScript("OnEnter", function(self) enter(self); Tip(self, T("clearTip"), {T("clearTipS")}) end)
+        t.clear:SetScript("OnLeave", function(self) leave(self); if GameTooltip then GameTooltip:Hide() end end)
+        t.clear:Hide()
         s.tiles[i] = t
     end
 
@@ -146,6 +154,21 @@ local function BuildGarden(win)
         UI:Refresh()
     end
 
+    -- the first click on the x asks, the second (within a few seconds) pulls the plant up
+    function s:Clear(i)
+        local now = KH.Now()
+        if not (self.asking and self.asking.i == i and now - self.asking.at <= 5) then
+            self.asking = {i = i, at = now}
+            Notice(T("clearAsk", D.Name(KH.db.plots[i] and KH.db.plots[i].plant or 0)))
+            UI:Refresh()
+            return
+        end
+        self.asking = nil
+        local ok, what = KH.Farm:Clear(i)
+        Notice(ok and T("cleared", D.Name(what)) or Reason(what))
+        UI:Refresh()
+    end
+
     -- the one button: harvest everything when something is ready, otherwise plant in every empty plot
     function s:Primary()
         local db = KH.db
@@ -215,6 +238,9 @@ local function BuildGarden(win)
             local status, progress, left = KH.Farm:Status(i)
             local plot = db.plots[i]
             t.status, t.dim, t.live, t.hinted = status, false, false, false
+            t.clear:SetShown(status == "growing")
+            local asking = self.asking and self.asking.i == i and KH.Now() - self.asking.at <= 5
+            t.clear:SetStyle(asking and "primary" or "quiet")
             t.lock:Hide()
             t.icon:Show()
             t.ring:Show()
