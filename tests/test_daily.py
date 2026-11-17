@@ -36,6 +36,11 @@ class DailyOrders(unittest.TestCase):
         expected = self.ev("function() local o = NS.db.daily.order; local p = NS.Data.Plant(o.plant); local q = o.qty; return q, math.floor(q * p.sell * NS.Balance.ORDERS.payMultiplier * NS.Balance.DAILY.payMultiplier), math.floor(q * p.xp / NS.Balance.ORDERS.xpDivisor * NS.Balance.DAILY.xpMultiplier) end")()
         self.assertEqual((order.qty, order.coins, order.xp), expected)
 
+    def test_an_order_drawn_before_a_change_of_the_numbers_takes_the_new_pay(self):
+        old = self.ev("NS.Daily:Order().coins")
+        self.lua.execute("NS.Balance.DAILY.payMultiplier = NS.Balance.DAILY.payMultiplier * 2")
+        self.assertAlmostEqual(self.ev("NS.Daily:Order().coins"), old * 2, delta=1)
+
     def test_delivery_consumes_herbs_pays_and_cannot_repeat(self):
         self.lua.execute("local o = NS.Daily:Order(); NS.db.crops[o.plant] = o.qty")
         ok, result = self.lua.eval("function() return NS.Daily:Deliver() end")()

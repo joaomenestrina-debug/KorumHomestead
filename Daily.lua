@@ -11,13 +11,19 @@ local D = KH.Data
 local B = KH.Balance
 local DONE = "done"
 
-function Daily:Make()
-    local order = KH.Orders:Make()
+-- the pay of an order comes from Balance.lua every time, so a change of the numbers reaches the order already drawn today
+function Daily:Price(order)
     local plant = D.Plant(order.plant)
-    order.qty = math.floor(order.qty * B.DAILY.qtyMultiplier)
+    if not plant then return order end
     order.coins = math.floor(order.qty * plant.sell * B.ORDERS.payMultiplier * B.DAILY.payMultiplier)
     order.xp = math.floor(order.qty * plant.xp / B.ORDERS.xpDivisor * B.DAILY.xpMultiplier)
     return order
+end
+
+function Daily:Make()
+    local order = KH.Orders:Make()
+    order.qty = math.floor(order.qty * B.DAILY.qtyMultiplier)
+    return self:Price(order)
 end
 
 function Daily:Ensure()
@@ -31,7 +37,7 @@ function Daily:Ensure()
         if saved.lastDone < today - 1 then saved.streak = 0 end
         return true
     end
-    if not saved.order then saved.order = self:Make() end
+    if not saved.order then saved.order = self:Make() else self:Price(saved.order) end
     return false
 end
 
