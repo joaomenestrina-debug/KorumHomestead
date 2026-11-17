@@ -315,7 +315,7 @@ class Game:
 
 PT_NAMES = {2447: "Botão-da-paz", 765: "Folha-prata", 2449: "Raiz-telúrica", 785: "Magi-real", 2450: "Cardo-farpado",
             2453: "Erva-moura", 3355: "Aço-flor Selvagem", 3356: "Sangue-real", 3357: "Raiz-da-vida", 3818: "Folha-pálida",
-            3821: "Espinheira-dourada", 3358: "Bigode-de-hadgar", 3369: "Musgo-de-túmulo"}
+            3821: "Espinheira-dourada", 3358: "Bigode-de-hadgar", 3369: "Musgo-de-túmulo", 13468: "Lótus-negro"}
 HOMESTEAD = [line.strip() for line in (ROOT / "KorumHomestead.toc").read_text(encoding="utf-8").splitlines()
              if line.strip().endswith(".lua")]
 
@@ -323,16 +323,20 @@ HOMESTEAD = [line.strip() for line in (ROOT / "KorumHomestead.toc").read_text(en
 def homestead(out):
     made = []
 
-    def scene(name, locale, setup, view, after="", settle=2.0):
+    def scene(name, locale, setup, view, after="", settle=2.0, clock_at=None, before_view="", after_settle=0.6):
         g = Game(locale, PT_NAMES if locale == "ptBR" else None)
         g.run("math.randomseed(11)")
+        if clock_at is not None:
+            g.run(f"SIM.clock = {clock_at}")
         g.run("KorumHomesteadDB = " + setup)
         g.load("KorumHomestead", HOMESTEAD)
+        if before_view:
+            g.run(before_view)
         g.run(f"NS.UI:Show('{view}')")
         g.advance(settle)
         if after:
             g.run(after)
-            g.advance(0.6)
+            g.advance(after_settle)
         made.append(g.shot(out / f"{name}.png", "KorumHomesteadFrame"))
 
     now = 1700000000
@@ -346,6 +350,11 @@ def homestead(out):
            " crops = {[2447] = 14, [765] = 9, [2449] = 6, [785] = 12, [2450] = 5},"
            " orders = {{plant = 785, qty = 8, coins = 358, xp = 80, npc = 2}, {plant = 2450, qty = 7, coins = 560, xp = 122, npc = 4},"
            " {plant = 2449, qty = 4, coins = 115, xp = 24, npc = 1}}}")
+    away_mid = mid.replace(f"plant = 2447, at = {now - 20}", f"plant = 2447, at = {now - 200}")
+    away = (away_mid[:-1] + f", lastSeen = {now - 8 * 3600},"
+            " snapshot = {goods = {ore = 0, fish = 0, heal = 2}, buildings = {hall = 4, garden = 4, barn = 3, market = 2, mine = 2, pond = 3, workshop = 2, inn = 3}},"
+            f" made = {{mine = {now - 8 * 3600}, pond = {now - 8 * 3600}}},"
+            " followers = {[1] = {done = 0, mission = {kind = 'short', at = " + str(now - 8 * 3600) + ", time = 1800}}}}")
     scene("1-vila-primeiro-uso", "ptBR", "{}", "village")
     scene("2-vila-em-jogo", "ptBR", mid, "village")
     first = mid.replace("seen = {hall = true, garden = true, barn = true, market = true, mine = true, pond = true, workshop = true, inn = true}", "seen = {}")
@@ -361,6 +370,21 @@ def homestead(out):
     scene("11-estalagem", "ptBR", mid, "inn", after="NS.Inn:Start(1, 'short'); NS.Inn:Start(2, 'medium'); NS.db.followers[3] = {done = 4, mission = {kind = 'short', at = NS.Now() - 2000, time = 1800}}; NS.UI:Refresh()")
     scene("12-novidades", "ptBR", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
     scene("12b-whats-new-english", "enUS", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
+    scene("13-fora-8h", "ptBR", away, "village", settle=5)
+    scene("13b-away-english", "enUS", away, "village", settle=5)
+    history_two = ("for i = 1, 2 do local o = NS.Daily:Order(); NS.db.crops[o.plant] = o.qty; "
+                   "assert(NS.Daily:Deliver()); if i < 2 then SIM.clock = SIM.clock + 86400; NS.Daily:Ensure() end end; "
+                   "SIM.clock = SIM.clock + 86400; NS.Daily:Ensure()")
+    scene("14-mercado-encomenda-do-dia", "ptBR", mid, "orders", before_view=history_two, clock_at=now - 2 * 86400)
+    history_six = ("NS.db.level = 20; NS.db.xp = 0; "
+                   "for i = 1, 6 do local o = NS.Daily:Order(); NS.db.crops[o.plant] = o.qty; "
+                   "assert(NS.Daily:Deliver()); if i < 6 then SIM.clock = SIM.clock + 86400; NS.Daily:Ensure() end end; "
+                   "SIM.clock = SIM.clock + 86400; NS.Daily:Ensure()")
+    scene("14b-mercado-sequencia-7", "ptBR", mid, "orders",
+          after="local o = NS.Daily:Order(); NS.db.crops[o.plant] = o.qty; NS.UI.screens.orders:DeliverDaily()",
+          before_view=history_six, clock_at=now - 6 * 86400, after_settle=1.4)
+    deliver_today = "local o = NS.Daily:Order(); NS.db.crops[o.plant] = o.qty; assert(NS.Daily:Deliver())"
+    scene("14c-mercado-dia-feito", "ptBR", mid, "orders", before_view=deliver_today, clock_at=now)
     for i, page in enumerate(("start", "buildings", "herbs", "tips")):
         scene(f"9{i + 1}-guia-{page}", "ptBR", mid, "guide", after=f"NS.UI.guidePage = '{page}'; NS.UI:Refresh()")
     # the icon on the screen, with a notification coming out of it
@@ -369,6 +393,14 @@ def homestead(out):
     g.load("KorumHomestead", HOMESTEAD)
     g.advance(6.6)
     made.append(g.shot(out / "8-icone-na-tela.png", "KorumHomesteadIcon", margin=44, right=300))
+
+    g = Game("ptBR", PT_NAMES)
+    g.run("math.randomseed(11)")
+    g.run("KorumHomesteadDB = " + mid)
+    g.load("KorumHomestead", HOMESTEAD)
+    g.run("NS.db.crops = {}; NS.db.plots = {}; local o = NS.Daily:Order(); NS.db.crops[o.plant] = o.qty; NS.UI:Refresh()")
+    g.advance(6.6)
+    made.append(g.shot(out / "15-icone-encomenda-do-dia.png", "KorumHomesteadIcon", margin=44, right=300))
     return made
 
 
