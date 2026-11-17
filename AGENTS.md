@@ -28,6 +28,9 @@ GitHub Actions runs the tests on every pull request. A red run is not done.
 - Do exactly the task in the brief. Anything else you notice goes in the pull request description, not in the code.
 - Branch: `codex/T-x.y-short-name`. Pull request title: `T-x.y: <what it does>`. One task per pull request.
 - In the pull request description: what changed, how it was tested, and anything you were unsure of.
+- **Commits and pull requests are signed as Korum** (the creator's name). Commit as the repository's configured user
+  (`Korum`); never add `Co-Authored-By` lines or mention Codex, Claude or any AI in commit messages, pull request titles
+  or descriptions, comments or changelogs.
 - **Never create or push git tags.** A tag publishes a file on CurseForge; releases are tagged by Claude only.
 - Do not change the version in `KorumHomestead.toc`, `CHANGELOG.md`, `.pkgmeta`, `LICENSE` or anything in `Media/`
   unless the brief says so.
