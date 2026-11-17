@@ -16,7 +16,7 @@ function Daily:Make()
     local plant = D.Plant(order.plant)
     order.qty = math.floor(order.qty * B.DAILY.qtyMultiplier)
     order.coins = math.floor(order.qty * plant.sell * B.ORDERS.payMultiplier * B.DAILY.payMultiplier)
-    order.xp = math.floor(order.qty * plant.xp / B.ORDERS.xpDivisor * B.DAILY.payMultiplier)
+    order.xp = math.floor(order.qty * plant.xp / B.ORDERS.xpDivisor * B.DAILY.xpMultiplier)
     return order
 end
 
@@ -70,12 +70,11 @@ function Daily:Deliver()
     if db.crops[order.plant] <= 0 then db.crops[order.plant] = nil end
 
     local streak = (saved.lastDone == saved.day - 1) and saved.streak + 1 or 1
-    local basePay = math.floor(order.coins * KH.Village:PayBonus())
+    local pay = math.floor(order.coins * KH.Village:PayBonus())
     local prize = PrizeFor(streak)
-    local bonus = prize and math.floor(basePay * (prize.coins or 0)) or 0
+    local bonus = prize and math.floor(order.xp * (prize.xp or 0)) or 0      -- the prize of the streak is xp, not coins
     local rare = prize and (prize.rare or 0) or 0
-    local pay = basePay + bonus
-    local xp = order.xp
+    local xp = order.xp + bonus
 
     db.coins = db.coins + pay
     db.stats.earned = db.stats.earned + pay

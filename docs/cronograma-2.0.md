@@ -143,6 +143,8 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
+| T2.0 | **Revisão da economia** (adiantada da alpha5): moedas por hora de cada atividade em cada nível contra o custo da vila; proposta de pagamentos e custos novos | Claude | M1 | 30/11 | 3 | `docs/economia.md` com tabelas e proposta |
+| T2.0b | Aprovar a proposta da economia | **Eu** | T2.0 | 30/11 | 0,3 | decisão no chat |
 | T2.1 | Especificação da F2 e briefings T2.4, T2.5, T2.7, T2.8 | Claude | M1 | 30/11 | 2 | briefings |
 | T2.2 | Aprovar os 6 serviços (nomes, custos, chances, recompensas) | **Eu** | T2.1 | 30/11 | 0,3 | decisão |
 | T2.3 | Disposição: valor, recarga com o jogo fechado, máximo por nível, gasto | Claude | M1 | 01/12 | 2 | testes de recarga (12 min, 2 h, 3 dias) |

@@ -191,8 +191,12 @@ são dados uma vez só.
 
 ## Equilíbrio
 
-Os números deste plano são o ponto de partida. Antes da 2.0.0, uma rodada de ajuste com a soma de quanto se ganha por
-hora em cada atividade, para nenhuma delas dominar (serviços não podem render mais que a Horta, por exemplo).
+Os números deste plano são o ponto de partida. A rodada de ajuste foi **adiantada para o início da S2 (T2.0)**: a soma de
+quanto se ganha por hora em cada atividade e em cada nível, contra o custo da vila (~194 mil moedas para tudo no máximo).
+
+Medido em 17/11: no Herbalismo 20, uma encomenda normal paga ~10 mil moedas e a Horta rende ~9.600 por hora, ou seja, a
+vila inteira sai em ~20 horas. Regra a partir de agora: **excesso de moedas é o risco nº 1 de equilíbrio**. Recompensas de
+hábito (sequência, conquistas, temporadas) dão XP, itens e enfeites, não moedas; serviços não rendem mais que a Horta.
 
 ## Riscos
 

@@ -52,7 +52,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 - **Eu:** **T1.9**: testar a alpha1 no jogo (Mercado com a encomenda do dia, cartão "Enquanto você esteve fora", tela Novidades).
 - **Codex:** nada até os briefings da S2 (T2.1).
-- **Claude:** correções da T1.9 (T1.10) e tag `v2.0.0-alpha1` (T1.11); depois os briefings da S2.
+- **Claude:** correções da T1.9 (T1.10) e tag `v2.0.0-alpha1` (T1.11); depois a revisão da economia (T2.0) e os briefings da S2.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
@@ -66,6 +66,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | Tudo público sai assinado como **Korum**: autor dos commits `Korum`, sem `Co-Authored-By`, sem citar IA. |
 | 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). |
 | 17/11 | Nada castiga quem fica fora; progresso nunca se perde. Saves antigos sempre abrem. |
+| 17/11 | **Cuidar do excesso de moedas.** A encomenda do dia paga 2,5× uma encomenda normal (o dobro de ervas × 1,25 por erva); os prêmios da sequência são XP e Lótus Negra, **nunca moedas**. Nenhuma recompensa nova dá moedas sem passar pela conta da economia (T2.0). |
 | 17/11 | Toda mudança que o jogador percebe ganha linha na tela **Novidades** (`News.lua` + `news<id>_<n>` no `Locales.lua`). A tela abre sozinha uma vez ao logar depois da atualização; save novo não vê novidades antigas. A entrada 1 é a `2.0.0-alpha1`: as tarefas da S1 acrescentam linhas nela. |
 
 ## 4. Mapa do código

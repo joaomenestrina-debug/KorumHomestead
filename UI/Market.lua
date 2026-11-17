@@ -38,15 +38,15 @@ local function OrderRow(parent, W, y, h, onDeliver, above)
     return row
 end
 
-local function PaintOrder(row, o, extraCoins)
+local function PaintOrder(row, o, extraXP)
     local have = KH.db.crops[o.plant] or 0
     local can = have >= o.qty
     SetIcon(row.icon, o.plant)
     row.wants:SetText(T("orderWants", o.qty, D.Name(o.plant)))
     row.bar:Glide(have / o.qty, can and C.accentBright or C.accent)
     row.have:SetText(T("orderHave", math.min(have, o.qty), o.qty))
-    row.coins:SetText(T("orderCoins", KH.Number(math.floor(o.coins * KH.Village:PayBonus()) + (extraCoins or 0))))
-    row.xp:SetText(T("orderXP", o.xp))
+    row.coins:SetText(T("orderCoins", KH.Number(math.floor(o.coins * KH.Village:PayBonus()))))
+    row.xp:SetText(T("orderXP", o.xp + (extraXP or 0)))
     row.deliver:SetLabel(can and T("deliver") or T("toGo", o.qty - have))
     row.deliver:SetStyle(can and "primary" or "quiet")
     row.deliver:SetEnabledState(can)
@@ -89,18 +89,18 @@ local function BuildOrders(win)
 
     function s:DeliverDaily()
         local ok, r = KH.Daily:Deliver()
+        UI:Refresh()        -- first: a level reached with the xp has its own notice, and the prize must be the one that stays
         if not ok then
             Notice(Reason(r))
         elseif r.rare > 0 then
-            Notice(T("streakRare", r.streak, KH.Number(r.pay), r.rare, D.Name(KH.Balance.DAILY.rareItem)))
+            Notice(T("streakRare", r.streak, KH.Number(r.pay), KH.Number(r.bonus), r.rare, D.Name(KH.Balance.DAILY.rareItem)))
             Kit.Float(self.daily.coins, "+" .. KH.Number(r.pay), C.gold, 1, 14)
         elseif r.bonus > 0 then
-            Notice(T("streakPrize", r.streak, KH.Number(r.pay)))
+            Notice(T("streakPrize", r.streak, KH.Number(r.pay), KH.Number(r.bonus)))
             Kit.Float(self.daily.coins, "+" .. KH.Number(r.pay), C.gold, 1, 14)
         else
             Notice(T("dailyDelivered", KH.Number(r.pay)))
         end
-        UI:Refresh()
     end
 
     function s:Refresh()
@@ -132,10 +132,9 @@ local function BuildOrders(win)
             d.deliver:SetEnabledState(false)
             d.outline:SetColor(1, 1, 1, 0.06)
         else
-            -- the prize of the streak shows in the pay when this delivery reaches it
-            local base = math.floor(o.coins * KH.Village:PayBonus())
+            -- the prize of the streak (xp) shows in the xp when this delivery reaches it
             local prize = missing == 1 and KH.Balance.DAILY.streak[nextDay]
-            if PaintOrder(d, o, prize and math.floor(base * (prize.coins or 0)) or 0) then ready = ready + 1 end
+            if PaintOrder(d, o, prize and math.floor(o.xp * (prize.xp or 0)) or 0) then ready = ready + 1 end
         end
         local rare = KH.Balance.DAILY.streak[nextDay] and (KH.Balance.DAILY.streak[nextDay].rare or 0) or (nextDay > 30 and 1 or 0)
         d.rare:SetTexture(D.Icon(KH.Balance.DAILY.rareItem))
