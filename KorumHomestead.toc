@@ -30,6 +30,7 @@ UI/Village.lua
 UI/Hall.lua
 UI/Guide.lua
 UI/News.lua
+UI/Away.lua
 UI/Workshop.lua
 UI/Inn.lua
 UI/Window.lua

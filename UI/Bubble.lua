@@ -16,6 +16,7 @@ local function Waiting()
     for i = 1, D.ORDER_SLOTS do
         if KH.Orders:CanDeliver(i) then deliverable = deliverable + 1 end
     end
+    if KH.Daily:CanDeliver() then deliverable = deliverable + 1 end    -- the order of the day counts as one more
     return ready, deliverable
 end
 
@@ -142,6 +143,10 @@ function UI:CreateBubble()
         GameTooltip:AddLine("Korum Homestead", 0.25, 0.85, 0.80)
         if ready > 0 then GameTooltip:AddLine(T(ready == 1 and "headReadyOne" or "headReadyMany", ready), 1, 1, 1) end
         if deliverable > 0 then GameTooltip:AddLine(T(deliverable == 1 and "vilDeliverOneH" or "vilDeliverH", deliverable), 1, 1, 1) end
+        if not KH.Daily:Done() then
+            local streak = KH.Daily:Streak()
+            GameTooltip:AddLine(streak > 0 and T("dailyTipStreak", streak) or T("dailyTip"), 0.25, 0.85, 0.80)
+        end
         if work then GameTooltip:AddLine(T("workLine", T("b_" .. work.id), KH.Village:Level(work.id) + 1, KH.Duration(left)), 0.8, 0.8, 0.8) end
         if ready == 0 and deliverable == 0 and not work then GameTooltip:AddLine(T("tooltipNone"), 0.8, 0.8, 0.8) end
         GameTooltip:AddLine(T("bubbleHow"), 0.6, 0.6, 0.6)

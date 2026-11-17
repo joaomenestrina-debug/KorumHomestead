@@ -25,9 +25,9 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T1.2 Aprovar prêmios da sequência | Eu | ✅ 17/11: aprovada a proposta de `T1.4.md` (`B.DAILY`) como está |
 | T1.3 Resumo ao voltar (lógica, `Away.lua`) | Claude | ✅ |
 | T1.4 Encomenda do dia e sequência (`Daily.lua`) | Codex | ✅ PR #7 |
-| T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | **em andamento** |
-| T1.6 Textos EN/ptBR da F1 + Novidades | Codex | depois de T1.5 |
-| T1.7 Cenas do simulador da F1 | Codex | depois de T1.5 |
+| T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | ✅ (textos ptBR provisórios em inglês, marcados `-- TODO ptBR`) |
+| T1.6 Textos EN/ptBR da F1 + Novidades | **Codex** | **pode começar** |
+| T1.7 Cenas do simulador da F1 | **Codex** | **pode começar** (o relógio do simulador é `SIM.clock`) |
 | T1.8–T1.11 Integração, teste no jogo, correções, tag alpha1 | Claude + Eu | 27–29/11 |
 
 ### Sprint 0: concluída
@@ -49,8 +49,8 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** nada até o teste da alpha1 no jogo (T1.9, 28/11).
-- **Codex:** nada até a T1.5 entrar na `main`; depois **T1.6** e **T1.7** (podem ser juntas, arquivos diferentes).
-- **Claude:** **T1.5** (telas).
+- **Codex:** **T1.6** e **T1.7** (podem ser juntas, arquivos diferentes). Terminar sempre com commit, push e pull request.
+- **Claude:** revisar T1.6/T1.7 e integrar (T1.8, 27/11).
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
@@ -87,6 +87,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 | `UI/Common.lua` | `KH.UI`, helpers compartilhados em `UI.P` (Screen, Notice, GoodTex, BuildingArt...) |
 | `UI/Window.lua` | a janela, navegação, cabeçalho, cartão "como funciona", `UI:Tick` |
 | `UI/<Tela>.lua` | uma tela cada: Village (mapa), Garden, Barn, Market, Hall (+ Mina/Lagoa), Workshop, Inn, Guide, Settings; cada uma registra `P.builders.<id>` |
+| `UI/Away.lua` | o cartão "Enquanto você esteve fora" (abre ao abrir a janela; fechar a janela marca a hora) |
 | `UI/Bubble.lua` | ícone flutuante e notificações |
 | `UI/Minimap.lua` | botão do minimapa |
 | `Media/` | `Village/` (construções, mapa, seguidores), `Icons/` (formas do Kit), `logo.tga` |

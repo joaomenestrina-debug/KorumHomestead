@@ -20,6 +20,12 @@ function UI:Create()
     self.win = win
     self.frame = win.frame
     self.screens = {}
+    -- closing the window stamps the moment, so the next opening can tell what happened meanwhile (UI/Away.lua)
+    local onHide = self.frame:GetScript("OnHide")
+    self.frame:SetScript("OnHide", function(...)
+        if onHide then onHide(...) end
+        if KH.db then KH.Away:Mark() end
+    end)
 
     -- the header keeps the two numbers of the game in sight on every screen: the coins and the level
     local h = win.header
@@ -171,6 +177,7 @@ function UI:RefreshHeader()
     for i = 1, D.ORDER_SLOTS do
         if KH.Orders:CanDeliver(i) then deliverable = true end
     end
+    if KH.Daily:CanDeliver() then deliverable = true end
     self.win:SetTabDot("orders", deliverable)
     self.win:SetTabDot("barn", self:Step() == "sell")
     self.win:SetTabDot("garden", self.view ~= "garden" and KH.Farm:ReadyCount() > 0)
@@ -270,13 +277,15 @@ end
 
 function UI:Show(view)
     self:Create()
-    if not self.frame:IsShown() then
+    local opening = not self.frame:IsShown()
+    if opening then
         -- what changed while the window was closed is simply shown, not animated
         self.coinsSeen, self.levelSeen = nil, nil
         Notice("")
         self.frame:Show()
     end
     self.win:Select(view or "village")
+    if opening then self:AwayOnOpen() end
 end
 
 local function InCombat() return _G.InCombatLockdown and InCombatLockdown() end

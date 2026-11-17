@@ -137,6 +137,7 @@ local function BuildVillage(win)
         for i = 1, D.ORDER_SLOTS do
             if KH.Orders:CanDeliver(i) then deliverable = deliverable + 1 end
         end
+        if KH.Daily:CanDeliver() then deliverable = deliverable + 1 end
         local work, left = V:Work()
         local affordable = V:Affordable()
         local stored, cap = V:Stored(), V:BarnCap()
