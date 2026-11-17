@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 17/11/2026, por Claude (após integrar a T0.6).*
+*Última atualização: 17/11/2026, após T0.9.*
 
 ---
 
@@ -24,10 +24,10 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T0.1 Desenvolvimento no repositório próprio | Eu | ✅ |
 | T0.2 Testes no GitHub Actions | Claude | ✅ |
 | T0.3 Instalador lendo deste repositório | Claude | ✅ |
-| T0.4 Amostra do save real (`KorumHomestead.lua` do WTF) | **Eu** | ⏳ pendente |
+| T0.4 Amostra do save real (`KorumHomestead.lua` do WTF) | Eu | ✅ em `tests/fixtures/save-1.0.1.lua` |
 | T0.5 Briefings T0.6, T0.8, T0.9 | Claude | ✅ |
 | T0.6 `UI.lua` dividido em `UI/` | Codex | ✅ PR #1 integrado |
-| T0.7 `db.schema` + `Migrate.lua` | Claude | ⏳ depende da T0.4 |
+| T0.7 `db.schema` + `Migrate.lua` | Claude | ✅ PR #2 |
 | T0.8 `Balance.lua` | **Codex** | ▶️ pode começar ([briefing](tarefas/T0.8.md)) |
 | T0.9 `KH.Day()` | **Codex** | 🔍 PR em revisão ([briefing](tarefas/T0.9.md)) |
 | T0.10 Revisão e integração | Claude | aguarda T0.8 e revisão da T0.9 |
@@ -35,11 +35,9 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** T0.4 — avisar quando o save estiver em
-  `C:\Program Files (x86)\World of Warcraft\_forever_\WTF\Account\<conta>\SavedVariables\KorumHomestead.lua`.
-  Depois da revisão da T0.9, dar ao Codex a T0.8.
+- **Eu:** T0.4 concluída; sábado: T0.11 (teste de regressão no jogo).
 - **Codex:** T0.9 em revisão; depois T0.8 (uma por pull request).
-- **Claude:** revisar os pull requests do Codex; T0.7 quando a amostra do save chegar; briefings da S1 até segunda 23/11.
+- **Claude:** revisar os pull requests do Codex; T0.7 concluída; briefings da S1 até segunda 23/11.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
@@ -62,6 +60,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 |---|---|
 | `Kit.lua` | kit visual próprio (janela, botões, textos, cores, barras, animações) — cópia independente |
 | `Core.lua` | `KH`, padrões do save `KorumHomesteadDB`, eventos, `KH.Now()`, `/kh` |
+| `Migrate.lua` | `KH.SCHEMA` (versão do formato do save) e as migrações, aplicadas ao carregar, antes dos padrões |
 | `Locales.lua` | todos os textos, `enUS` e `ptBR`, via `KH.T("chave")` |
 | `Data.lua` | as 13 ervas (item id, nível, tempo, custo, venda, xp), nome e ícone vindos do jogo |
 | `Farm.lua` | plantar, colher, vender ervas, encomendas do Mercado |
@@ -73,7 +72,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 | `UI/Bubble.lua` | ícone flutuante e notificações |
 | `UI/Minimap.lua` | botão do minimapa |
 | `Media/` | `Village/` (construções, mapa, seguidores), `Icons/` (formas do Kit), `logo.tga` |
-| `tests/` | `test_homestead.py` (53 testes) e `client_mock.py` (cliente falso) |
+| `tests/` | `test_homestead.py`, `test_migrate.py` (saves antigos), `client_mock.py` (cliente falso), `fixtures/` (saves reais de versões antigas) |
 | `ferramentas/` | `simulador_ui.py` (capturas), `importar_arte_homestead.py`, `curse_homestead.py` |
 | `arquivo/arte_v3/` | fontes da pixel art (PNG) |
 | `docs/` | este arquivo, plano, cronograma, `tarefas/` (briefings do Codex) |

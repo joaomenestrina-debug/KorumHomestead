@@ -74,6 +74,7 @@ frame:SetScript("OnEvent", function(_, event, ...)
     if event == "ADDON_LOADED" then
         if (...) == addonName then
             KorumHomesteadDB = KorumHomesteadDB or {}
+            KH.Migrate(KorumHomesteadDB)            -- the save of an older version first takes the current shape (Migrate.lua)
             Merge(KorumHomesteadDB, KH.defaults)
             KH.db = KorumHomesteadDB
         end

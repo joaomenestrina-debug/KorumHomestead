@@ -16,7 +16,12 @@ FILES = [line.strip() for line in (HOME / "KorumHomestead.toc").read_text(encodi
          if line.strip().endswith(".lua")]
 
 
+FIXTURES = pathlib.Path(__file__).resolve().parent / "fixtures"
+
+
 class Homestead(unittest.TestCase):
+    SAVED = None            # the text of a SavedVariables file to start from (a save of an older version); None = new
+
     def setUp(self):
         lua = self.lua = lua51.LuaRuntime(unpack_returned_tuples=True)
         lua.execute(CLIENT)
@@ -48,6 +53,8 @@ class Homestead(unittest.TestCase):
                 assert(loadstring(src, "@" .. path))("KorumHomestead", NS)
             end
         """)
+        if self.SAVED:
+            lua.execute(self.SAVED)
         for f in FILES:
             lua.execute(f"LoadAddon([[{HOME / f}]])")
         lua.execute("""
