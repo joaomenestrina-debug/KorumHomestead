@@ -339,7 +339,7 @@ function print(...)
     for i = 1, select("#", ...) do t[#t + 1] = tostring((select(i, ...))) end
     PRINTS[#PRINTS + 1] = table.concat(t, " ")
 end
-function time() return SIM.clock end
+function time(t) if t then return os.time(t) end return SIM.clock end     -- time({year=...}) as in the game
 function date(f) return os.date(f, SIM.clock) end
 function GetTime() return SIM.now end
 function GetLocale() return SIM.locale or "enUS" end

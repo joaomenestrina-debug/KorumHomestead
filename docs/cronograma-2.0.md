@@ -132,9 +132,9 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T1.3 | Resumo ao voltar: `db.lastSeen`, fotografia dos contadores, cálculo do que mudou | Claude | M0 | 24/11 | 3 | ✅ feito em 17/11 (`Away.lua`, `tests/test_away.py`) |
 | T1.4 | Encomenda do dia e sequência: sorteio por dia, entrega, contagem, zerar, recorde | **Codex** | T1.1 | 24–25/11 | 4 | ✅ feito em 17/11 (PR #7) |
 | T1.5 | Cartão "Enquanto você esteve fora" com "Coletar tudo"; encomenda do dia no Mercado; ponto no ícone flutuante | Claude | T1.3, T1.4 | 26/11 | 4 | ✅ feito em 17/11 |
-| T1.6 | Textos EN/ptBR da F1 e cartão "como funciona" atualizado do Mercado | **Codex** | T1.5 | 26/11 | 1,5 | nenhuma chave faltando |
-| T1.7 | Cenas do simulador da F1 (resumo, encomenda do dia, sequência no 7º dia) | **Codex** | T1.5 | 27/11 | 1 | imagens em `arquivo/telas` |
-| T1.8 | Revisão, integração e build de teste instalado no Forever | Claude | T1.4–T1.7 | 27/11 | 2 | lista do que conferir no jogo |
+| T1.6 | Textos EN/ptBR da F1 e cartão "como funciona" atualizado do Mercado | **Codex** | T1.5 | 26/11 | 1,5 | ✅ feito em 17/11 (PR #9) |
+| T1.7 | Cenas do simulador da F1 (resumo, encomenda do dia, sequência no 7º dia) | **Codex** | T1.5 | 27/11 | 1 | ✅ feito em 17/11 (PR #10) |
+| T1.8 | Revisão, integração e build de teste instalado no Forever | Claude | T1.4–T1.7 | 27/11 | 2 | ✅ feito em 17/11 |
 | T1.9 | Teste no jogo da F1 | **Eu** | T1.8 | 28/11 | 1,5 | relato |
 | T1.10 | Correções do teste | Claude | T1.9 | 29/11 | 1–3 | — |
 | T1.11 | Changelog, tag `v2.0.0-alpha1`, conferir o arquivo no CurseForge (como **Alpha**) | Claude + **Eu** | T1.10 | 29/11 | 0,5 | alpha publicado |

@@ -26,9 +26,11 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T1.3 Resumo ao voltar (lógica, `Away.lua`) | Claude | ✅ |
 | T1.4 Encomenda do dia e sequência (`Daily.lua`) | Codex | ✅ PR #7 |
 | T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | ✅; textos ptBR revisados na T1.6 |
-| T1.6 Textos EN/ptBR da F1 + Novidades | **Codex** | ✅ PR #9 aberta; testes e simulador verdes |
-| T1.7 Cenas do simulador da F1 | **Codex** | ✅ pronta no branch `codex/T1.7-scenes`; seis capturas revisadas |
-| T1.8–T1.11 Integração, teste no jogo, correções, tag alpha1 | Claude + Eu | 27–29/11 |
+| T1.6 Textos EN/ptBR da F1 + Novidades | Codex | ✅ PR #9 |
+| T1.7 Cenas do simulador da F1 | Codex | ✅ PR #10 |
+| T1.8 Revisão, integração e build no jogo | Claude | ✅ 17/11 |
+| T1.9 Teste no jogo da F1 | **Eu** | **agora** (era 28/11) |
+| T1.10–T1.11 Correções e tag `v2.0.0-alpha1` | Claude + Eu | depois da T1.9 |
 
 ### Sprint 0: concluída
 
@@ -48,9 +50,9 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** nada até o teste da alpha1 no jogo (T1.9, 28/11).
-- **Codex:** T1.6 na PR #9; T1.7 pronta no branch `codex/T1.7-scenes`, com as seis capturas anexas. Terminar sempre com commit, push e pull request.
-- **Claude:** revisar T1.6/T1.7 e integrar (T1.8, 27/11).
+- **Eu:** **T1.9**: testar a alpha1 no jogo (Mercado com a encomenda do dia, cartão "Enquanto você esteve fora", tela Novidades).
+- **Codex:** nada até os briefings da S2 (T2.1).
+- **Claude:** correções da T1.9 (T1.10) e tag `v2.0.0-alpha1` (T1.11); depois os briefings da S2.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
