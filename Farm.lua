@@ -19,6 +19,7 @@ KH.Farm = F
 local Orders = {}
 KH.Orders = Orders
 local D = KH.Data
+local B = KH.Balance
 
 -- ----------------------------------------------------------------------------
 -- The level
@@ -151,12 +152,12 @@ function Orders:Make()
     local db = KH.db
     local options = {}
     for _, p in ipairs(D.PLANTS) do
-        if p[2] <= db.level and p[2] >= db.level - 8 then options[#options + 1] = p[1] end
+        if p[2] <= db.level and p[2] >= db.level - B.ORDERS.plantLevelRange then options[#options + 1] = p[1] end
     end
     if #options == 0 then options[1] = D.PLANTS[1][1] end
     local plant = D.Plant(options[Rand(#options)])
-    local qty = 2 + Rand(5) + math.floor(db.level / 5)
-    return {plant = plant.id, qty = qty, coins = math.floor(qty * plant.sell * 1.6), xp = math.floor(qty * plant.xp / 2),
+    local qty = B.ORDERS.quantityBase + Rand(B.ORDERS.quantityRandom) + math.floor(db.level / B.ORDERS.quantityLevels)
+    return {plant = plant.id, qty = qty, coins = math.floor(qty * plant.sell * B.ORDERS.payMultiplier), xp = math.floor(qty * plant.xp / B.ORDERS.xpDivisor),
         npc = Rand(D.NPC_COUNT)}
 end
 

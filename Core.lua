@@ -16,11 +16,10 @@ local Meta = (C_AddOns and C_AddOns.GetAddOnMetadata) or _G.GetAddOnMetadata
 KH.version = (Meta and Meta(addonName, "Version")) or "1.0.0"
 
 KH.defaults = {
-    coins = 40,
+    -- Starting coins and plot count are supplied by Balance.lua before ADDON_LOADED.
     xp = 0,
     level = 1,
     plots = {},            -- [index] = {plant = itemID, at = time planted}
-    nplots = 2,            -- plots owned
     selected = 2447,       -- the plant "Plant" uses
     crops = {},            -- [itemID] = harvested and not sold
     orders = {},           -- {plant, qty, coins, xp, npc}
