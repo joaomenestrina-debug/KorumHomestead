@@ -24,8 +24,8 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T1.1 Especificação e briefings T1.4, T1.6, T1.7 | Claude | ✅ em `docs/tarefas/` |
 | T1.2 Aprovar prêmios da sequência | Eu | ✅ 17/11: aprovada a proposta de `T1.4.md` (`B.DAILY`) como está |
 | T1.3 Resumo ao voltar (lógica, `Away.lua`) | Claude | ✅ |
-| T1.4 Encomenda do dia e sequência (`Daily.lua`) | **Codex** | **pode começar** |
-| T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | depois de T1.3 e T1.4 |
+| T1.4 Encomenda do dia e sequência (`Daily.lua`) | Codex | ✅ PR #7 |
+| T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | **em andamento** |
 | T1.6 Textos EN/ptBR da F1 + Novidades | Codex | depois de T1.5 |
 | T1.7 Cenas do simulador da F1 | Codex | depois de T1.5 |
 | T1.8–T1.11 Integração, teste no jogo, correções, tag alpha1 | Claude + Eu | 27–29/11 |
@@ -49,8 +49,8 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** nada até o teste da alpha1 no jogo (T1.9, 28/11).
-- **Codex:** **T1.4** (`docs/tarefas/T1.4.md`), branch `codex/T1.4-daily`. Depois T1.6 e T1.7, quando a T1.5 estiver na `main`.
-- **Claude:** T1.5 (telas) quando a T1.4 entrar na `main`.
+- **Codex:** nada até a T1.5 entrar na `main`; depois **T1.6** e **T1.7** (podem ser juntas, arquivos diferentes).
+- **Claude:** **T1.5** (telas).
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
@@ -80,6 +80,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 | `Balance.lua` | **todos os números do jogo** (ervas, encomendas, construções, produtos, receitas, Estalagem, início): ajuste de equilíbrio é aqui |
 | `Data.lua` | as ervas (tabela vem do `Balance.lua`), nome e ícone vindos do jogo |
 | `Farm.lua` | plantar, colher, vender ervas, encomendas do Mercado |
+| `Daily.lua` | encomenda do dia e sequência (`db.daily`, prêmios em `B.DAILY`) |
 | `Village.lua` | construções, níveis, obras, Mina e Lagoa, produtos (`GOODS`, `ITEM` = ícones), Celeiro |
 | `Works.lua` | Oficina (3 ofícios, fila) e Estalagem (seguidores, missões) |
 | `Away.lua` | resumo "Enquanto você esteve fora": `db.lastSeen` + `db.snapshot`, `Away:Mark/Summary/CollectAll` |

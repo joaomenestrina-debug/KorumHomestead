@@ -23,6 +23,7 @@ KH.defaults = {
     selected = 2447,       -- the plant "Plant" uses
     crops = {},            -- [itemID] = harvested and not sold
     orders = {},           -- {plant, qty, coins, xp, npc}
+    daily = {day = 0, order = nil, done = false, streak = 0, best = 0, lastDone = 0, rare = 0},
     stats = {harvested = 0, earned = 0, delivered = 0},
     lang = "auto",         -- auto | enUS | ptBR
     alerts = true,         -- a line in the chat when a plot becomes ready

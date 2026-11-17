@@ -17,6 +17,7 @@ News.lua
 Balance.lua
 Data.lua
 Farm.lua
+Daily.lua
 Village.lua
 Works.lua
 Away.lua

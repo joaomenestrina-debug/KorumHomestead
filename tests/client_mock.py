@@ -37,7 +37,7 @@ SlashCmdList = {}
 PRINTS = {}
 function print(...) local t = {}; for i = 1, select("#", ...) do t[#t + 1] = tostring((select(i, ...))) end; PRINTS[#PRINTS + 1] = table.concat(t, " ") end
 function time() return 1000 end
-function date() return "01/01 00:00" end
+function date(format, at) return os.date(format, at or time()) end
 function UnitName() return ME_NAME end
 function GetNormalizedRealmName() return "Forever" end
 function UnitClass() return "Mago", "MAGE" end

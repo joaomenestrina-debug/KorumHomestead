@@ -312,6 +312,7 @@ ticker:SetScript("OnUpdate", function(_, elapsed)
 end)
 
 function UI:Tick()
+    KH.Daily:Ensure()
     for _, recipe in ipairs(KH.Workshop:Update()) do
         if KH.db.alerts then KH:Notify(T("craftDone", T("good_" .. recipe))) end
     end
@@ -339,6 +340,7 @@ end
 KH:On("PLAYER_LOGIN", function()
     D.Preload()
     KH.Orders:Ensure()
+    KH.Daily:Ensure()
     UI:CreateMinimap()
     UI:CreateBubble()
     -- what was ready when logging in is not announced again by the clock; the welcome line tells it once

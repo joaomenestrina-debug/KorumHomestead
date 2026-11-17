@@ -130,7 +130,7 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T1.1 | Especificação da F1 e briefings T1.4, T1.6, T1.7 | Claude | M0 | 23/11 | 2 | ✅ feito em 17/11 (`docs/tarefas/T1.4.md`, `T1.6.md`, `T1.7.md`) |
 | T1.2 | Aprovar as recompensas da sequência (dias 3, 7, 14, 30) e o item raro do 7º dia | **Eu** | T1.1 | 23/11 | 0,3 | ✅ 17/11: proposta do `T1.4.md` aprovada |
 | T1.3 | Resumo ao voltar: `db.lastSeen`, fotografia dos contadores, cálculo do que mudou | Claude | M0 | 24/11 | 3 | ✅ feito em 17/11 (`Away.lua`, `tests/test_away.py`) |
-| T1.4 | Encomenda do dia e sequência: sorteio por dia, entrega, contagem, zerar, recorde | **Codex** | T1.1 | 24–25/11 | 4 | testes com o relógio adiantado: troca à meia-noite, sequência conta e zera |
+| T1.4 | Encomenda do dia e sequência: sorteio por dia, entrega, contagem, zerar, recorde | **Codex** | T1.1 | 24–25/11 | 4 | ✅ feito em 17/11 (PR #7) |
 | T1.5 | Cartão "Enquanto você esteve fora" com "Coletar tudo"; encomenda do dia no Mercado; ponto no ícone flutuante | Claude | T1.3, T1.4 | 26/11 | 4 | capturas do simulador |
 | T1.6 | Textos EN/ptBR da F1 e cartão "como funciona" atualizado do Mercado | **Codex** | T1.5 | 26/11 | 1,5 | nenhuma chave faltando |
 | T1.7 | Cenas do simulador da F1 (resumo, encomenda do dia, sequência no 7º dia) | **Codex** | T1.5 | 27/11 | 1 | imagens em `arquivo/telas` |
