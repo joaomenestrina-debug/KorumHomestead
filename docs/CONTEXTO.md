@@ -39,10 +39,10 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T2.0 / T2.0b Proposta e aprovação | Claude + Eu | ✅ 17/11 |
 | T2.0a Nível da Vila 1–60 e as 27 ervas | Claude | a fazer |
 | T2.0b2 Migração `schema 3` | Claude | depois da T2.0a |
-| T2.0c Mercado 4 + 4 e Oficina pagando mais | **Codex** | **pode começar** (`docs/tarefas/T2.0c.md`) |
+| T2.0c Mercado 4 + 4 e Oficina pagando mais | Claude | a fazer (`docs/tarefas/T2.0c.md`) |
 | T2.0d Prédios com nível mínimo e custos pela renda | Claude | depois da T2.0a |
 | T2.0e Telas | Claude | depois da T2.0a e T2.0c |
-| T2.0f Textos | Codex | depois da T2.0e |
+| T2.0f Revisão dos textos | Codex | depois da T2.0e |
 | T2.0g Teste de simulação | Claude | depois da T2.0d |
 | T2.0h Teste no jogo | Eu | 28/11 |
 
@@ -65,7 +65,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** **T1.9**: testar a alpha1 no jogo (Mercado com a encomenda do dia, cartão "Enquanto você esteve fora", tela Novidades).
-- **Codex:** **T2.0c** (`docs/tarefas/T2.0c.md`), branch `codex/T2.0c-market-goods`. Terminar com commit, push e pull request.
+- **Codex:** **só arte e revisão de texto** (decisão de 17/11). Agora: nada; a próxima é a revisão dos textos da economia (T2.0f). Não escrever código.
 - **Claude:** T2.0a (nível da Vila e as 27 ervas), depois T2.0b2 e T2.0d; correções da T1.9 e tag `v2.0.0-alpha1` quando você testar.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
@@ -75,12 +75,13 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | O Homestead é desenvolvido **neste repositório** (`C:\AI\Code\KorumHomestead`, GitHub público). O monorepo dos outros addons não tem cópia; o instalador de lá lê daqui. |
 | 17/11 | Só **WoW Forever** (interface 16001). |
 | 17/11 | Licença **All Rights Reserved**. |
-| 17/11 | **Ícones de itens do jogo** para tudo o que é item; pixel art própria (feita pelo dono com o ChatGPT) só para lugares, mapa, decorações, retratos e logo. |
+| 17/11 | **Ícones de itens do jogo** para tudo o que é item; pixel art própria (do dono com o ChatGPT, ou do Codex, sempre aprovada pelo dono) só para lugares, mapa, decorações, retratos e logo. |
 | 17/11 | Versões de trabalho da 2.0 saem como **Alpha** no CurseForge (tag `v2.0.0-alphaN`). Só `v2.0.0` sem sufixo. Nunca `-rc`. |
 | 17/11 | Tudo público sai assinado como **Korum**: autor dos commits `Korum`, sem `Co-Authored-By`, sem citar IA. |
 | 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). |
 | 17/11 | Nada castiga quem fica fora; progresso nunca se perde. Saves antigos sempre abrem. |
 | 17/11 | **Cuidar do excesso de moedas.** A encomenda do dia paga 2,5× uma encomenda normal (o dobro de ervas × 1,25 por erva); os prêmios da sequência são XP e Lótus Negra, **nunca moedas**. Nenhuma recompensa nova dá moedas sem passar pela conta da economia (T2.0). |
+| 17/11 | **Papéis:** Claude faz **todo o código** (lógica, telas, testes, simulador, textos EN/ptBR). O Codex faz **só arte** (pixel art a partir do kit de arte, aprovada pelo dono) **e revisão de texto**. |
 | 17/11 | **Economia da 2.0** aprovada (`docs/economia.md`): Nível da Vila 1–60; ervas na perícia do jogo ÷ 5; colher dá pouco XP; a Oficina sempre dá mais moedas e XP; Mercado 4 + 4; prédios pedem nível da vila e custam horas de renda. |
 | 17/11 | Toda mudança que o jogador percebe ganha linha na tela **Novidades** (`News.lua` + `news<id>_<n>` no `Locales.lua`). A tela abre sozinha uma vez ao logar depois da atualização; save novo não vê novidades antigas. A entrada 1 é a `2.0.0-alpha1`: as tarefas da S1 acrescentam linhas nela. |
 
@@ -112,7 +113,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 | `tests/` | `test_homestead.py`, `test_migrate.py` (saves antigos), `client_mock.py` (cliente falso), `fixtures/` (saves reais de versões antigas) |
 | `ferramentas/` | `simulador_ui.py` (capturas), `importar_arte_homestead.py`, `curse_homestead.py` |
 | `arquivo/arte_v3/` | fontes da pixel art (PNG) |
-| `docs/` | este arquivo, plano, cronograma, `tarefas/` (briefings do Codex) |
+| `docs/` | este arquivo, plano, cronograma, economia, `tarefas/` (especificações das tarefas e pedidos de arte/revisão) |
 
 ## 5. Como trabalhamos (resumo)
 
@@ -122,6 +123,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 - **Comandos:** `python -m pytest tests -q` · `python ferramentas/simulador_ui.py` ·
   instalar no jogo: `python "C:\AI\Code\Addons WOW\ferramentas\instalar.py" --apply forever`.
 - **Publicar:** só Claude cria tags. Tag `v2.0.0-alphaN` → webhook → CurseForge empacota como Alpha.
+- **Papéis:** Claude escreve todo o código e os textos; o Codex só faz arte e revisa textos (ver `AGENTS.md`).
 - **Pasta compartilhada:** Codex e Claude podem trabalhar nesta mesma pasta. Antes de commitar, conferir o branch
   (`git branch --show-current`) e não usar `git add -A` com arquivos de outro.
 

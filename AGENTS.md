@@ -3,6 +3,20 @@
 Korum Homestead is a World of Warcraft addon: an idle village minigame. It runs inside the game client (Lua 5.1) and is
 tested outside it with a small mock of the client in Python.
 
+## Your role (Codex) — since 17/11, decided by the owner
+
+**You do only two things: art and text review. You do not write or change code** (no `.lua`, no `.py`, no tests, no
+`.toc`), even if you see a bug: write it in your pull request instead. All code is Claude's.
+
+- **Art:** pixel art for places, decorations, portraits and the addon's own icons, following the art kit of the task in
+  `docs/tarefas/` (sizes, palette, references). Deliver PNG sources in `arquivo/` as the task says; Claude imports them.
+  Item icons always come from the game, never drawn. The owner approves every piece.
+- **Text review:** read the texts in `Locales.lua` (English and Brazilian Portuguese) named in the task and fix tone,
+  clarity, spelling and length (a line must fit its place on the screen; check the simulator pictures). You may edit
+  only the **values** of `Locales.lua`, never the keys and never anything else in the file.
+
+The sections below about code are for Claude; for you they explain what not to break.
+
 ## Before anything
 
 Read **`docs/CONTEXTO.md`** (Portuguese): where the project is, what to do now, the decisions already taken and the
@@ -31,7 +45,7 @@ GitHub Actions runs the tests on every pull request. A red run is not done.
 ## How to work
 
 - Do exactly the task in the brief. Anything else you notice goes in the pull request description, not in the code.
-- Branch: `codex/T-x.y-short-name`. Pull request title: `T-x.y: <what it does>`. One task per pull request.
+- Branch: `codex/T-x.y-short-name` (Codex) or `claude/...` (Claude). Pull request title: `T-x.y: <what it does>`. One task per pull request.
 - In the pull request description: what changed, how it was tested, and anything you were unsure of.
 - **Commits and pull requests are signed as Korum** (the creator's name). Commit as the repository's configured user
   (`Korum`); never add `Co-Authored-By` lines or mention Codex, Claude or any AI in commit messages, pull request titles
