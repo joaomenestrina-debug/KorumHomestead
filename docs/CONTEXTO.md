@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 17/11/2026, por Korum (T1.6 concluída; T1.7 em andamento).*
+*Última atualização: 17/11/2026, por Korum (T1.6 e T1.7 prontas para revisão).*
 
 ---
 
@@ -25,9 +25,9 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T1.2 Aprovar prêmios da sequência | Eu | ✅ 17/11: aprovada a proposta de `T1.4.md` (`B.DAILY`) como está |
 | T1.3 Resumo ao voltar (lógica, `Away.lua`) | Claude | ✅ |
 | T1.4 Encomenda do dia e sequência (`Daily.lua`) | Codex | ✅ PR #7 |
-| T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | ✅ (textos ptBR provisórios em inglês, marcados `-- TODO ptBR`) |
-| T1.6 Textos EN/ptBR da F1 + Novidades | **Codex** | ✅ pronta no branch `codex/T1.6-texts`; testes e simulador verdes |
-| T1.7 Cenas do simulador da F1 | **Codex** | em andamento no branch de cenas (`SIM.clock`) |
+| T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | ✅; textos ptBR revisados na T1.6 |
+| T1.6 Textos EN/ptBR da F1 + Novidades | **Codex** | ✅ PR #9 aberta; testes e simulador verdes |
+| T1.7 Cenas do simulador da F1 | **Codex** | ✅ pronta no branch `codex/T1.7-scenes`; seis capturas revisadas |
 | T1.8–T1.11 Integração, teste no jogo, correções, tag alpha1 | Claude + Eu | 27–29/11 |
 
 ### Sprint 0: concluída
@@ -49,7 +49,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** nada até o teste da alpha1 no jogo (T1.9, 28/11).
-- **Codex:** T1.6 concluída no branch `codex/T1.6-texts`; T1.7 em andamento (cenas do simulador). Terminar sempre com commit, push e pull request.
+- **Codex:** T1.6 na PR #9; T1.7 pronta no branch `codex/T1.7-scenes`, com as seis capturas anexas. Terminar sempre com commit, push e pull request.
 - **Claude:** revisar T1.6/T1.7 e integrar (T1.8, 27/11).
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
