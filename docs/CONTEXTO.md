@@ -24,7 +24,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T1.1 Especificação e briefings T1.4, T1.6, T1.7 | Claude | ✅ em `docs/tarefas/` |
 | T1.2 Aprovar prêmios da sequência (proposta em `T1.4.md`, `B.DAILY`) | **Eu** | até 23/11 |
 | T1.3 Resumo ao voltar (lógica) | Claude | a fazer |
-| T1.4 Encomenda do dia e sequência (`Daily.lua`) | **Codex** | **pode começar** |
+| T1.4 Encomenda do dia e sequência (`Daily.lua`) | **Codex** | ✅ pronta no branch `codex/T1.4-daily`; testes verdes |
 | T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | depois de T1.3 e T1.4 |
 | T1.6 Textos EN/ptBR da F1 + Novidades | Codex | depois de T1.5 |
 | T1.7 Cenas do simulador da F1 | Codex | depois de T1.5 |
@@ -50,7 +50,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 - **Eu:** até segunda 23/11, **T1.2**: aprovar os prêmios da sequência (dias 3, 7, 14, 30 e o item raro; proposta na
   tabela `B.DAILY` de `docs/tarefas/T1.4.md`).
-- **Codex:** **T1.4** (`docs/tarefas/T1.4.md`), branch `codex/T1.4-daily`. Depois T1.6 e T1.7, quando a T1.5 estiver na `main`.
+- **Codex:** **T1.4 concluída** em `codex/T1.4-daily` (lógica, dados salvos e testes; aguarda revisão/integração). Depois T1.6 e T1.7, quando a T1.5 estiver na `main`.
 - **Claude:** T1.3 (resumo ao voltar), depois T1.5 (telas) quando a T1.4 entrar.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)

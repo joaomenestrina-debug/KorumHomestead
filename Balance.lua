@@ -40,6 +40,20 @@ B.ORDERS = {
     xpDivisor = 2,
 }
 
+-- Daily order size, pay, and streak prizes.
+B.DAILY = {
+    qtyMultiplier = 2,        -- the daily order asks for twice the herbs of a normal order
+    payMultiplier = 2.5,      -- the daily order pays 2.5 times its size-based coins and XP
+    streak = {                -- extra prize when a streak reaches the day, once per streak
+        [3] = {coins = 1.0},   -- add 100% of the day's coins
+        [7] = {coins = 1.0, rare = 1}, -- add 100% and one rare keepsake
+        [14] = {coins = 2.0, rare = 1}, -- add 200% and one rare keepsake
+        [30] = {coins = 3.0, rare = 2}, -- add 300% and two rare keepsakes
+    },
+    rareEvery = 7,            -- after day 30, give one rare keepsake every 7 streak days
+    rareItem = 13468,         -- Black Lotus, the keepsake shown by its game icon
+}
+
 -- Village level cap and Hall levels required to open each building.
 B.VILLAGE_MAX_LEVEL = 7
 B.NEEDS_HALL = {mine = 2, pond = 3, workshop = 4, inn = 5}
