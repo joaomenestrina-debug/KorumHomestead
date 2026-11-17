@@ -10,7 +10,8 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from client_mock import CLIENT  # noqa: E402  (frames, print, timers)
 
 HOME = pathlib.Path(__file__).resolve().parent.parent          # the addon is the root of this repository
-FILES = ["Kit.lua", "Core.lua", "Locales.lua", "Data.lua", "Farm.lua", "Village.lua", "Works.lua", "UI.lua"]
+FILES = [line.strip() for line in (HOME / "KorumHomestead.toc").read_text(encoding="utf-8").splitlines()
+         if line.strip().endswith(".lua")]
 
 
 class Homestead(unittest.TestCase):
@@ -449,7 +450,7 @@ class Homestead(unittest.TestCase):
         self.assertEqual(problems, "")
 
     def test_every_text_the_window_asks_for_exists(self):
-        source = "".join((HOME / f).read_text(encoding="utf-8") for f in ("UI.lua", "Core.lua", "Farm.lua"))
+        source = "".join((HOME / f).read_text(encoding="utf-8") for f in FILES + ["Core.lua", "Farm.lua"])
         keys = set(re.findall(r'\bT\("([A-Za-z_0-9]+)"[,)]', source))
         keys |= {"why_" + k for k in re.findall(r'Reason\("(\w+)"\)', source)}
         keys |= {"why_" + k for k in re.findall(r'return false, "(\w+)"', source)}
@@ -460,8 +461,9 @@ class Homestead(unittest.TestCase):
             self.assertTrue(self.ev(f"NS.L.enUS['{key}'] ~= nil"), key)
 
     def test_no_accented_text_goes_through_string_upper(self):
-        for lua in HOME.glob("*.lua"):
-            self.assertNotIn("string.upper", lua.read_text(encoding="utf-8"), lua.name)
+        for lua in FILES:
+            path = HOME / lua
+            self.assertNotIn("string.upper", path.read_text(encoding="utf-8"), lua)
 
     # ------------------------------------------------------------------ the window
     def open(self, view="garden"):

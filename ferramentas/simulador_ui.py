@@ -316,7 +316,8 @@ class Game:
 PT_NAMES = {2447: "Botão-da-paz", 765: "Folha-prata", 2449: "Raiz-telúrica", 785: "Magi-real", 2450: "Cardo-farpado",
             2453: "Erva-moura", 3355: "Aço-flor Selvagem", 3356: "Sangue-real", 3357: "Raiz-da-vida", 3818: "Folha-pálida",
             3821: "Espinheira-dourada", 3358: "Bigode-de-hadgar", 3369: "Musgo-de-túmulo"}
-HOMESTEAD = ["Kit.lua", "Core.lua", "Locales.lua", "Data.lua", "Farm.lua", "Village.lua", "Works.lua", "UI.lua"]
+HOMESTEAD = [line.strip() for line in (ROOT / "KorumHomestead.toc").read_text(encoding="utf-8").splitlines()
+             if line.strip().endswith(".lua")]
 
 
 def homestead(out):

@@ -16,4 +16,16 @@ Data.lua
 Farm.lua
 Village.lua
 Works.lua
-UI.lua
+UI/Common.lua
+UI/Garden.lua
+UI/Barn.lua
+UI/Market.lua
+UI/Settings.lua
+UI/Village.lua
+UI/Hall.lua
+UI/Guide.lua
+UI/Workshop.lua
+UI/Inn.lua
+UI/Window.lua
+UI/Bubble.lua
+UI/Minimap.lua
