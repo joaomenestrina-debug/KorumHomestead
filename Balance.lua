@@ -107,6 +107,9 @@ B.MISSIONS = {
     {id = "long", time = 28800, fish = 20, coins = 750, ore = 8},
 }
 
+-- While you were away (Away.lua): the window tells what happened only after this long closed (seconds).
+B.AWAY = {minSeconds = 1800}
+
 -- Initial coins and plot count for a new homestead.
 B.STARTING = {coins = 40, plots = 2}
 KH.defaults.coins = B.STARTING.coins
