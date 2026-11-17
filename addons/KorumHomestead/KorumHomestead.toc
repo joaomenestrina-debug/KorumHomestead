@@ -1,0 +1,19 @@
+## Interface: 16001
+## Title: Korum Homestead
+## Title-ptBR: Korum Homestead
+## IconTexture: Interface\AddOns\KorumHomestead\Media\logo
+## Notes: A little idle village for the moments of waiting: grow herbs, build, craft, send followers on missions. Independent addon.
+## Notes-ptBR: Uma pequena vila para os momentos de espera: plante ervas, construa, fabrique e mande seguidores em missões. Addon independente.
+## Author: Korum
+## Version: 1.0.0
+## SavedVariables: KorumHomesteadDB
+## Category: Korum
+
+Kit.lua
+Core.lua
+Locales.lua
+Data.lua
+Farm.lua
+Village.lua
+Works.lua
+UI.lua

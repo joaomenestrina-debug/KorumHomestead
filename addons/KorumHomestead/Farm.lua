@@ -1,0 +1,190 @@
+--[[
+    Korum Homestead - the farm
+
+    The rules, without any window: plots, planting, harvest, selling, the level and the orders. Every function that can fail
+    returns false and the key of the reason (the UI says it in the language of the player).
+
+        Farm:Status(index)           "locked" | "empty" | "growing" | "ready", progress 0..1, seconds left
+        Farm:Plant(index, plantId)   buys the seed and plants it
+        Farm:Harvest(index)          the plant of a ready plot goes to the barn; returns how many
+        Farm:HarvestAll() / Farm:PlantAll(plantId)
+        Farm:Sell(plantId, n) / Farm:SellAll()
+        Farm:AddXP(n)
+        Orders:Ensure() / Orders:Deliver(slot)
+]]
+
+local addonName, KH = ...
+local F = {}
+KH.Farm = F
+local Orders = {}
+KH.Orders = Orders
+local D = KH.Data
+
+-- ----------------------------------------------------------------------------
+-- The level
+-- ----------------------------------------------------------------------------
+function F:AddXP(n)
+    local db = KH.db
+    if db.level >= D.MAX_LEVEL then return end
+    db.xp = db.xp + n
+    while db.level < D.MAX_LEVEL and db.xp >= D.XPToNext(db.level) do
+        db.xp = db.xp - D.XPToNext(db.level)
+        db.level = db.level + 1
+        KH:Notify(KH.T("levelUp", db.level))
+    end
+    if db.level >= D.MAX_LEVEL then db.xp = 0 end
+end
+
+-- ----------------------------------------------------------------------------
+-- The plots
+-- ----------------------------------------------------------------------------
+function F:Status(index)
+    local db = KH.db
+    if index > db.nplots then return "locked", 0, 0 end
+    local plot = db.plots[index]
+    if not plot then return "empty", 0, 0 end
+    local plant = D.Plant(plot.plant)
+    if not plant then return "empty", 0, 0 end
+    local elapsed = KH.Now() - plot.at
+    if elapsed >= plant.grow then return "ready", 1, 0 end
+    return "growing", math.max(0, elapsed) / plant.grow, plant.grow - elapsed
+end
+
+function F:ReadyCount()
+    local n = 0
+    for i = 1, KH.db.nplots do
+        if self:Status(i) == "ready" then n = n + 1 end
+    end
+    return n
+end
+
+-- Nothing growing, nothing in the barn and not even the cheapest seed affordable: the player could never earn again
+function F:Stuck()
+    local db = KH.db
+    for i = 1, db.nplots do
+        if db.plots[i] then return false end
+    end
+    for _, n in pairs(db.crops) do
+        if n > 0 then return false end
+    end
+    return db.coins < D.PLANTS[1][4]
+end
+
+function F:Plant(index, plantId)
+    local db = KH.db
+    local plant = D.Plant(plantId)
+    if not plant then return false, "noPlant" end
+    if self:Status(index) ~= "empty" then return false, "notEmpty" end
+    if db.level < plant.level then return false, "level" end
+    -- a neighbour lends the cheapest seed to whoever is stuck without coins
+    if plantId == D.PLANTS[1][1] and self:Stuck() then db.coins = plant.cost end
+    if db.coins < plant.cost then return false, "coins" end
+    db.coins = db.coins - plant.cost
+    db.plots[index] = {plant = plantId, at = KH.Now()}
+    return true
+end
+
+function F:PlantAll(plantId)
+    local n, why = 0, nil
+    for i = 1, KH.db.nplots do
+        if self:Status(i) == "empty" then
+            local ok, reason = self:Plant(i, plantId)
+            if ok then n = n + 1 else why = reason break end
+        end
+    end
+    return n, why
+end
+
+function F:Harvest(index)
+    local db = KH.db
+    if self:Status(index) ~= "ready" then return 0 end
+    local plant = D.Plant(db.plots[index].plant)
+    local amount = D.Yield(plant, db.level)
+    if KH.Village:Stored() + amount > KH.Village:BarnCap() then return 0, "barnFull" end
+    db.crops[plant.id] = (db.crops[plant.id] or 0) + amount
+    db.plots[index] = nil
+    db.stats.harvested = db.stats.harvested + amount
+    self:AddXP(plant.xp)
+    return amount
+end
+
+function F:HarvestAll()
+    local total, why = 0, nil
+    for i = 1, KH.db.nplots do
+        local n, reason = self:Harvest(i)
+        total = total + n
+        why = why or reason
+    end
+    return total, why
+end
+
+-- ----------------------------------------------------------------------------
+-- The barn: selling
+-- ----------------------------------------------------------------------------
+function F:Sell(plantId, n)
+    local db = KH.db
+    local plant = D.Plant(plantId)
+    local have = db.crops[plantId] or 0
+    n = math.min(n or have, have)
+    if not plant or n <= 0 then return 0 end
+    db.crops[plantId] = have - n > 0 and (have - n) or nil
+    local coins = math.floor(n * plant.sell * KH.Village:PayBonus())
+    db.coins = db.coins + coins
+    db.stats.earned = db.stats.earned + coins
+    return coins
+end
+
+function F:SellAll()
+    local total = 0
+    for _, p in ipairs(D.PLANTS) do total = total + self:Sell(p[1]) end
+    return total
+end
+
+-- ----------------------------------------------------------------------------
+-- The orders: someone in the world wants some of a herb, and pays more than the market
+-- ----------------------------------------------------------------------------
+local function Rand(n)
+    return (KH.Rand or math.random)(n)
+end
+
+function Orders:Make()
+    local db = KH.db
+    local options = {}
+    for _, p in ipairs(D.PLANTS) do
+        if p[2] <= db.level and p[2] >= db.level - 8 then options[#options + 1] = p[1] end
+    end
+    if #options == 0 then options[1] = D.PLANTS[1][1] end
+    local plant = D.Plant(options[Rand(#options)])
+    local qty = 2 + Rand(5) + math.floor(db.level / 5)
+    return {plant = plant.id, qty = qty, coins = math.floor(qty * plant.sell * 1.6), xp = math.floor(qty * plant.xp / 2),
+        npc = Rand(D.NPC_COUNT)}
+end
+
+function Orders:Ensure()
+    local db = KH.db
+    for i = 1, D.ORDER_SLOTS do
+        if not db.orders[i] then db.orders[i] = self:Make() end
+    end
+end
+
+function Orders:CanDeliver(slot)
+    local o = KH.db.orders[slot]
+    return o ~= nil and (KH.db.crops[o.plant] or 0) >= o.qty
+end
+
+function Orders:Deliver(slot)
+    local db = KH.db
+    local o = db.orders[slot]
+    if not o then return false, "noOrder" end
+    if (db.crops[o.plant] or 0) < o.qty then return false, "missing" end
+    db.crops[o.plant] = db.crops[o.plant] - o.qty
+    if db.crops[o.plant] <= 0 then db.crops[o.plant] = nil end
+    local pay = math.floor(o.coins * KH.Village:PayBonus())
+    o.paid = pay
+    db.coins = db.coins + pay
+    db.stats.earned = db.stats.earned + pay
+    db.stats.delivered = db.stats.delivered + 1
+    db.orders[slot] = self:Make()
+    F:AddXP(o.xp)
+    return true, o
+end
