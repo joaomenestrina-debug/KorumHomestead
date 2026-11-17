@@ -1,7 +1,9 @@
 """Korum Homestead: the farm rules (plots, growth by the clock, harvest, selling, orders, level) and the window."""
+import os
 import pathlib
 import re
 import sys
+import time
 import unittest
 
 from lupa import lua51
@@ -854,6 +856,60 @@ class Homestead(unittest.TestCase):
             text = lua.read_text(encoding="utf-8")
             for other in ("KorumFacilities", "KorumRadar", "KorumLevelingGuide", "KorumSafeTravels", "GoldRadar"):
                 self.assertNotIn(other, text, lua.name)
+
+    def use_local_os_clock(self):
+        self.lua.execute("""
+            function time(fields)
+                if fields then return os.time(fields) end
+                return NOW
+            end
+            function date(format, at) return os.date(format, at or NOW) end
+        """)
+
+    def test_day_changes_at_local_midnight(self):
+        self.use_local_os_clock()
+        self.lua.execute("NOW = os.time({year = 2024, month = 2, day = 1, hour = 23, min = 59, sec = 30})")
+        before = self.ev("NS.Day()")
+        self.lua.execute("NOW = NOW + 60")
+        self.assertEqual(self.ev("NS.Day()"), before + 1)
+
+    def test_day_stays_the_same_for_23_hours_inside_one_local_day(self):
+        self.use_local_os_clock()
+        self.lua.execute("NOW = os.time({year = 2024, month = 2, day = 1, hour = 0, min = 30, sec = 0})")
+        first = self.ev("NS.Day()")
+        self.lua.execute("NOW = NOW + 23 * 60 * 60")
+        self.assertEqual(self.ev("NS.Day()"), first)
+
+    def test_until_next_local_midnight(self):
+        self.use_local_os_clock()
+        self.lua.execute("NOW = os.time({year = 2024, month = 2, day = 1, hour = 23, min = 0, sec = 0})")
+        self.assertAlmostEqual(self.ev("NS.UntilNextDay()"), 3600, delta=1)
+        self.lua.execute("NOW = os.time({year = 2024, month = 2, day = 1, hour = 0, min = 0, sec = 0})")
+        self.assertEqual(self.ev("NS.UntilNextDay()"), 86400)
+
+    @unittest.skipUnless(hasattr(time, "tzset"), "Python's time.tzset is unavailable; cannot set a test time zone")
+    def test_day_advances_once_at_midnight_across_daylight_saving_changes(self):
+        old_tz = os.environ.get("TZ")
+        try:
+            os.environ["TZ"] = "Europe/Berlin"
+            time.tzset()
+            self.use_local_os_clock()
+            for month, day, next_month, next_day, hours in (
+                (3, 31, 4, 1, 23),
+                (10, 27, 10, 28, 25),
+            ):
+                start = self.ev(f"os.time({{year = 2024, month = {month}, day = {day}, hour = 0, min = 0, sec = 0}})")
+                next_midnight = self.ev(f"os.time({{year = 2024, month = {next_month}, day = {next_day}, hour = 0, min = 0, sec = 0}})")
+                self.assertEqual(next_midnight - start, hours * 3600)
+                self.assertEqual(self.ev(f"NS.Day({next_midnight - 1})"), self.ev(f"NS.Day({start})"))
+                self.assertEqual(self.ev(f"NS.Day({next_midnight})"), self.ev(f"NS.Day({start})") + 1)
+                self.assertEqual(self.ev(f"NS.UntilNextDay({start})"), hours * 3600)
+        finally:
+            if old_tz is None:
+                os.environ.pop("TZ", None)
+            else:
+                os.environ["TZ"] = old_tz
+            time.tzset()
 
 
 if __name__ == "__main__":

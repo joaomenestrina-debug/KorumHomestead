@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 17/11/2026, por Claude (T0.4 e T0.7 concluídas).*
+*Última atualização: 17/11/2026, após T0.9.*
 
 ---
 
@@ -29,15 +29,15 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T0.6 `UI.lua` dividido em `UI/` | Codex | ✅ PR #1 integrado |
 | T0.7 `db.schema` + `Migrate.lua` | Claude | ✅ PR #2 |
 | T0.8 `Balance.lua` | **Codex** | ▶️ pode começar ([briefing](tarefas/T0.8.md)) |
-| T0.9 `KH.Day()` | **Codex** | ▶️ pode começar ([briefing](tarefas/T0.9.md)) |
-| T0.10 Revisão e integração | Claude | aguarda T0.8 e T0.9 |
+| T0.9 `KH.Day()` | **Codex** | 🔍 PR em revisão ([briefing](tarefas/T0.9.md)) |
+| T0.10 Revisão e integração | Claude | aguarda T0.8 e revisão da T0.9 |
 | T0.11 Teste de regressão no jogo | **Eu** | sábado 21–22/11 |
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** dar ao Codex a T0.9 e, em seguida, a T0.8. Sábado: T0.11 (teste de regressão no jogo).
-- **Codex:** T0.9, depois T0.8 (uma por pull request).
-- **Claude:** revisar os pull requests do Codex; briefings da S1 até segunda 23/11.
+- **Eu:** T0.4 concluída; sábado: T0.11 (teste de regressão no jogo).
+- **Codex:** T0.9 em revisão; depois T0.8 (uma por pull request).
+- **Claude:** revisar os pull requests do Codex; T0.7 concluída; briefings da S1 até segunda 23/11.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
