@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 17/11/2026, por Claude (Sprint 0 concluída: T0.11 ok no jogo, M0 atingido).*
+*Última atualização: 17/11/2026, por Claude (Sprint 0 concluída; tela Novidades; briefings da S1 prontos).*
 
 ---
 
@@ -16,6 +16,19 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | **Sprint atual** | S0 concluída em 17/11; **S1 — Voltar todo dia** começa em 23/11 |
 | **Próximo marco** | **2.0.0-alpha1** em 29/11 (M0 atingido em 17/11) |
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
+
+### Sprint 1: andamento (alpha1 em 29/11)
+
+| Tarefa | Quem | Estado |
+|---|---|---|
+| T1.1 Especificação e briefings T1.4, T1.6, T1.7 | Claude | ✅ em `docs/tarefas/` |
+| T1.2 Aprovar prêmios da sequência (proposta em `T1.4.md`, `B.DAILY`) | **Eu** | até 23/11 |
+| T1.3 Resumo ao voltar (lógica) | Claude | a fazer |
+| T1.4 Encomenda do dia e sequência (`Daily.lua`) | **Codex** | **pode começar** |
+| T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | depois de T1.3 e T1.4 |
+| T1.6 Textos EN/ptBR da F1 + Novidades | Codex | depois de T1.5 |
+| T1.7 Cenas do simulador da F1 | Codex | depois de T1.5 |
+| T1.8–T1.11 Integração, teste no jogo, correções, tag alpha1 | Claude + Eu | 27–29/11 |
 
 ### Sprint 0: concluída
 
@@ -35,9 +48,10 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** segunda 23/11: decisões rápidas da S1 (T1.2: prêmios da sequência).
-- **Codex:** nada até os briefings da S1 (segunda 23/11).
-- **Claude:** briefings da S1 (T1.1) até segunda 23/11.
+- **Eu:** até segunda 23/11, **T1.2**: aprovar os prêmios da sequência (dias 3, 7, 14, 30 e o item raro; proposta na
+  tabela `B.DAILY` de `docs/tarefas/T1.4.md`).
+- **Codex:** **T1.4** (`docs/tarefas/T1.4.md`), branch `codex/T1.4-daily`. Depois T1.6 e T1.7, quando a T1.5 estiver na `main`.
+- **Claude:** T1.3 (resumo ao voltar), depois T1.5 (telas) quando a T1.4 entrar.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
