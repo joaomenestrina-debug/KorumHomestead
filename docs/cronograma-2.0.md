@@ -20,12 +20,13 @@ quê e quando**.
 
 | Quem | Papel | Responsável por |
 |---|---|---|
-| **Eu** | Dono do produto e testador no jogo | Decisões de produto, prioridades e equilíbrio; **todo teste dentro do jogo** (só você roda o WoW); arte com o ChatGPT; capturas de tela reais; aprovar e publicar no CurseForge; tokens e acessos |
-| **Claude** | Arquiteto, líder técnico e gestor do projeto | Arquitetura e modelo de dados; migrações de save; sistemas centrais e telas novas; escrever as tarefas do Codex; revisar e integrar o código do Codex; simulador; versões, tags e changelog; manter este cronograma atualizado |
-| **Codex** | Engenheiro de implementação | Tarefas bem especificadas: refatorações mecânicas, lógica com regras fechadas, testes automáticos, textos em EN/ptBR, tabelas de conteúdo, cenas do simulador, scripts de apoio |
+| **Eu** | Dono do produto e testador no jogo | Decisões de produto, prioridades e equilíbrio; **todo teste dentro do jogo** (só você roda o WoW); aprovar a arte; capturas de tela reais; aprovar e publicar no CurseForge; tokens e acessos |
+| **Claude** | Arquiteto, líder técnico, gestor e **todo o código** | Desde 17/11: arquitetura, dados, migrações, toda a lógica, telas, testes, simulador, textos (escreve EN e ptBR junto com cada tarefa); pedidos de arte e de revisão para o Codex; integrar; versões, tags e changelog; manter este cronograma |
+| **Codex** | Arte e revisão de texto | Desde 17/11, **só**: pixel art (lugares, decorações, retratos, ícones próprios) a partir do kit de arte, e revisão dos textos EN/ptBR que Claude escreve (tom, clareza, erros, se cabe na tela). Não escreve código |
 
-**Regra de divisão:** o que exige decisão de desenho fica com Claude; o que tem especificação fechada e critério de
-aceite testável vai para o Codex; o que exige o jogo aberto ou uma decisão de produto fica com você.
+**Regra de divisão (desde 17/11, decisão do dono):** todo o código é de Claude; o Codex faz só arte e revisão de texto;
+o que exige o jogo aberto ou uma decisão de produto fica com você. As tarefas de código já feitas pelo Codex antes disso
+continuam marcadas com ele no histórico.
 
 ## 2. Como trabalhamos
 
@@ -150,10 +151,10 @@ Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com
 | T2.0b | Aprovar a proposta | Eu | T2.0 | 17/11 | 0,3 | ✅ aprovada em 17/11 |
 | T2.0a | Nível da Vila 1–60, as 27 ervas (perícia ÷ 5), curva de XP, colher dá pouco XP, nível 60 dá Lótus Negra | Claude | T2.0b | 18–20/11 | 5 | testes; `B.PLANTS` gerada por fórmula |
 | T2.0b2 | Migração `schema 3` (Herbalismo → Vila; save real → Vila 37) | Claude | T2.0a | 20/11 | 2 | teste com `save-1.0.1.lua` |
-| T2.0c | Mercado com 4 + 4 encomendas (ervas e itens) e a Oficina pagando mais (moedas e XP) | **Codex** | T2.0b | 18–21/11 | 5 | `docs/tarefas/T2.0c.md`; teste para todas as receitas |
+| T2.0c | Mercado com 4 + 4 encomendas (ervas e itens) e a Oficina pagando mais (moedas e XP) | Claude | T2.0b | 18–21/11 | 5 | `docs/tarefas/T2.0c.md`; teste para todas as receitas |
 | T2.0d | Prédios com nível mínimo da vila e custos pela renda | Claude | T2.0a | 21/11 | 2 | testes |
 | T2.0e | Telas: cabeçalho "Vila N", Mercado com 8 encomendas, Guia, cartões | Claude | T2.0a, T2.0c | 23–24/11 | 4 | capturas |
-| T2.0f | Textos EN/ptBR e Novidades da economia | **Codex** | T2.0e | 25/11 | 1,5 | chaves completas |
+| T2.0f | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) e Novidades da economia | **Codex** | T2.0e | 25/11 | 1,5 | chaves completas |
 | T2.0g | Teste que simula um jogador: vila inteira ≥ ~200 h de Horta; nenhuma atividade rende mais que a Horta | Claude | T2.0a–d | 25/11 | 2 | teste verde |
 | T2.0h | Teste no jogo da economia | **Eu** | T2.0e–g | 28/11 | 1,5 | relato |
 
@@ -164,11 +165,11 @@ Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com
 | T2.1 | Especificação da F2 e briefings T2.4, T2.5, T2.7, T2.8 | Claude | M1 | 30/11 | 2 | briefings |
 | T2.2 | Aprovar os 6 serviços (nomes, custos, chances, recompensas) | **Eu** | T2.1 | 30/11 | 0,3 | decisão |
 | T2.3 | Disposição: valor, recarga com o jogo fechado, máximo por nível, gasto | Claude | M1 | 01/12 | 2 | testes de recarga (12 min, 2 h, 3 dias) |
-| T2.4 | Serviços: quadro de 3 por hora, sorteio com semente fixa, sucesso, falha com consolo | **Codex** | T2.1 | 01–02/12 | 4 | testes com sorteio fixo batendo com a tabela |
-| T2.5 | Propor itens do jogo para os ícones dos serviços e recompensas (IDs conferidos na base do guia) | **Codex** | T2.1 | 01/12 | 1 | lista de IDs no pull request |
+| T2.4 | Serviços: quadro de 3 por hora, sorteio com semente fixa, sucesso, falha com consolo | Claude | T2.1 | 01–02/12 | 4 | testes com sorteio fixo batendo com a tabela |
+| T2.5 | Propor itens do jogo para os ícones dos serviços e recompensas (IDs conferidos na base do guia) | Claude | T2.1 | 01/12 | 1 | lista de IDs no pull request |
 | T2.6 | Barra de Disposição no cabeçalho; tela do Quadro de Serviços; resultado com animação curta | Claude | T2.3, T2.4 | 03/12 | 4 | capturas; cabeçalho cabe em EN e ptBR |
-| T2.7 | Textos EN/ptBR dos serviços (nome, descrição, frase de sucesso e de falha) | **Codex** | T2.2 | 03/12 | 1,5 | chaves completas |
-| T2.8 | Cenas do simulador da F2 | **Codex** | T2.6 | 04/12 | 1 | imagens |
+| T2.7 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) dos serviços (nome, descrição, frase de sucesso e de falha) | **Codex** | T2.2 | 03/12 | 1,5 | chaves completas |
+| T2.8 | Cenas do simulador da F2 | Claude | T2.6 | 04/12 | 1 | imagens |
 | T2.9 | Conferência de equilíbrio: moedas por hora dos serviços contra a Horta | Claude | T2.4 | 04/12 | 1 | serviços rendem menos que a Horta por hora |
 | T2.10 | Revisão, integração, build de teste | Claude | T2.4–T2.9 | 04/12 | 2 | lista do que conferir |
 | T2.11 | Teste no jogo da F2 | **Eu** | T2.10 | 05/12 | 1,5 | relato |
@@ -181,11 +182,11 @@ Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com
 | T3.1 | Especificação da F3 e briefings T3.4, T3.5, T3.7, T3.8 | Claude | M2 | 07/12 | 2 | briefings |
 | T3.2 | Aprovar os quatro atributos, os valores por ponto e as especialidades dos seis seguidores | **Eu** | T3.1 | 07/12 | 0,3 | decisão |
 | T3.3 | Atributos: pontos por nível, migração (pontos dos níveis que o save já tem), redistribuir com custo | Claude | M2 | 08/12 | 3 | teste de migração dá os pontos certos |
-| T3.4 | Aplicar os bônus dos atributos em Horta, Mercado, Oficina, Estalagem e Serviços | **Codex** | T3.3 | 08–09/12 | 4 | testes por bônus; números na tela já com o bônus |
-| T3.5 | Seguidores: especialidade em casa, risco de ferimento, descanso, achados raros | **Codex** | T3.1 | 09–10/12 | 4 | testes com sorteio fixo |
+| T3.4 | Aplicar os bônus dos atributos em Horta, Mercado, Oficina, Estalagem e Serviços | Claude | T3.3 | 08–09/12 | 4 | testes por bônus; números na tela já com o bônus |
+| T3.5 | Seguidores: especialidade em casa, risco de ferimento, descanso, achados raros | Claude | T3.1 | 09–10/12 | 4 | testes com sorteio fixo |
 | T3.6 | Tela do personagem (atributos e "de onde vem cada bônus"); Estalagem com especialidade, ferido e achado | Claude | T3.3–T3.5 | 10–11/12 | 5 | capturas |
-| T3.7 | Textos EN/ptBR da F3 | **Codex** | T3.6 | 11/12 | 1,5 | chaves completas |
-| T3.8 | Cenas do simulador da F3 | **Codex** | T3.6 | 11/12 | 1 | imagens |
+| T3.7 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) da F3 | **Codex** | T3.6 | 11/12 | 1,5 | chaves completas |
+| T3.8 | Cenas do simulador da F3 | Claude | T3.6 | 11/12 | 1 | imagens |
 | T3.9 | Revisão, integração, build de teste | Claude | T3.4–T3.8 | 11/12 | 2 | lista do que conferir |
 | T3.10 | Teste no jogo da F3 | **Eu** | T3.9 | 12/12 | 1,5 | relato |
 | T3.11 | Correções e tag `v2.0.0-alpha3` | Claude + **Eu** | T3.10 | 13/12 | 1–3 | alpha publicado |
@@ -195,10 +196,10 @@ Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
 | A1 | Definir as 10 decorações e as posições livres no mapa | Claude | — | 07/12 | 1,5 | mapa marcado com os pontos |
-| A2 | Kit para o ChatGPT: LEIA-ME com medidas, referências aprovadas, mapa com os pontos | Claude | A1 | 08/12 | 1,5 | `kit_decoracoes.zip` |
-| A3 | Produzir as decorações no ChatGPT | **Eu** | A2 | 09–14/12 | 3–5 | 10 imagens (grade real + @2x) |
+| A2 | Kit de arte para o Codex: LEIA-ME com medidas, referências aprovadas, mapa com os pontos | Claude | A1 | 08/12 | 1,5 | `kit_decoracoes.zip` |
+| A3 | Produzir as decorações (pixel art) | **Codex** (você aprova) | A2 | 09–14/12 | 3–5 | 10 imagens (grade real + @2x) |
 | A4 | Revisar a arte (estilo, medidas, pixels soltos) e pedir ajustes | Claude | A3 | 15/12 | 1 | aprovado ou lista de ajustes |
-| A5 | Importar para o addon (estender o importador) | **Codex** | A4 | 16/12 | 1 | TGAs em `Media/Village/` |
+| A5 | Importar para o addon (estender o importador) | Claude | A4 | 16/12 | 1 | TGAs em `Media/Village/` |
 
 ### Sprint 4: Coleção, conquistas e decorações (seg 14/12 a dom 20/12) → Alpha 4
 
@@ -206,13 +207,13 @@ Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com
 |---|---|---|---|---|---|---|
 | T4.1 | Especificação da F4 e briefings T4.3, T4.4, T4.6, T4.7 | Claude | M3 | 14/12 | 2 | briefings |
 | T4.2 | Motor de conquistas: registro de eventos, progresso, pontos de vila, prêmios dados uma vez | Claude | M3 | 14–15/12 | 3 | testes; o que já foi feito no save conta |
-| T4.3 | Herbário: catálogo (ervas, receitas, produtos, raros), visto ou não, contagem desde o save antigo | **Codex** | T4.1 | 15/12 | 3 | testes de contagem |
-| T4.4 | Lista das ~40 conquistas e dos ~12 itens raros (com IDs de itens do jogo conferidos) | **Codex** | T4.1 | 15/12 | 2 | tabela no pull request |
+| T4.3 | Herbário: catálogo (ervas, receitas, produtos, raros), visto ou não, contagem desde o save antigo | Claude | T4.1 | 15/12 | 3 | testes de contagem |
+| T4.4 | Lista das ~40 conquistas e dos ~12 itens raros (com IDs de itens do jogo conferidos) | Claude | T4.1 | 15/12 | 2 | tabela no pull request |
 | T4.5 | Aprovar conquistas, raros e quais marcos liberam cada decoração | **Eu** | T4.4 | 16/12 | 0,5 | decisão |
 | T4.6 | Telas: Herbário (álbum com silhuetas) e Conquistas (grupos, progresso) | Claude | T4.2, T4.3 | 16–17/12 | 5 | capturas |
 | T4.7 | Decorações no mapa: posições, ligar e desligar, tela de decorações | Claude | A5, T4.2 | 17/12 | 3 | capturas com e sem decorações |
-| T4.8 | Textos EN/ptBR da F4 (conquistas, raros, telas) | **Codex** | T4.5 | 17/12 | 2 | chaves completas |
-| T4.9 | Cenas do simulador da F4 | **Codex** | T4.6, T4.7 | 18/12 | 1 | imagens |
+| T4.8 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) da F4 (conquistas, raros, telas) | **Codex** | T4.5 | 17/12 | 2 | chaves completas |
+| T4.9 | Cenas do simulador da F4 | Claude | T4.6, T4.7 | 18/12 | 1 | imagens |
 | T4.10 | Revisão, integração, build de teste | Claude | T4.3–T4.9 | 18/12 | 2 | lista do que conferir |
 | T4.11 | Teste no jogo da F4 | **Eu** | T4.10 | 19/12 | 2 | relato |
 | T4.12 | Correções e tag `v2.0.0-alpha4` | Claude + **Eu** | T4.11 | 20/12 | 1–3 | alpha publicado |
@@ -224,16 +225,16 @@ Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com
 | T5.1 | Especificação da F5 e F6 e briefings T5.4, T5.5, T5.7, T5.10 | Claude | M4 | 21/12 | 2 | briefings |
 | T5.2 | Aprovar duração das temporadas, faixas de prêmio e o selo de cada temporada | **Eu** | T5.1 | 21/12 | 0,3 | decisão |
 | T5.3 | Calendário de temporadas (fixo, sem servidor), pontos, histórico, virada | Claude | M4 | 22/12 | 3 | testes de virada com o relógio adiantado |
-| T5.4 | Banco de metas semanais (~30) e sorteio de 3 por semana pelo número da temporada | **Codex** | T5.1 | 22–23/12 | 3 | testes: mesma temporada sorteia as mesmas metas |
-| T5.5 | Prêmios por faixa e decoração exclusiva por temporada (dados uma vez só) | **Codex** | T5.3 | 23/12 | 2 | testes |
+| T5.4 | Banco de metas semanais (~30) e sorteio de 3 por semana pelo número da temporada | Claude | T5.1 | 22–23/12 | 3 | testes: mesma temporada sorteia as mesmas metas |
+| T5.5 | Prêmios por faixa e decoração exclusiva por temporada (dados uma vez só) | Claude | T5.3 | 23/12 | 2 | testes |
 | T5.6 | Tela da temporada e indicador no cabeçalho ("Temporada 3 · faltam 9 dias") | Claude | T5.3–T5.5 | 28/12 | 4 | capturas |
-| T5.7 | Sons do jogo nos eventos (colher, vender, obra, nível, serviço) com opção de desligar | **Codex** | T5.1 | 28/12 | 2 | lista de sons; opção nas configurações |
+| T5.7 | Sons do jogo nos eventos (colher, vender, obra, nível, serviço) com opção de desligar | Claude | T5.1 | 28/12 | 2 | lista de sons; opção nas configurações |
 | T5.8 | Conferir no jogo se os sons tocam e escolher os que ficam | **Eu** | T5.7 | 29/12 | 0,5 | lista aprovada |
 | T5.9 | Animações: moedas voando, brilho da obra terminada, comemoração de nível | Claude | M4 | 29/12 | 3 | capturas em sequência |
-| T5.10 | Script de equilíbrio: moedas e XP por hora de cada atividade, por nível | **Codex** | T5.1 | 29/12 | 2 | tabela gerada |
+| T5.10 | Script de equilíbrio: moedas e XP por hora de cada atividade, por nível | Claude | T5.1 | 29/12 | 2 | tabela gerada |
 | T5.11 | Análise do equilíbrio e proposta de ajustes em `Balance.lua` | Claude | T5.10 | 30/12 | 2 | proposta |
 | T5.12 | Aprovar os ajustes de equilíbrio | **Eu** | T5.11 | 30/12 | 0,5 | decisão |
-| T5.13 | Textos EN/ptBR da F5 e F6, guia do jogo atualizado com tudo da 2.0 | **Codex** | T5.6 | 30/12 | 2 | chaves completas; guia com as novidades |
+| T5.13 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) da F5 e F6, guia do jogo atualizado com tudo da 2.0 | **Codex** | T5.6 | 30/12 | 2 | chaves completas; guia com as novidades |
 | T5.14 | Revisão final, build e tag `v2.0.0-alpha5` (candidato final) | Claude | T5.3–T5.13 | 02/01 | 3 | candidato publicado como Alpha |
 | T5.15 | Teste completo no jogo (começar do zero e com save antigo) | **Eu** | T5.14 | 03/01 | 2–3 | relato |
 | T5.16 | Capturas de tela reais no jogo, em inglês, para o CurseForge e o GitHub | **Eu** | T5.14 | 03/01 | 1 | 7 imagens |
@@ -249,9 +250,9 @@ Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com
 | T6.2 | Rodar o teste com um amigo ou segunda conta (envio, recebimento, limite) | **Eu** | T6.1 | 12/01 | 1 | relato: funciona ou não |
 | T6.3 | **Ponto de decisão:** seguir com a F7 ou adiar | **Eu** | T6.2 | 12/01 | 0,2 | decisão |
 | T6.4 | Protocolo: resumo da vila, presente diário, pontos da temporada; limites e versões | Claude | T6.3 | 13/01 | 3 | documento do protocolo e testes |
-| T6.5 | Implementar envio, recebimento, fila com limite e lista de amigos | **Codex** | T6.4 | 14–16/01 | 5 | testes com dois clientes simulados |
+| T6.5 | Implementar envio, recebimento, fila com limite e lista de amigos | Claude | T6.4 | 14–16/01 | 5 | testes com dois clientes simulados |
 | T6.6 | Tela de amigos (vila do amigo, mandar presente, comparação da temporada) | Claude | T6.5 | 18–19/01 | 4 | capturas |
-| T6.7 | Textos EN/ptBR e cenas do simulador da F7 | **Codex** | T6.6 | 20/01 | 1,5 | chaves e imagens |
+| T6.7 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) e cenas do simulador da F7 | **Codex** | T6.6 | 20/01 | 1,5 | chaves e imagens |
 | T6.8 | Teste no jogo com um amigo | **Eu** | T6.7 | 23/01 | 1,5 | relato |
 | T6.9 | Correções e tag `v2.1.0` | Claude + **Eu** | T6.8 | 25/01 | 1–3 | **2.1 publicada** |
 
