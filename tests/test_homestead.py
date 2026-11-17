@@ -9,7 +9,7 @@ from lupa import lua51
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from client_mock import CLIENT  # noqa: E402  (frames, print, timers)
 
-HOME = pathlib.Path(__file__).resolve().parent.parent / "addons" / "KorumHomestead"
+HOME = pathlib.Path(__file__).resolve().parent.parent          # the addon is the root of this repository
 FILES = ["Kit.lua", "Core.lua", "Locales.lua", "Data.lua", "Farm.lua", "Village.lua", "Works.lua", "UI.lua"]
 
 

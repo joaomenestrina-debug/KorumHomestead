@@ -5,7 +5,7 @@
 The folder has every image twice: `nome.png` on the real pixel grid (128x128 buildings, 32x32 icons, 512x256 map) and
 `nome@2x.png` (the same, doubled). This script takes the real grid, cleans the stray pixels that the drawing left at the edges
 of the images, doubles it again with no smoothing (so what is in the game is exactly what was drawn) and writes the 32-bit
-TGA files the game reads into addons/KorumHomestead/Media/Village (the logo into Media/logo.tga).
+TGA files the game reads into Media/Village (the logo into Media/logo.tga).
 """
 import pathlib
 import sys
@@ -13,11 +13,12 @@ import sys
 from PIL import Image
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-OUT = ROOT / "addons" / "KorumHomestead" / "Media" / "Village"
-LOGO = ROOT / "addons" / "KorumHomestead" / "Media" / "logo.tga"
+OUT = ROOT / "Media" / "Village"
+LOGO = ROOT / "Media" / "logo.tga"
 
 BUILDINGS = ["hall", "garden", "barn", "market", "mine", "pond", "workshop", "inn"]
-NAMES = (["map", "works", "lot", "ore", "fish", "heal", "mana", "agil", "logo", "stew", "roast", "feast", "bar", "tools", "blade"]
+# the goods (ore, fish, potions, meals, tools) use the icons of items of the game, not drawings
+NAMES = (["map", "works", "lot", "logo"]
          + [f"{b}{t}" for b in BUILDINGS for t in (1, 2, 3)] + [f"follower{i}" for i in range(1, 7)])
 KEEP_WHOLE = {"map", "works"}           # one piece by nature: nothing is a stray pixel there
 

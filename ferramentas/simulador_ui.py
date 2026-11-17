@@ -287,7 +287,7 @@ class Game:
         self.dirs = {}
 
     def load(self, addon, files):
-        folder = ROOT / "addons" / addon
+        folder = ROOT if (ROOT / f"{addon}.toc").exists() else ROOT / "addons" / addon
         self.dirs[addon] = folder
         self.lua.execute("NS = NS or {}")
         for f in files:

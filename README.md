@@ -28,14 +28,15 @@ It is a minigame of its own: it never touches your character, your bags or your 
 
 ## Install
 
-Get it from CurseForge, or copy `addons/KorumHomestead` into `World of Warcraft/<client>/Interface/AddOns/`.
+Get it from CurseForge, or download the release zip and put the `KorumHomestead` folder into
+`World of Warcraft/<client>/Interface/AddOns/`.
 In the game, type `/kh`. It is made for WoW Forever (interface 16001).
 
 ## Repository
 
 | Folder | What is there |
 |---|---|
-| `addons/KorumHomestead/` | the addon itself (what goes in the release zip) |
+| the root | the addon itself: the `.toc`, the Lua files and `Media/` (what goes in the release zip, see `.pkgmeta`) |
 | `tests/` | the tests, run against a small mock of the game client: `python -m pytest tests` |
 | `ferramentas/simulador_ui.py` | a UI simulator that opens the addon outside the game and saves pictures of its screens |
 | `ferramentas/importar_arte_homestead.py` | brings the pixel art of `arquivo/arte_v3/` into the addon as TGA files |
@@ -43,6 +44,11 @@ In the game, type `/kh`. It is made for WoW Forever (interface 16001).
 | `arquivo/arte_v3/` | the pixel art sources (PNG, real grid and @2x) |
 
 The tests and tools need Python 3 with `lupa` and `Pillow` (`pip install lupa pillow`).
+
+## Releases
+
+CurseForge packages the addon from this repository when a version tag is pushed (`git tag v1.0.1` and
+`git push --tags`). `.pkgmeta` leaves the tests, the tools, the art sources and the docs out of the zip.
 
 ## License
 

@@ -36,8 +36,9 @@ V.MAKES = {mine = "ore", pond = "fish"}
 V.GOODS = {ore = {sell = 6, perHour = 6}, fish = {sell = 5, perHour = 5}, heal = {sell = 60}, mana = {sell = 150}, agil = {sell = 400},
     stew = {sell = 32}, roast = {sell = 110}, feast = {sell = 330}, bar = {sell = 60}, tools = {sell = 190}, blade = {sell = 560}}
 V.GOOD_ORDER = {"ore", "fish", "heal", "mana", "agil", "stew", "roast", "feast", "bar", "tools", "blade"}
--- the goods of the Cooking and Smithing trades are shown with the icon of an item of the game (as the herbs are)
-V.ITEM = {stew = 13931, roast = 13935, feast = 21023, bar = 3575, tools = 5956, blade = 3487}                     -- perHour: for each level of its building
+-- every good is shown with the icon of an item of the game, as the herbs are
+V.ITEM = {ore = 2770, fish = 6303, heal = 118, mana = 2455, agil = 2457,
+    stew = 13931, roast = 13935, feast = 21023, bar = 3575, tools = 5956, blade = 3487}                     -- perHour: for each level of its building
 -- [target level]
 V.COST = {
     hall = {0, 100, 300, 800, 2000, 5000, 12000},

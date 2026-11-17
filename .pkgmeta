@@ -1,0 +1,9 @@
+package-as: KorumHomestead
+
+# what is only for development stays out of the zip the players download
+ignore:
+  - tests
+  - ferramentas
+  - arquivo
+  - docs
+  - .gitignore
