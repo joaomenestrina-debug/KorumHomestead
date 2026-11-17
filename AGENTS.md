@@ -3,6 +3,11 @@
 Korum Homestead is a World of Warcraft addon: an idle village minigame. It runs inside the game client (Lua 5.1) and is
 tested outside it with a small mock of the client in Python.
 
+## Before anything
+
+Read **`docs/CONTEXTO.md`** (Portuguese): where the project is, what to do now, the decisions already taken and the
+map of the code. When your task is done, update its sections 1 and 2 (the state of your task) in your pull request.
+
 ## Where things are
 
 | Path | What |
