@@ -115,8 +115,8 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T0.2 | GitHub Actions: rodar os testes em todo push e pull request | Claude | T0.1 | 18/11 | 1 | ✅ feito em 17/11 (`.github/workflows/tests.yml`) |
 | T0.3 | Instalador lendo o Homestead do repositório próprio; tirar a cópia do monorepo | Claude | T0.1 | 18/11 | 1 | ✅ feito em 17/11 |
 | T0.4 | Guardar uma amostra do save real: copiar `WTF\Account\...\SavedVariables\KorumHomestead.lua` para Claude | **Eu** | — | 18/11 | 0,2 | arquivo enviado |
-| T0.5 | Briefings das tarefas T0.6, T0.8 e T0.9 | Claude | T0.1 | 18/11 | 1,5 | `docs/tarefas/T0.6.md`, `T0.8.md`, `T0.9.md` |
-| T0.6 | Dividir `UI.lua` em `UI.lua` + `Screens/*.lua` (um arquivo por tela), sem mudar comportamento | **Codex** | T0.5 | 19–20/11 | 5 | todos os testes passam sem mudança; capturas do simulador idênticas às de antes |
+| T0.5 | Briefings das tarefas T0.6, T0.8 e T0.9 | Claude | T0.1 | 18/11 | 1,5 | ✅ feito em 17/11 |
+| T0.6 | Dividir `UI.lua` em `UI.lua` + `Screens/*.lua` (um arquivo por tela), sem mudar comportamento | **Codex** | T0.5 | 19–20/11 | 5 | ✅ feito em 17/11 (PR #1: 53 testes, 17 capturas idênticas) |
 | T0.7 | `db.schema` e `Migrate.lua` (uma função por versão), com a amostra real como teste | Claude | T0.4 | 19/11 | 2 | teste "save 1.0 abre na 2.0" |
 | T0.8 | `Balance.lua`: levar todos os números de equilíbrio para um arquivo | **Codex** | T0.6 | 20/11 | 2 | nenhum número de equilíbrio fora de `Balance.lua`; testes iguais |
 | T0.9 | `KH.Day()` (dia local virando à meia-noite) e um relógio controlável nos testes | **Codex** | T0.5 | 20/11 | 1 | testes de virada de dia e de fuso |
