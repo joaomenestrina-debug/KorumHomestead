@@ -25,6 +25,8 @@ local function BuildSettings(win)
         function(v) KH.db.bubble.show = v; UI:ApplyBubble() end)
     s.about = Kit.Text(s.frame, 10, C.textMuted)
     s.about:SetPoint("BOTTOMLEFT", 0, 12)
+    s.news = Kit.Button(s.frame, 170, 30, "", function() UI:ShowNews(false) end)
+    s.news:SetPoint("BOTTOMRIGHT", 0, 6)
 
     function s:Refresh()
         self.head:SetText(T("settingsH"))
@@ -38,6 +40,7 @@ local function BuildSettings(win)
         self.lang.buttons[1].label:SetText(T("langAuto"))
         self.lang:Sync()
         self.about:SetText(T("about", KH.version))
+        self.news:SetLabel(T("newsOpen"))
     end
     return s
 end

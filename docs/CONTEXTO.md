@@ -51,6 +51,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | Tudo público sai assinado como **Korum**: autor dos commits `Korum`, sem `Co-Authored-By`, sem citar IA. |
 | 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). |
 | 17/11 | Nada castiga quem fica fora; progresso nunca se perde. Saves antigos sempre abrem. |
+| 17/11 | Toda mudança que o jogador percebe ganha linha na tela **Novidades** (`News.lua` + `news<id>_<n>` no `Locales.lua`). A tela abre sozinha uma vez ao logar depois da atualização; save novo não vê novidades antigas. A entrada 1 é a `2.0.0-alpha1`: as tarefas da S1 acrescentam linhas nela. |
 
 ## 4. Mapa do código
 
@@ -62,6 +63,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 | `Core.lua` | `KH`, padrões do save `KorumHomesteadDB`, eventos, `KH.Now()`, `KH.Day()` (dia local), `KH.UntilNextDay()`, `/kh` |
 | `Migrate.lua` | `KH.SCHEMA` (versão do formato do save) e as migrações, aplicadas ao carregar, antes dos padrões |
 | `Locales.lua` | todos os textos, `enUS` e `ptBR`, via `KH.T("chave")` |
+| `News.lua` | as entradas da tela Novidades (`KH.NEWS`), `db.newsSeen`; `UI/News.lua` é a tela e a abertura ao logar |
 | `Balance.lua` | **todos os números do jogo** (ervas, encomendas, construções, produtos, receitas, Estalagem, início): ajuste de equilíbrio é aqui |
 | `Data.lua` | as ervas (tabela vem do `Balance.lua`), nome e ícone vindos do jogo |
 | `Farm.lua` | plantar, colher, vender ervas, encomendas do Mercado |

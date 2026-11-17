@@ -168,6 +168,10 @@ L.enUS = {
     awayMany = "%d away", followersIdle = "%d followers",
     why_fish = "Not enough fish for the road.", why_notIdle = "That follower is busy.", why_noMission = "No such mission.",
     about = "Korum Homestead %s · /kh opens this window",
+    -- what's new (News.lua): newsN_1, newsN_2... are the lines of entry N
+    newsH = "What's new", newsS = "What changed in the latest versions of your homestead.",
+    newsVersion = "Version %s", newsNew = "New", newsGo = "Go to the village", newsOpen = "What's new",
+    news1_1 = "This screen: after an update it opens by itself once and shows what changed. It also stays in the Settings.",
     -- chat and tooltip
     levelUp = "The homestead reached Herbalism %d!",
     readyAlert = "%s is ready to harvest.", welcomeReady = "%d plot(s) ready to harvest. /kh to open.",
@@ -331,6 +335,9 @@ L.ptBR = {
     awayMany = "%d fora", followersIdle = "%d seguidores",
     why_fish = "Falta peixe para a viagem.", why_notIdle = "Esse seguidor está ocupado.", why_noMission = "Missão desconhecida.",
     about = "Korum Homestead %s · /kh abre esta janela",
+    newsH = "Novidades", newsS = "O que mudou nas últimas versões da sua vila.",
+    newsVersion = "Versão %s", newsNew = "Novo", newsGo = "Ir para a vila", newsOpen = "Novidades",
+    news1_1 = "Esta tela: depois de uma atualização ela abre sozinha uma vez e mostra o que mudou. Ela também fica nos Ajustes.",
     levelUp = "A fazenda chegou ao Herbalismo %d!",
     readyAlert = "%s está pronta para colher.", welcomeReady = "%d canteiro(s) pronto(s) para colher. /kh abre.",
     help = "/kh abre a janela. /kh colher colhe tudo que estiver pronto.",

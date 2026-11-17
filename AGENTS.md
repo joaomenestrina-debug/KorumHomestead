@@ -57,6 +57,9 @@ GitHub Actions runs the tests on every pull request. A red run is not done.
 - **Saved data must survive.** Never rename or delete a field of `KorumHomesteadDB`; add new ones to the defaults in
   `Core.lua`, and when the shape changes add a migration (from task T0.7 on: `Migrate.lua`).
 - **Nothing punishes a player who was away.** No decay, no loss of what was earned.
+- **Every change the player can notice goes in "What's new".** Add its line(s) under the last entry of `KH.NEWS`
+  (`News.lua`) as `news<id>_<n>` in `Locales.lua`, in both languages, short and in the player's words. The screen opens
+  by itself once after the update. Changes nobody sees (code moved, tests) do not go there.
 - **Time:** use `KH.Now()` (never `time()` directly), so the tests can move the clock.
 - **Randomness:** use `KH.Rand` (or the helper the brief names), so the tests can fix it.
 
