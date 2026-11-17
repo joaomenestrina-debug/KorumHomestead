@@ -69,7 +69,7 @@ Branch próprio, testes junto, captura do simulador no pull request, integraçã
 
 | Marco | Data | Conteúdo | Tag |
 |---|---|---|---|
-| M0 | dom 22/11 | Fundação técnica pronta, nada mudou para o jogador | — |
+| M0 | dom 22/11 | Fundação técnica pronta, nada mudou para o jogador | ✅ atingido em 17/11 |
 | M1 | dom 29/11 | **Alpha 1:** resumo ao voltar, encomenda do dia, sequência | `v2.0.0-alpha1` |
 | M2 | dom 06/12 | **Alpha 2:** Disposição e Serviços | `v2.0.0-alpha2` |
 | M3 | dom 13/12 | **Alpha 3:** atributos, seguidores com especialidade, risco e achados | `v2.0.0-alpha3` |
@@ -121,7 +121,7 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T0.8 | `Balance.lua`: levar todos os números de equilíbrio para um arquivo | **Codex** | T0.6 | 20/11 | 2 | ✅ feito em 17/11 |
 | T0.9 | `KH.Day()` (dia local virando à meia-noite) e um relógio controlável nos testes | **Codex** | T0.5 | 20/11 | 1 | ✅ feito em 17/11 |
 | T0.10 | Revisar e integrar T0.6, T0.8, T0.9 | Claude | T0.6–T0.9 | 21/11 | 2 | ✅ feito em 17/11 |
-| T0.11 | Teste de regressão no jogo: tudo continua igual | **Eu** | T0.10 | 21–22/11 | 1 | relato "ok" ou lista de falhas |
+| T0.11 | Teste de regressão no jogo: tudo continua igual | **Eu** | T0.10 | 21–22/11 | 1 | ✅ ok em 17/11 (save migrado para schema 2, nada perdido) |
 
 ### Sprint 1: Retorno diário (seg 23/11 a dom 29/11) → Alpha 1
 

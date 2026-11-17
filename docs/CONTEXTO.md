@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 17/11/2026, por Claude (T0.8, T0.9 e T0.10 integradas; falta só o teste no jogo).*
+*Última atualização: 17/11/2026, por Claude (Sprint 0 concluída: T0.11 ok no jogo, M0 atingido).*
 
 ---
 
@@ -13,11 +13,11 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 |---|---|
 | **Versão publicada** | **1.0.1** no CurseForge (Release) — é a que os jogadores usam |
 | **Em desenvolvimento** | **2.0** (plano em [plano-2.0.md](plano-2.0.md), cronograma em [cronograma-2.0.md](cronograma-2.0.md)) |
-| **Sprint atual** | **S0 — Fundação técnica** (17/11 a 22/11) |
-| **Próximo marco** | M0 em 22/11 (nada muda para o jogador); depois **2.0.0-alpha1** em 29/11 |
+| **Sprint atual** | S0 concluída em 17/11; **S1 — Voltar todo dia** começa em 23/11 |
+| **Próximo marco** | **2.0.0-alpha1** em 29/11 (M0 atingido em 17/11) |
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
 
-### Sprint 0: andamento
+### Sprint 0: concluída
 
 | Tarefa | Quem | Estado |
 |---|---|---|
@@ -31,14 +31,13 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T0.8 `Balance.lua` | Codex | ✅ PR #4 |
 | T0.9 `KH.Day()` | Codex | ✅ PR #3 |
 | T0.10 Revisão e integração | Claude | ✅ |
-| T0.11 Teste de regressão no jogo | **Eu** | sábado 21–22/11 |
+| T0.11 Teste de regressão no jogo | Eu | ✅ 17/11: save migrado para schema 2, nada perdido, telas ok |
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** sábado 21–22/11, **T0.11**: `/reload` e conferir que tudo está igual (vila, telas, seu save migrado).
-  Segunda 23/11: decisões rápidas da S1 (T1.2: prêmios da sequência).
+- **Eu:** segunda 23/11: decisões rápidas da S1 (T1.2: prêmios da sequência).
 - **Codex:** nada até os briefings da S1 (segunda 23/11).
-- **Claude:** briefings da S1 (T1.1) até segunda 23/11; correções se a T0.11 achar algo.
+- **Claude:** briefings da S1 (T1.1) até segunda 23/11.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
