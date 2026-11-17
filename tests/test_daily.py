@@ -59,6 +59,11 @@ class DailyOrders(unittest.TestCase):
         self.lua.execute("NS.db.daily.streak = 30; NS.db.daily.lastDone = NS.db.daily.day - 1")
         self.assertEqual(tuple(self.lua.eval("function() return NS.Daily:NextPrize() end")()), (37, 7))
 
+    def test_after_day_thirty_the_next_prize_is_the_next_seven_day_step(self):
+        for streak, prize in ((30, 37), (31, 37), (33, 37), (36, 37), (37, 44), (40, 44), (44, 51)):
+            self.lua.execute(f"NS.db.daily.streak = {streak}; NS.db.daily.lastDone = NS.Day()")
+            self.assertEqual(tuple(self.lua.eval("function() return NS.Daily:NextPrize() end")()), (prize, prize - streak), streak)
+
     def test_three_day_streak_pays_day_three_prize_once_and_day_seven_gives_rare(self):
         for day in range(1, 8):
             if day > 1:

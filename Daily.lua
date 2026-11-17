@@ -103,7 +103,7 @@ function Daily:NextPrize()
         if day > streak and (not nextDay or day < nextDay) then nextDay = day end
     end
     if not nextDay then
-        nextDay = math.max(37, 30 + (math.floor(math.max(streak, 30) - 30) / B.DAILY.rareEvery + 1) * B.DAILY.rareEvery)
+        nextDay = 30 + (math.floor((math.max(streak, 30) - 30) / B.DAILY.rareEvery) + 1) * B.DAILY.rareEvery
     end
     return nextDay, nextDay - streak
 end
