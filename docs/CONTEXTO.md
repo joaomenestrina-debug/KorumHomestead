@@ -30,7 +30,21 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T1.7 Cenas do simulador da F1 | Codex | ✅ PR #10 |
 | T1.8 Revisão, integração e build no jogo | Claude | ✅ 17/11 |
 | T1.9 Teste no jogo da F1 | **Eu** | **agora** (era 28/11) |
-| T1.10–T1.11 Correções e tag `v2.0.0-alpha1` | Claude + Eu | depois da T1.9 |
+| T1.10–T1.11 Correções e tag `v2.0.0-alpha1` | Claude + Eu | depois da T1.9 (sai com a economia atual) |
+
+### F2.0 Economia: andamento (proposta aprovada em `docs/economia.md`)
+
+| Tarefa | Quem | Estado |
+|---|---|---|
+| T2.0 / T2.0b Proposta e aprovação | Claude + Eu | ✅ 17/11 |
+| T2.0a Nível da Vila 1–60 e as 27 ervas | Claude | a fazer |
+| T2.0b2 Migração `schema 3` | Claude | depois da T2.0a |
+| T2.0c Mercado 4 + 4 e Oficina pagando mais | **Codex** | **pode começar** (`docs/tarefas/T2.0c.md`) |
+| T2.0d Prédios com nível mínimo e custos pela renda | Claude | depois da T2.0a |
+| T2.0e Telas | Claude | depois da T2.0a e T2.0c |
+| T2.0f Textos | Codex | depois da T2.0e |
+| T2.0g Teste de simulação | Claude | depois da T2.0d |
+| T2.0h Teste no jogo | Eu | 28/11 |
 
 ### Sprint 0: concluída
 
@@ -51,8 +65,8 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** **T1.9**: testar a alpha1 no jogo (Mercado com a encomenda do dia, cartão "Enquanto você esteve fora", tela Novidades).
-- **Codex:** nada até os briefings da S2 (T2.1).
-- **Claude:** correções da T1.9 (T1.10) e tag `v2.0.0-alpha1` (T1.11); depois a revisão da economia (T2.0) e os briefings da S2.
+- **Codex:** **T2.0c** (`docs/tarefas/T2.0c.md`), branch `codex/T2.0c-market-goods`. Terminar com commit, push e pull request.
+- **Claude:** T2.0a (nível da Vila e as 27 ervas), depois T2.0b2 e T2.0d; correções da T1.9 e tag `v2.0.0-alpha1` quando você testar.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
@@ -67,6 +81,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). |
 | 17/11 | Nada castiga quem fica fora; progresso nunca se perde. Saves antigos sempre abrem. |
 | 17/11 | **Cuidar do excesso de moedas.** A encomenda do dia paga 2,5× uma encomenda normal (o dobro de ervas × 1,25 por erva); os prêmios da sequência são XP e Lótus Negra, **nunca moedas**. Nenhuma recompensa nova dá moedas sem passar pela conta da economia (T2.0). |
+| 17/11 | **Economia da 2.0** aprovada (`docs/economia.md`): Nível da Vila 1–60; ervas na perícia do jogo ÷ 5; colher dá pouco XP; a Oficina sempre dá mais moedas e XP; Mercado 4 + 4; prédios pedem nível da vila e custam horas de renda. |
 | 17/11 | Toda mudança que o jogador percebe ganha linha na tela **Novidades** (`News.lua` + `news<id>_<n>` no `Locales.lua`). A tela abre sozinha uma vez ao logar depois da atualização; save novo não vê novidades antigas. A entrada 1 é a `2.0.0-alpha1`: as tarefas da S1 acrescentam linhas nela. |
 
 ## 4. Mapa do código

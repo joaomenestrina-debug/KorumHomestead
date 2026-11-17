@@ -139,12 +139,28 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T1.10 | Correções do teste | Claude | T1.9 | 29/11 | 1–3 | — |
 | T1.11 | Changelog, tag `v2.0.0-alpha1`, conferir o arquivo no CurseForge (como **Alpha**) | Claude + **Eu** | T1.10 | 29/11 | 0,5 | alpha publicado |
 
+### F2.0: Economia (18/11 a 29/11, em paralelo ao fim da S1) → entra na Alpha 2
+
+Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com itens). Proposta aprovada:
+[`docs/economia.md`](economia.md).
+
+| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
+|---|---|---|---|---|---|---|
+| T2.0 | Medição e proposta da economia | Claude | — | 17/11 | 3 | ✅ `docs/economia.md` |
+| T2.0b | Aprovar a proposta | Eu | T2.0 | 17/11 | 0,3 | ✅ aprovada em 17/11 |
+| T2.0a | Nível da Vila 1–60, as 27 ervas (perícia ÷ 5), curva de XP, colher dá pouco XP, nível 60 dá Lótus Negra | Claude | T2.0b | 18–20/11 | 5 | testes; `B.PLANTS` gerada por fórmula |
+| T2.0b2 | Migração `schema 3` (Herbalismo → Vila; save real → Vila 37) | Claude | T2.0a | 20/11 | 2 | teste com `save-1.0.1.lua` |
+| T2.0c | Mercado com 4 + 4 encomendas (ervas e itens) e a Oficina pagando mais (moedas e XP) | **Codex** | T2.0b | 18–21/11 | 5 | `docs/tarefas/T2.0c.md`; teste para todas as receitas |
+| T2.0d | Prédios com nível mínimo da vila e custos pela renda | Claude | T2.0a | 21/11 | 2 | testes |
+| T2.0e | Telas: cabeçalho "Vila N", Mercado com 8 encomendas, Guia, cartões | Claude | T2.0a, T2.0c | 23–24/11 | 4 | capturas |
+| T2.0f | Textos EN/ptBR e Novidades da economia | **Codex** | T2.0e | 25/11 | 1,5 | chaves completas |
+| T2.0g | Teste que simula um jogador: vila inteira ≥ ~200 h de Horta; nenhuma atividade rende mais que a Horta | Claude | T2.0a–d | 25/11 | 2 | teste verde |
+| T2.0h | Teste no jogo da economia | **Eu** | T2.0e–g | 28/11 | 1,5 | relato |
+
 ### Sprint 2: Disposição e Serviços (seg 30/11 a dom 06/12) → Alpha 2
 
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
-| T2.0 | **Revisão da economia** (adiantada da alpha5): moedas por hora de cada atividade em cada nível contra o custo da vila; proposta de pagamentos e custos novos | Claude | M1 | 30/11 | 3 | `docs/economia.md` com tabelas e proposta |
-| T2.0b | Aprovar a proposta da economia | **Eu** | T2.0 | 30/11 | 0,3 | decisão no chat |
 | T2.1 | Especificação da F2 e briefings T2.4, T2.5, T2.7, T2.8 | Claude | M1 | 30/11 | 2 | briefings |
 | T2.2 | Aprovar os 6 serviços (nomes, custos, chances, recompensas) | **Eu** | T2.1 | 30/11 | 0,3 | decisão |
 | T2.3 | Disposição: valor, recarga com o jogo fechado, máximo por nível, gasto | Claude | M1 | 01/12 | 2 | testes de recarga (12 min, 2 h, 3 dias) |
