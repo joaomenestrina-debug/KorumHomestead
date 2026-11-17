@@ -8,25 +8,67 @@ local addonName, KH = ...
 local B = {}
 KH.Balance = B
 
--- Herb rows: item id, required level, grow seconds, seed cost, sell price, XP, harvest, English fallback.
-B.PLANTS = {
-    {2447, 1, 45, 4, 4, 4, 3, "Peacebloom"},
-    {765, 1, 120, 10, 9, 6, 3, "Silverleaf"},
-    {2449, 2, 300, 25, 18, 12, 4, "Earthroot"},
-    {785, 3, 600, 50, 28, 20, 4, "Mageroyal"},
-    {2450, 4, 1200, 100, 50, 35, 5, "Briarthorn"},
-    {2453, 6, 1800, 150, 75, 50, 5, "Bruiseweed"},
-    {3355, 7, 2700, 250, 110, 75, 5, "Wild Steelbloom"},
-    {3356, 9, 3600, 400, 170, 110, 5, "Kingsblood"},
-    {3357, 11, 5400, 700, 260, 170, 6, "Liferoot"},
-    {3818, 13, 7200, 1000, 330, 240, 6, "Fadeleaf"},
-    {3821, 15, 10800, 1800, 520, 360, 7, "Goldthorn"},
-    {3358, 17, 14400, 3000, 800, 520, 7, "Khadgar's Whisker"},
-    {3369, 19, 21600, 5000, 1100, 800, 8, "Grave Moss"},
+-- The level of the Village (1-60) and what it gives (docs/economia.md, approved on 17/11). The table keeps the name
+-- HERBALISM so old readers work; the player sees "Village".
+--   maxLevel            the cap: the character cap of WoW Forever, whose professions go to 300
+--   maxPlots            plots in the Garden at most
+--   extraHarvestLevels  one more herb per harvest every this many levels
+--   xpBase, xpGrowth    xp from a level to the next: xpBase * level * (1 + level / xpGrowth)
+--   lotusXP             at the cap, every this much xp becomes one Black Lotus (the rare keepsake)
+B.HERBALISM = {maxLevel = 60, maxPlots = 8, extraHarvestLevels = 20, xpBase = 50, xpGrowth = 10, lotusXP = 20000}
+
+-- The herbs: item id, Herbalism skill the game asks to gather it, English fallback. Each opens at Village level =
+-- skill / 5 (at least 1). The Black Lotus (300 = level 60) is not planted: it is the rare keepsake (B.DAILY.rareItem).
+B.HERBS = {
+    {2447, 1, "Peacebloom"}, {765, 1, "Silverleaf"}, {2449, 15, "Earthroot"}, {785, 50, "Mageroyal"},
+    {2450, 70, "Briarthorn"}, {3820, 85, "Stranglekelp"}, {2453, 100, "Bruiseweed"}, {3355, 115, "Wild Steelbloom"},
+    {3369, 120, "Grave Moss"}, {3356, 125, "Kingsblood"}, {3357, 150, "Liferoot"}, {3818, 160, "Fadeleaf"},
+    {3821, 170, "Goldthorn"}, {3358, 185, "Khadgar's Whisker"}, {3819, 195, "Wintersbite"}, {4625, 205, "Firebloom"},
+    {8831, 210, "Purple Lotus"}, {8836, 220, "Arthas' Tears"}, {8838, 230, "Sungrass"}, {8839, 235, "Blindweed"},
+    {8845, 245, "Ghost Mushroom"}, {8846, 250, "Gromsblood"}, {13464, 260, "Golden Sansam"}, {13463, 270, "Dreamfoil"},
+    {13465, 280, "Mountain Silversage"}, {13466, 285, "Plaguebloom"}, {13467, 290, "Icecap"},
 }
 
--- Herbalism cap and plots, XP per level, and levels between extra harvests.
-B.HERBALISM = {maxLevel = 20, maxPlots = 8, xpPerLevel = 40, extraHarvestLevels = 6}
+-- How the numbers of each herb come out of its place in the list (index i from 0) and its level L:
+--   grow        firstGrow * growStep ^ i seconds (45 s for the first, about 4 h for the last)
+--   harvest     firstYield + i / yieldEvery
+--   profit      what one plot earns in an hour with this herb: profitPerHour * profitStep ^ (L - 1)
+--   seed cost   seedShare of what the harvest sells for; the rest is the profit
+--   xp          harvest xp is small on purpose (the Workshop and the Market give the xp): one plot growing this herb for
+--               xpHours hours makes harvestXPShare of the xp of its level
+B.HERB_CURVE = {
+    firstGrow = 45, growStep = 1.25, firstYield = 3, yieldEvery = 6,
+    profitPerHour = 600, profitStep = 1.05, seedShare = 0.35,
+    xpHours = 8, harvestXPShare = 0.15,
+}
+
+local function Round(x)                                -- 2 significant digits, so prices read well
+    if x < 10 then return math.max(1, math.floor(x + 0.5)) end
+    local mag = 1
+    while x >= 100 * mag do mag = mag * 10 end
+    return math.floor(x / mag + 0.5) * mag
+end
+B.Round = Round
+
+function B.XPToNext(level)
+    local h = B.HERBALISM
+    return Round(h.xpBase * level * (1 + level / h.xpGrowth))
+end
+
+-- Herb rows built from the two tables above: {item id, level, grow seconds, seed cost, sell price, xp, harvest, name}
+B.PLANTS = {}
+for i, herb in ipairs(B.HERBS) do
+    local c, n = B.HERB_CURVE, i - 1
+    local level = math.max(1, math.floor(herb[2] / 5))
+    local grow = Round(c.firstGrow * c.growStep ^ n)
+    local yield = c.firstYield + math.floor(n / c.yieldEvery)
+    local profit = c.profitPerHour * c.profitStep ^ (level - 1) * grow / 3600
+    local gross = profit / (1 - c.seedShare)
+    local cost = Round(gross * c.seedShare)
+    local sell = Round(gross / yield)
+    local xp = math.max(1, Round(B.XPToNext(level) * c.harvestXPShare * grow / (c.xpHours * 3600)))
+    B.PLANTS[i] = {herb[1], level, grow, cost, sell, xp, yield, herb[3]}
+end
 
 -- Order slots, NPC count, quantity formula, level range, reward multipliers and XP divisor.
 B.ORDERS = {
@@ -34,8 +76,8 @@ B.ORDERS = {
     npcCount = 6,
     quantityBase = 2,
     quantityRandom = 5,
-    quantityLevels = 5,
-    plantLevelRange = 8,
+    quantityLevels = 15,
+    plantLevelRange = 15,
     payMultiplier = 1.6,
     xpDivisor = 2,
 }

@@ -10,6 +10,16 @@ local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingNa
 local TILE_H, TILE_GAP, COLS = 128, 10, 4
 local RING_Y = -48
 
+local STRIP = 13                 -- seeds shown on the strip at once
+
+-- the first herb of the strip: the last ones open now, and two still to come
+local function SeedWindow(level)
+    local open = 0
+    for i, p in ipairs(D.PLANTS) do if p[2] <= level then open = i end end
+    return math.max(1, math.min(#D.PLANTS - STRIP + 1, open - (STRIP - 3)))
+end
+UI.SeedWindow = SeedWindow
+
 local function CanPlant(id)
     local plant = D.Plant(id)
     return plant ~= nil and KH.db.level >= plant.level and KH.db.coins >= plant.cost
@@ -77,17 +87,18 @@ local function BuildGarden(win)
         s.tiles[i] = t
     end
 
-    -- the seeds: one strip of herbs, the chosen one framed, the locked ones faded with their level
+    -- the seeds: one strip of herbs, the chosen one framed, the locked ones faded with their level. With 27 herbs the strip
+    -- shows a window of STRIP of them: the best ones open now and the next ones to come
     local seedsY = -66 - 2 * TILE_H - TILE_GAP - 18
     s.seedsLabel = Kit.Text(s.frame, 11, C.textMuted)
     s.seedsLabel:SetPoint("TOPLEFT", 0, seedsY)
     s.seeds = {}
-    local slotW = math.floor(W / #D.PLANTS)
-    for i, p in ipairs(D.PLANTS) do
+    local slotW = math.floor(W / STRIP)
+    for i = 1, STRIP do
         local b = CreateFrame("Button", nil, s.frame)
         b:SetSize(slotW, 58)
         b:SetPoint("TOPLEFT", (i - 1) * slotW, seedsY - 18)
-        b.id = p[1]
+        b.id = D.PLANTS[i][1]
         b.frame = CreateFrame("Frame", nil, b)
         b.frame:SetSize(44, 44)
         b.frame:SetPoint("TOP", 0, 0)
@@ -190,7 +201,9 @@ local function BuildGarden(win)
 
     function s:RefreshSeeds()
         local db = KH.db
-        for _, b in ipairs(self.seeds) do
+        local first = SeedWindow(db.level)
+        for i, b in ipairs(self.seeds) do
+            b.id = D.PLANTS[first + i - 1][1]
             local p = D.Plant(b.id)
             local locked = db.level < p.level
             local chosen = db.selected == b.id

@@ -99,9 +99,9 @@ local function BuildGuide(win)
         p.head[c] = h
     end
     p.rows = {}
-    for i, plant in ipairs(D.PLANTS) do
+    for i = 1, 13 do                     -- the same window of herbs as the Garden's strip (UI.SeedWindow)
         local row = CreateFrame("Frame", nil, p)
-        row.id = plant[1]
+        row.id = D.PLANTS[i][1]
         row:SetSize(W, 24)
         row:SetPoint("TOPLEFT", 0, -20 - (i - 1) * 24)
         row.icon = row:CreateTexture(nil, "ARTWORK")
@@ -163,7 +163,9 @@ local function BuildGuide(win)
 
         local h = self.pages.herbs
         for c, key in ipairs({"g_cHerb", "g_cLevel", "g_cGrow", "g_cSeed", "g_cYield", "g_cSell"}) do h.head[c]:SetText(T(key)) end
-        for _, row in ipairs(h.rows) do
+        local first = UI.SeedWindow(db.level)
+        for i, row in ipairs(h.rows) do
+            row.id = D.PLANTS[first + i - 1][1]
             local plant = D.Plant(row.id)
             local locked = db.level < plant.level
             SetIcon(row.icon, row.id)

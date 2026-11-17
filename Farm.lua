@@ -26,7 +26,17 @@ local B = KH.Balance
 -- ----------------------------------------------------------------------------
 function F:AddXP(n)
     local db = KH.db
-    if db.level >= D.MAX_LEVEL then return end
+    if db.level >= D.MAX_LEVEL then
+        -- at the cap the xp is not lost: every B.HERBALISM.lotusXP of it becomes a Black Lotus (the rare keepsake)
+        db.capXP = (db.capXP or 0) + n
+        local every = KH.Balance.HERBALISM.lotusXP
+        while db.capXP >= every do
+            db.capXP = db.capXP - every
+            db.daily.rare = (db.daily.rare or 0) + 1
+            KH:Notify(KH.T("capLotus", D.Name(KH.Balance.DAILY.rareItem)))
+        end
+        return
+    end
     db.xp = db.xp + n
     while db.level < D.MAX_LEVEL and db.xp >= D.XPToNext(db.level) do
         db.xp = db.xp - D.XPToNext(db.level)
@@ -34,6 +44,11 @@ function F:AddXP(n)
         KH:Notify(KH.T("levelUp", db.level))
     end
     if db.level >= D.MAX_LEVEL then db.xp = 0 end
+end
+
+-- how far the xp at the cap is from the next Black Lotus (0..1)
+function F:CapProgress()
+    return (KH.db.capXP or 0) / KH.Balance.HERBALISM.lotusXP
 end
 
 -- ----------------------------------------------------------------------------

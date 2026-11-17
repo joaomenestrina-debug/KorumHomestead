@@ -53,7 +53,7 @@ function UI:Create()
     lv:EnableMouse(true)
     lv:SetScript("OnEnter", function(frame)
         local db = KH.db
-        local first = db.level >= D.MAX_LEVEL and T("maxLevel") or T("xpTip", db.xp, D.XPToNext(db.level))
+        local first = db.level >= D.MAX_LEVEL and T("maxLevel", KH.Number(KH.Balance.HERBALISM.lotusXP), math.floor(KH.Farm:CapProgress() * 100)) or T("xpTip", db.xp, D.XPToNext(db.level))
         Tip(frame, T("herbalism", db.level), {first, T("xpHow")})
     end)
     lv:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
@@ -155,7 +155,7 @@ function UI:ShowLevel()
     local lv = self.levelBox
     lv.label:SetText(T("herbalism", db.level))
     if db.level >= D.MAX_LEVEL then
-        lv.bar:Glide(1)
+        lv.bar:Glide(KH.Farm:CapProgress())             -- at the cap the bar fills toward the next Black Lotus
     else
         lv.bar:Glide(db.xp / D.XPToNext(db.level))
     end

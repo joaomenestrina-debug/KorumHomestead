@@ -31,7 +31,7 @@ end
 
 -- the xp that takes the homestead from `level` to the next one
 function D.XPToNext(level)
-    return B.HERBALISM.xpPerLevel * level
+    return B.XPToNext(level)
 end
 
 -- harvest at this level, including the extra amount awarded by Herbalism progression.
