@@ -11,6 +11,7 @@
 
 Kit.lua
 Core.lua
+Migrate.lua
 Locales.lua
 Data.lua
 Farm.lua
