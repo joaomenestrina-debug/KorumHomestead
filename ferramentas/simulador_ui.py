@@ -336,7 +336,7 @@ def homestead(out):
         made.append(g.shot(out / f"{name}.png", "KorumHomesteadFrame"))
 
     now = 1700000000
-    mid = ("{coins = 1240, xp = 150, level = 6, nplots = 5, selected = 2450, tutorial = {done = true},"
+    mid = ("{coins = 1240, xp = 150, level = 6, nplots = 5, selected = 2450, tutorial = {done = true}, newsSeen = 1000,"
            " seen = {hall = true, garden = true, barn = true, market = true, mine = true, pond = true, workshop = true, inn = true},"
            " stats = {harvested = 412, earned = 3980, delivered = 9},"
            " buildings = {hall = 4, garden = 4, barn = 3, market = 2, mine = 2, pond = 3, workshop = 2, inn = 3}, goods = {ore = 34, fish = 18, heal = 2},"
@@ -359,6 +359,8 @@ def homestead(out):
     scene("10-oficina", "ptBR", mid, "workshop", after="NS.Workshop:Craft('heal'); NS.Workshop:Craft('heal'); NS.UI:Refresh()")
     scene("10b-oficina-culinaria", "ptBR", mid, "workshop", after="NS.UI.trade = 'cooking'; NS.Workshop:Craft('stew'); NS.UI:Refresh()")
     scene("11-estalagem", "ptBR", mid, "inn", after="NS.Inn:Start(1, 'short'); NS.Inn:Start(2, 'medium'); NS.db.followers[3] = {done = 4, mission = {kind = 'short', at = NS.Now() - 2000, time = 1800}}; NS.UI:Refresh()")
+    scene("12-novidades", "ptBR", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
+    scene("12b-whats-new-english", "enUS", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
     for i, page in enumerate(("start", "buildings", "herbs", "tips")):
         scene(f"9{i + 1}-guia-{page}", "ptBR", mid, "guide", after=f"NS.UI.guidePage = '{page}'; NS.UI:Refresh()")
     # the icon on the screen, with a notification coming out of it

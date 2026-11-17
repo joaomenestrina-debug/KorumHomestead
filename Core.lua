@@ -37,6 +37,7 @@ KH.defaults = {
     bubble = {show = true},      -- the icon on the screen; x, y where the player dragged it
     seen = {},             -- the buildings whose "how this works" card was read
     tutorial = {done = false},   -- the first steps shown in the window (plant, wait, harvest, sell); over after the first sale
+    newsSeen = 0,          -- the id of the last "What's new" entry seen (News.lua); an older save sees what came after it
 }
 
 local function Merge(dst, src)
@@ -73,8 +74,10 @@ frame:SetScript("OnEvent", function(_, event, ...)
     if event == "ADDON_LOADED" then
         if (...) == addonName then
             KorumHomesteadDB = KorumHomesteadDB or {}
+            local fresh = next(KorumHomesteadDB) == nil
             KH.Migrate(KorumHomesteadDB)            -- the save of an older version first takes the current shape (Migrate.lua)
             Merge(KorumHomesteadDB, KH.defaults)
+            if fresh then KorumHomesteadDB.newsSeen = KH.LatestNews() end    -- a new homestead has no old news to read
             KH.db = KorumHomesteadDB
         end
         return

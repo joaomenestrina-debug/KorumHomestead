@@ -13,6 +13,7 @@ Kit.lua
 Core.lua
 Migrate.lua
 Locales.lua
+News.lua
 Balance.lua
 Data.lua
 Farm.lua
@@ -26,6 +27,7 @@ UI/Settings.lua
 UI/Village.lua
 UI/Hall.lua
 UI/Guide.lua
+UI/News.lua
 UI/Workshop.lua
 UI/Inn.lua
 UI/Window.lua
