@@ -128,7 +128,7 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
 | T1.1 | Especificação da F1 e briefings T1.4, T1.6, T1.7 | Claude | M0 | 23/11 | 2 | ✅ feito em 17/11 (`docs/tarefas/T1.4.md`, `T1.6.md`, `T1.7.md`) |
-| T1.2 | Aprovar as recompensas da sequência (dias 3, 7, 14, 30) e o item raro do 7º dia | **Eu** | T1.1 | 23/11 | 0,3 | decisão no chat |
+| T1.2 | Aprovar as recompensas da sequência (dias 3, 7, 14, 30) e o item raro do 7º dia | **Eu** | T1.1 | 23/11 | 0,3 | ✅ 17/11: proposta do `T1.4.md` aprovada |
 | T1.3 | Resumo ao voltar: `db.lastSeen`, fotografia dos contadores, cálculo do que mudou | Claude | M0 | 24/11 | 3 | testes com 30 min, 8 h e 3 dias fora |
 | T1.4 | Encomenda do dia e sequência: sorteio por dia, entrega, contagem, zerar, recorde | **Codex** | T1.1 | 24–25/11 | 4 | testes com o relógio adiantado: troca à meia-noite, sequência conta e zera |
 | T1.5 | Cartão "Enquanto você esteve fora" com "Coletar tudo"; encomenda do dia no Mercado; ponto no ícone flutuante | Claude | T1.3, T1.4 | 26/11 | 4 | capturas do simulador |
