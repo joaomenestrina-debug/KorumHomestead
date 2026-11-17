@@ -1,0 +1,357 @@
+local addonName, KH = ...
+local UI = KH.UI
+local P = UI.P
+local Kit, C, D, V, T = P.Kit, P.C, P.D, P.V, P.T
+local WIDTH, HEIGHT, WHITE, VDIR = P.WIDTH, P.HEIGHT, P.WHITE, P.VDIR
+local Reason, Notice, Screen = P.Reason, P.Notice, P.Screen
+local GoodTex, SetIcon = P.GoodTex, P.SetIcon
+local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingName, P.Tip
+
+local BUILDERS = P.builders
+local CRUMB = {workshop = "b_workshop", inn = "b_inn", guide = "guide", hall = "b_hall", garden = "b_garden", barn = "b_barn", mine = "b_mine", pond = "b_pond", orders = "b_market", settings = "tabSettings"}
+function UI:Create()
+    if self.win then return end
+    local win = Kit.Window({
+        name = "KorumHomesteadFrame", width = WIDTH, height = HEIGHT,
+        title = "|cff40d9c4Korum|r Homestead", logo = Kit.LOGO, tabs = {},
+        onSelect = function(id) UI:OnSelect(id) end,
+        closeTip = function() return T("close") end,
+    })
+    self.win = win
+    self.frame = win.frame
+    self.screens = {}
+
+    -- the header keeps the two numbers of the game in sight on every screen: the coins and the level
+    local h = win.header
+    self.coinText = Kit.Text(h, 14, C.text, "RIGHT")
+    self.coinText:SetPoint("RIGHT", win.close, "LEFT", -16, 0)
+    self.coinDot = h:CreateTexture(nil, "ARTWORK")
+    self.coinDot:SetTexture(Kit.Icon("dot"))
+    self.coinDot:SetSize(12, 12)
+    self.coinDot:SetVertexColor(C.gold[1], C.gold[2], C.gold[3])
+    self.coinDot:SetPoint("RIGHT", self.coinText, "LEFT", -6, 0)
+    local coinHit = CreateFrame("Frame", nil, h)
+    coinHit:SetPoint("TOPLEFT", self.coinDot, "TOPLEFT", -6, 12)
+    coinHit:SetPoint("BOTTOMRIGHT", self.coinText, "BOTTOMRIGHT", 4, -10)
+    coinHit:EnableMouse(true)
+    coinHit:SetScript("OnEnter", function(frame) Tip(frame, T("coinsTip"), {T("coinsHow")}) end)
+    coinHit:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
+
+    local lv = CreateFrame("Frame", nil, h)
+    lv:SetSize(132, 30)
+    lv:SetPoint("RIGHT", self.coinDot, "LEFT", -24, 0)
+    lv.label = Kit.Text(lv, 11, C.textSoft, "RIGHT")
+    lv.label:SetPoint("TOPRIGHT", 0, -3)
+    lv.bar = Kit.Bar(lv, 132, 3)
+    lv.bar:SetPoint("BOTTOMRIGHT", 0, 6)
+    lv:EnableMouse(true)
+    lv:SetScript("OnEnter", function(frame)
+        local db = KH.db
+        local first = db.level >= D.MAX_LEVEL and T("maxLevel") or T("xpTip", db.xp, D.XPToNext(db.level))
+        Tip(frame, T("herbalism", db.level), {first, T("xpHow")})
+    end)
+    lv:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
+    self.levelBox = lv
+
+    -- the gear: the settings are a screen like the others
+    local gear = CreateFrame("Button", nil, h)
+    gear:SetSize(26, 26)
+    gear:SetPoint("RIGHT", lv, "LEFT", -18, -4)
+    gear.bg = gear:CreateTexture(nil, "BACKGROUND")
+    gear.bg:SetAllPoints()
+    gear.bg:SetTexture(Kit.Icon("dot"))
+    gear.bg:SetVertexColor(1, 1, 1, 0.06)
+    gear.icon = gear:CreateTexture(nil, "ARTWORK")
+    gear.icon:SetSize(14, 14)
+    gear.icon:SetPoint("CENTER")
+    gear.icon:SetTexture(Kit.Icon("settings"))
+    gear.icon:SetVertexColor(C.textSoft[1], C.textSoft[2], C.textSoft[3])
+    gear:SetScript("OnEnter", function(frame) frame.bg:SetVertexColor(1, 1, 1, 0.16); Tip(frame, T("tabSettings"), {}) end)
+    gear:SetScript("OnLeave", function(frame) frame.bg:SetVertexColor(1, 1, 1, 0.06); if GameTooltip then GameTooltip:Hide() end end)
+    gear:SetScript("OnClick", function() Kit.ClickSound(); UI:Show("settings") end)
+    self.gear = gear
+
+    -- the question mark: the guide
+    local help = CreateFrame("Button", nil, h)
+    help:SetSize(26, 26)
+    help:SetPoint("RIGHT", gear, "LEFT", -8, 0)
+    help.bg = help:CreateTexture(nil, "BACKGROUND")
+    help.bg:SetAllPoints()
+    help.bg:SetTexture(Kit.Icon("dot"))
+    help.bg:SetVertexColor(1, 1, 1, 0.06)
+    help.mark = Kit.Text(help, 13, C.textSoft, "CENTER")
+    help.mark:SetPoint("CENTER", 0, 0)
+    help.mark:SetText("?")
+    help:SetScript("OnEnter", function(frame) frame.bg:SetVertexColor(1, 1, 1, 0.16); Tip(frame, T("guide"), {T("guideS")}) end)
+    help:SetScript("OnLeave", function(frame) frame.bg:SetVertexColor(1, 1, 1, 0.06); if GameTooltip then GameTooltip:Hide() end end)
+    help:SetScript("OnClick", function() Kit.ClickSound(); UI:Show("guide") end)
+    self.help = help
+
+    -- the path, where the tabs were: "Village" always takes you back to the map; after it, where you are
+    local row = win.tabRow
+    local home = CreateFrame("Button", nil, row)
+    home:SetSize(60, Kit.TABS_H)
+    home:SetPoint("LEFT", 0, 0)
+    home.label = Kit.Text(home, 13, C.text)
+    home.label:SetPoint("LEFT", 0, 0)
+    home.line = home:CreateTexture(nil, "ARTWORK")
+    home.line:SetHeight(2)
+    home.line:SetPoint("BOTTOMLEFT", home, "BOTTOMLEFT", 0, 0)
+    home.line:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 1)
+    home:SetScript("OnEnter", function(frame) frame.hover = true; UI:PaintPath() end)
+    home:SetScript("OnLeave", function(frame) frame.hover = false; UI:PaintPath() end)
+    home:SetScript("OnClick", function() Kit.ClickSound(); UI:Show("village") end)
+    self.home = home
+    self.here = Kit.Text(row, 13, C.text)
+    self.here:SetPoint("LEFT", home, "RIGHT", 0, 0)
+end
+
+function UI:PaintPath()
+    local home = self.home
+    if not home then return end
+    local inVillage = self.view == "village" or self.view == nil
+    home.label:SetText(T("village"))
+    local w = Kit.TextWidth(home.label, T("village"))
+    home:SetWidth(w + 4)
+    home.line:SetWidth(w)
+    home.line:SetShown(inVillage)
+    Kit.Paint(home.label, (inVillage or home.hover) and C.text or C.textSoft)
+    if inVillage then
+        self.here:SetText("")
+    else
+        self.here:SetText("|cff757a87  /  |r" .. T(CRUMB[self.view] or "village"))
+    end
+end
+
+-- the coins count up or down to the new number, and the difference floats away under them
+function UI:ShowCoins()
+    local coins = KH.db.coins
+    if self.coinsSeen ~= nil and coins ~= self.coinsSeen then
+        local from, delta = self.coinsShown or self.coinsSeen, coins - self.coinsSeen
+        Kit.Float(self.coinText, (delta > 0 and "+" or "-") .. KH.Number(math.abs(delta)), delta > 0 and C.gold or C.textSoft, -1, 12)
+        if self.coinAnim then self.coinAnim.cancelled = true end
+        self.coinAnim = Kit.Animate(0.45, function(p)
+            self.coinsShown = math.floor(from + (coins - from) * p + 0.5)
+            self.coinText:SetText(KH.Number(self.coinsShown))
+        end, function()
+            self.coinAnim, self.coinsShown = nil, coins
+            self.coinText:SetText(KH.Number(coins))
+        end)
+    elseif not self.coinAnim then
+        self.coinsShown = coins
+        self.coinText:SetText(KH.Number(coins))
+    end
+    self.coinsSeen = coins
+end
+
+function UI:ShowLevel()
+    local db = KH.db
+    local lv = self.levelBox
+    lv.label:SetText(T("herbalism", db.level))
+    if db.level >= D.MAX_LEVEL then
+        lv.bar:Glide(1)
+    else
+        lv.bar:Glide(db.xp / D.XPToNext(db.level))
+    end
+    if self.levelSeen and db.level > self.levelSeen then
+        local seed
+        for _, p in ipairs(D.PLANTS) do
+            if p[2] > self.levelSeen and p[2] <= db.level then seed = p[1] end
+        end
+        Notice(seed and T("newSeed", db.level, D.Name(seed)) or T("levelNotice", db.level))
+        Kit.Float(lv.label, T("herbalism", db.level), C.accentBright, -1, 12)
+    end
+    self.levelSeen = db.level
+end
+
+function UI:RefreshHeader()
+    self:ShowCoins()
+    self:ShowLevel()
+    local deliverable = false
+    for i = 1, D.ORDER_SLOTS do
+        if KH.Orders:CanDeliver(i) then deliverable = true end
+    end
+    self.win:SetTabDot("orders", deliverable)
+    self.win:SetTabDot("barn", self:Step() == "sell")
+    self.win:SetTabDot("garden", self.view ~= "garden" and KH.Farm:ReadyCount() > 0)
+end
+
+-- the language changed: the words of the tabs and of the open screen are written again
+function UI:Relabel()
+    self:PaintPath()
+    self:Refresh()
+end
+
+function UI:OnSelect(id)
+    local changed = self.view ~= id
+    self.view = id
+    for _, s in pairs(self.screens) do s.frame:Hide() end
+    local s = self.screens[id]
+    if not s then
+        s = BUILDERS[id](self.win)
+        self.screens[id] = s
+    end
+    s.frame:Show()
+    if changed then Kit.FadeIn(s.frame, 0.14) end
+    self:PaintPath()
+    if KH.db then
+        self:RefreshHeader()
+        self:RefreshScreen()
+        -- the first time a place is opened, a card says how it works (and a "?" brings it back)
+        if s.place and not s.helpButton then
+            local b = Kit.Button(s.frame, 30, 30, "?", function() UI:Coach(s, true) end)
+            b:SetPoint("TOPRIGHT", 0, 0)
+            b:SetStyle("quiet")
+            s.helpButton = b
+        end
+        if s.place then self:Coach(s) end
+    end
+end
+
+-- The card that explains a place: three short lines and one button. It opens by itself the first time the place is opened, and
+-- the "?" beside the title brings it back.
+function UI:Coach(s, force)
+    if not (s and s.place) then return end
+    local db = KH.db
+    db.seen = db.seen or {}
+    if db.seen[s.place] and not force then return end
+    if not s.coach then
+        local dim = CreateFrame("Frame", nil, s.frame)
+        dim:SetAllPoints(s.frame)
+        dim:SetFrameLevel(s.frame:GetFrameLevel() + 40)
+        dim:EnableMouse(true)
+        dim.fill = dim:CreateTexture(nil, "BACKGROUND")
+        dim.fill:SetAllPoints(dim)
+        dim.fill:SetColorTexture(0, 0, 0, 0.62)
+        local card = CreateFrame("Frame", nil, dim)
+        card:SetSize(500, 300)
+        card:SetPoint("CENTER", 0, 10)
+        card.surface, card.outline = Kit.Rounded(card, 18, 0.07, 0.085, 0.095, 0.99, 0.14)
+        card.art = card:CreateTexture(nil, "ARTWORK")
+        card.art:SetSize(92, 92)
+        card.art:SetPoint("TOP", 0, -18)
+        card.title = Kit.Text(card, 18, C.text, "CENTER")
+        card.title:SetPoint("TOP", 0, -118)
+        card.title:SetWidth(460)
+        card.lines = {}
+        for i = 1, 3 do
+            local line = Kit.Text(card, 12, C.textSoft, "CENTER")
+            line:SetPoint("TOP", 0, -150 - (i - 1) * 34)
+            line:SetWidth(440)
+            card.lines[i] = line
+        end
+        card.ok = Kit.Button(card, 160, 34, "", function()
+            KH.db.seen[s.place] = true
+            dim:Hide()
+        end)
+        card.ok:SetPoint("BOTTOM", 0, 16)
+        card.ok:SetStyle("primary")
+        dim.card = card
+        s.coach = dim
+    end
+    local card = s.coach.card
+    card.art:SetTexture(BuildingArt(s.place))
+    card.title:SetText(BuildingName(s.place))
+    for i, line in ipairs(card.lines) do line:SetText(T("tut_" .. s.place .. i)) end
+    card.ok:SetLabel(T("gotIt"))
+    s.coach:Show()
+end
+
+function UI:RefreshScreen()
+    local s = self.screens and self.screens[self.view]
+    if not s or not KH.db then return end
+    s:Refresh()
+    if s.art and s.place then
+        local level = V:Level(s.place)
+        s.art:SetTexture(BuildingArt(s.place, level))
+        s.art:SetAlpha(level > 0 and 1 or 0.45)
+    end
+end
+
+function UI:Show(view)
+    self:Create()
+    if not self.frame:IsShown() then
+        -- what changed while the window was closed is simply shown, not animated
+        self.coinsSeen, self.levelSeen = nil, nil
+        Notice("")
+        self.frame:Show()
+    end
+    self.win:Select(view or "village")
+end
+
+local function InCombat() return _G.InCombatLockdown and InCombatLockdown() end
+
+function UI:Toggle()
+    self:Create()
+    if not self.frame:IsShown() and InCombat() then
+        Notice(T("inCombat"))
+        KH:Notify(T("inCombat"))
+        return
+    end
+    if self.frame:IsShown() then self.frame:Hide() else self:Show() end
+end
+
+function UI:Refresh()
+    self:UpdateBadge()
+    if self.frame and self.frame:IsShown() and KH.db then
+        self:RefreshHeader()
+        self:RefreshScreen()
+    end
+end
+-- ----------------------------------------------------------------------------
+-- The clock: the rings move, the badge counts, and a plot that finishes is announced once
+-- ----------------------------------------------------------------------------
+local announced = {}
+local acc = 0
+local ticker = CreateFrame("Frame")
+ticker:SetScript("OnUpdate", function(_, elapsed)
+    acc = acc + (elapsed or 0)
+    if acc < 1 or not KH.db then return end
+    acc = 0
+    UI:Tick()
+end)
+
+function UI:Tick()
+    for _, recipe in ipairs(KH.Workshop:Update()) do
+        if KH.db.alerts then KH:Notify(T("craftDone", T("good_" .. recipe))) end
+    end
+    local back = KH.Inn:Update()
+    if back > 0 and KH.db.alerts then KH:Notify(T(back == 1 and "innBackOne" or "innBackMany", back)) end
+    local built, level = KH.Village:Update()
+    if built then
+        local text = T("built", T("b_" .. built), level)
+        if KH.db.alerts then KH:Notify(text) end
+        Notice(text)
+    end
+    for i = 1, KH.db.nplots do
+        local ready = KH.Farm:Status(i) == "ready"
+        if ready and not announced[i] then
+            announced[i] = true
+            local plot = KH.db.plots[i]
+            if KH.db.alerts and plot then KH:Notify(T("readyAlert", D.Name(plot.plant))) end
+        elseif not ready then
+            announced[i] = nil
+        end
+    end
+    self:Refresh()
+end
+
+KH:On("PLAYER_LOGIN", function()
+    D.Preload()
+    KH.Orders:Ensure()
+    UI:CreateMinimap()
+    UI:CreateBubble()
+    -- what was ready when logging in is not announced again by the clock; the welcome line tells it once
+    for i = 1, KH.db.nplots do
+        if KH.Farm:Status(i) == "ready" then announced[i] = true end
+    end
+    KH.After(6, function()
+        local n = KH.Farm:ReadyCount()
+        if KH.db.welcome and n > 0 then KH:Notify(T(n == 1 and "headReadyOne" or "headReadyMany", n)) end
+    end)
+end)
+KH:On("GET_ITEM_INFO_RECEIVED", function() UI:Refresh() end)
+-- a fight starts: the window is not in the way
+KH:On("PLAYER_REGEN_DISABLED", function()
+    if UI.frame and UI.frame:IsShown() then UI.frame:Hide() end
+end)
