@@ -179,7 +179,7 @@ L.enUS = {
     dailyTomorrow = "Tomorrow", dailyDelivered = "Order of the day delivered: +%s coins.",
     dailyStreakOne = "Streak: %d day · prize on day %d (%d to go)", dailyStreak = "Streak: %d days · prize on day %d (%d to go)", dailyStreakNone = "Deliver today to start a streak · prize on day %d",
     dailyTip = "The order of the day is waiting", dailyTipStreak = "The order of the day is waiting (streak: %d days)",
-    streakPrize = "Day %d of your streak! +%s coins.", streakRare = "Day %d of your streak! +%s coins and %d %s.",
+    streakPrize = "Day %d of your streak! +%s coins and +%s bonus xp.", streakRare = "Day %d of your streak! +%s coins, +%s bonus xp and %d %s.",
     why_done = "Today's order is already delivered. A new one comes tomorrow.",
     -- what's new (News.lua): newsN_1, newsN_2... are the lines of entry N
     newsH = "What's new", newsS = "What changed in the latest versions of your homestead.",
@@ -361,7 +361,7 @@ L.ptBR = {
     dailyTomorrow = "Amanhã", dailyDelivered = "Encomenda do dia entregue: +%s moedas.",
     dailyStreakOne = "Sequência: %d dia · prêmio no dia %d (faltam %d)", dailyStreak = "Sequência: %d dias · prêmio no dia %d (faltam %d)", dailyStreakNone = "Entregue hoje para iniciar a sequência · prêmio no dia %d",
     dailyTip = "Sua encomenda do dia está esperando", dailyTipStreak = "Sua encomenda do dia está esperando (sequência: %d dias)",
-    streakPrize = "Dia %d da sequência! +%s moedas.", streakRare = "Dia %d da sequência! +%s moedas e %d %s.",
+    streakPrize = "Dia %d da sequência! +%s moedas e +%s de xp extra.", streakRare = "Dia %d da sequência! +%s moedas, +%s de xp extra e %d %s.",
     why_done = "Você já entregou a encomenda de hoje. A próxima chega amanhã.",
     newsH = "Novidades", newsS = "O que mudou nas últimas versões da sua vila.",
     newsVersion = "Versão %s", newsNew = "Novo", newsGo = "Ir para a vila", newsOpen = "Novidades",

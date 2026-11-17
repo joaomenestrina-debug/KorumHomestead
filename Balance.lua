@@ -43,12 +43,13 @@ B.ORDERS = {
 -- Daily order size, pay, and streak prizes.
 B.DAILY = {
     qtyMultiplier = 2,        -- the daily order asks for twice the herbs of a normal order
-    payMultiplier = 2.5,      -- the daily order pays 2.5 times its size-based coins and XP
-    streak = {                -- extra prize when a streak reaches the day, once per streak
-        [3] = {coins = 1.0},   -- add 100% of the day's coins
-        [7] = {coins = 1.0, rare = 1}, -- add 100% and one rare keepsake
-        [14] = {coins = 2.0, rare = 1}, -- add 200% and one rare keepsake
-        [30] = {coins = 3.0, rare = 2}, -- add 300% and two rare keepsakes
+    payMultiplier = 1.25,     -- coins per herb: 1.25x a normal order (with twice the herbs, 2.5x a normal order in all)
+    xpMultiplier = 2.5,       -- xp per herb: 2.5x a normal order
+    streak = {                -- extra prize when a streak reaches the day, once per streak; never coins (no excess of gold)
+        [3] = {xp = 1.0},              -- add 100% of the day's xp
+        [7] = {xp = 1.0, rare = 1},    -- add 100% xp and one rare keepsake
+        [14] = {xp = 2.0, rare = 1},   -- add 200% xp and one rare keepsake
+        [30] = {xp = 3.0, rare = 2},   -- add 300% xp and two rare keepsakes
     },
     rareEvery = 7,            -- after day 30, give one rare keepsake every 7 streak days
     rareItem = 13468,         -- Black Lotus, the keepsake shown by its game icon
