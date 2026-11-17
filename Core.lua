@@ -92,6 +92,41 @@ end
 
 function KH.Now() return time() end
 
+-- The player's local calendar day, as days since 1970-01-01.
+function KH.Day(at)
+    local today = date("*t", at or KH.Now())
+    local year, month, day = today.year, today.month, today.day
+    local shift = math.floor((14 - month) / 12)
+    year = year + 4800 - shift
+    month = month + 12 * shift - 3
+    local julian = day + math.floor((153 * month + 2) / 5) + 365 * year + math.floor(year / 4)
+        - math.floor(year / 100) + math.floor(year / 400) - 32045
+    return julian - 2440588
+end
+
+local function DaysInMonth(year, month)
+    if month == 2 then
+        local leap = year % 4 == 0 and (year % 100 ~= 0 or year % 400 == 0)
+        return leap and 29 or 28
+    end
+    if month == 4 or month == 6 or month == 9 or month == 11 then return 30 end
+    return 31
+end
+
+-- Seconds from the given instant to the next midnight in the player's local time.
+function KH.UntilNextDay(at)
+    at = at or KH.Now()
+    local today = date("*t", at)
+    local year, month, day = today.year, today.month, today.day + 1
+    if day > DaysInMonth(year, month) then
+        day = 1
+        month = month + 1
+        if month > 12 then year, month = year + 1, 1 end
+    end
+    local nextMidnight = time({year = year, month = month, day = day, hour = 0, min = 0, sec = 0})
+    return nextMidnight - at
+end
+
 -- Something the homestead has to tell: on its icon on the screen, or in the chat when the icon is hidden
 function KH:Notify(msg)
     if KH.UI and KH.UI.Toast and KH.UI:Toast(msg) then return end

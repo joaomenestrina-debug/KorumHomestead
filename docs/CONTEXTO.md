@@ -29,16 +29,16 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T0.6 `UI.lua` dividido em `UI/` | Codex | ✅ PR #1 integrado |
 | T0.7 `db.schema` + `Migrate.lua` | Claude | ⏳ depende da T0.4 |
 | T0.8 `Balance.lua` | **Codex** | ▶️ pode começar ([briefing](tarefas/T0.8.md)) |
-| T0.9 `KH.Day()` | **Codex** | ▶️ pode começar ([briefing](tarefas/T0.9.md)) |
-| T0.10 Revisão e integração | Claude | aguarda T0.8 e T0.9 |
+| T0.9 `KH.Day()` | **Codex** | 🔍 PR em revisão ([briefing](tarefas/T0.9.md)) |
+| T0.10 Revisão e integração | Claude | aguarda T0.8 e revisão da T0.9 |
 | T0.11 Teste de regressão no jogo | **Eu** | sábado 21–22/11 |
 
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** T0.4 — avisar quando o save estiver em
   `C:\Program Files (x86)\World of Warcraft\_forever_\WTF\Account\<conta>\SavedVariables\KorumHomestead.lua`.
-  Dar ao Codex a T0.9 e, em seguida, a T0.8.
-- **Codex:** T0.9, depois T0.8 (uma por pull request).
+  Depois da revisão da T0.9, dar ao Codex a T0.8.
+- **Codex:** T0.9 em revisão; depois T0.8 (uma por pull request).
 - **Claude:** revisar os pull requests do Codex; T0.7 quando a amostra do save chegar; briefings da S1 até segunda 23/11.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
