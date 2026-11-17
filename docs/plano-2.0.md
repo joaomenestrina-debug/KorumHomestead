@@ -28,15 +28,20 @@ adaptadas para uma vila:
 | Fase | Conteúdo | Arte nova | Publicação |
 |---|---|---|---|
 | **F0** | Fundação técnica (UI em arquivos, versão do save, tabela de equilíbrio) | não | interna |
-| **F1** | Resumo ao voltar, encomenda do dia, sequência | não | **2.0 beta 1** |
-| **F2** | Disposição e Serviços | não (ícones do jogo) | **2.0 beta 2** |
-| **F3** | Atributos, seguidores com especialidade, risco e achados | não | **2.0 beta 3** |
-| **F4** | Herbário, conquistas, decorações no mapa | **sim** (decorações) | **2.0 beta 4** |
+| **F1** | Resumo ao voltar, encomenda do dia, sequência | não | **2.0 alpha 1** |
+| **F2** | Disposição e Serviços | não (ícones do jogo) | **2.0 alpha 2** |
+| **F3** | Atributos, seguidores com especialidade, risco e achados | não | **2.0 alpha 3** |
+| **F4** | Herbário, conquistas, decorações no mapa | **sim** (decorações) | **2.0 alpha 4** |
 | **F5** | Temporadas | pouca (selos) | **2.0.0** |
 | **F6** | Som e animações (polimento) | não | junto da F5 |
 | **F7** | Social com amigos (opcional) | não | **2.1** |
 
-Cada beta vai para o CurseForge como **Beta** (tag `v2.0.0-beta1` etc.), para jogadores testarem antes da versão final.
+> **Tipo de arquivo no CurseForge.** Toda versão de trabalho da 2.0 sai como **Alpha**, para não tomar o lugar da 1.0.1
+> de quem usa a versão estável. O CurseForge decide o tipo pela tag: com `alpha` no nome vira Alpha, com `beta` vira
+> Beta, e **sem nenhum dos dois vira Release**. Por isso as tags são `v2.0.0-alpha1`, `v2.0.0-alpha2`... e só a
+> `v2.0.0` não tem sufixo. Nunca usar `-rc1` ou outro sufixo sem `alpha`: o CurseForge publicaria como Release.
+
+Cada alpha vai para o CurseForge como **Alpha** (tag `v2.0.0-alpha1` etc.), para jogadores testarem antes da versão final.
 
 ---
 
@@ -179,9 +184,9 @@ são dados uma vez só.
 ## Testes e verificação
 
 - Testes automáticos para cada sistema, com o relógio controlado (dias, temporadas, recarga com o jogo fechado).
-- Teste de migração: um save da 1.0 (gravado agora como amostra) abre em cada beta.
-- Simulador: capturas de todas as telas novas, revisadas antes de cada beta.
-- **No jogo**, antes de cada beta: lista curta do que conferir (o que o simulador não mostra: ícones do jogo, sons,
+- Teste de migração: um save da 1.0 (gravado agora como amostra) abre em cada alpha.
+- Simulador: capturas de todas as telas novas, revisadas antes de cada alpha.
+- **No jogo**, antes de cada alpha: lista curta do que conferir (o que o simulador não mostra: ícones do jogo, sons,
   fontes, desempenho).
 
 ## Equilíbrio
@@ -198,5 +203,5 @@ hora em cada atividade, para nenhuma delas dominar (serviços não podem render 
 
 ## Ordem de trabalho sugerida
 
-F0 → F1 (beta 1) → F2 (beta 2) → F3 (beta 3) → pedido de arte das decorações em paralelo → F4 (beta 4) → F5 + F6
+F0 → F1 (alpha 1) → F2 (alpha 2) → F3 (alpha 3) → pedido de arte das decorações em paralelo → F4 (alpha 4) → F5 + F6
 (2.0.0) → F7 (2.1).

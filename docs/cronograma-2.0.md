@@ -6,7 +6,13 @@ quê e quando**.
 - **Início:** terça, 17/11/2026
 - **2.0.0 publicada:** terça, 05/01/2027
 - **2.1 (social):** segunda, 25/01/2027
-- **Ritmo:** sprints de uma semana (segunda a domingo), um beta no CurseForge no fim de cada sprint de fase.
+- **Ritmo:** sprints de uma semana (segunda a domingo), um alpha no CurseForge no fim de cada sprint de fase.
+
+
+> **Tipo de arquivo no CurseForge.** Toda versão de trabalho da 2.0 sai como **Alpha**, para não tomar o lugar da 1.0.1
+> de quem usa a versão estável. O CurseForge decide o tipo pela tag: com `alpha` no nome vira Alpha, com `beta` vira
+> Beta, e **sem nenhum dos dois vira Release**. Por isso as tags são `v2.0.0-alpha1`, `v2.0.0-alpha2`... e só a
+> `v2.0.0` não tem sufixo. Nunca usar `-rc1` ou outro sufixo sem `alpha`: o CurseForge publicaria como Release.
 
 ---
 
@@ -47,14 +53,14 @@ Branch próprio, testes junto, captura do simulador no pull request, integraçã
 | Terça a sexta | Implementação e revisões | Claude e Codex |
 | Sexta | Build de teste instalado no Forever + lista do que conferir | Claude |
 | Sábado | **Teste no jogo** (1 a 2 h) e relato do que falhou | Eu |
-| Domingo | Correções, tag do beta, publicação | Claude (tag) e Eu (conferir CurseForge) |
+| Domingo | Correções, tag do alpha, publicação | Claude (tag) e Eu (conferir CurseForge) |
 
 ### Definição de pronto (vale para toda tarefa)
 - Testes automáticos novos e antigos passando (GitHub Actions verde).
 - Textos em inglês e português, sem chave faltando.
 - Toda função com controle na tela e cartão "como funciona" quando a tela é nova.
 - Captura do simulador revisada.
-- Save da 1.0 e dos betas anteriores abre sem erro (teste de migração).
+- Save da 1.0 e dos alphas anteriores abre sem erro (teste de migração).
 - Sem dependência de outro addon.
 
 ---
@@ -64,11 +70,11 @@ Branch próprio, testes junto, captura do simulador no pull request, integraçã
 | Marco | Data | Conteúdo | Tag |
 |---|---|---|---|
 | M0 | dom 22/11 | Fundação técnica pronta, nada mudou para o jogador | — |
-| M1 | dom 29/11 | **Beta 1:** resumo ao voltar, encomenda do dia, sequência | `v2.0.0-beta1` |
-| M2 | dom 06/12 | **Beta 2:** Disposição e Serviços | `v2.0.0-beta2` |
-| M3 | dom 13/12 | **Beta 3:** atributos, seguidores com especialidade, risco e achados | `v2.0.0-beta3` |
-| M4 | dom 20/12 | **Beta 4:** herbário, conquistas, decorações no mapa | `v2.0.0-beta4` |
-| M5 | dom 03/01 | **Release candidate:** temporadas, som, animação, equilíbrio | `v2.0.0-rc1` |
+| M1 | dom 29/11 | **Alpha 1:** resumo ao voltar, encomenda do dia, sequência | `v2.0.0-alpha1` |
+| M2 | dom 06/12 | **Alpha 2:** Disposição e Serviços | `v2.0.0-alpha2` |
+| M3 | dom 13/12 | **Alpha 3:** atributos, seguidores com especialidade, risco e achados | `v2.0.0-alpha3` |
+| M4 | dom 20/12 | **Alpha 4:** herbário, conquistas, decorações no mapa | `v2.0.0-alpha4` |
+| M5 | dom 03/01 | **Candidato final:** temporadas, som, animação, equilíbrio | `v2.0.0-alpha5` |
 | **M6** | **ter 05/01** | **Korum Homestead 2.0.0** | `v2.0.0` |
 | M7 | seg 25/01 | 2.1: social com amigos | `v2.1.0` |
 
@@ -117,7 +123,7 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T0.10 | Revisar e integrar T0.6, T0.8, T0.9 | Claude | T0.6–T0.9 | 21/11 | 2 | `main` verde |
 | T0.11 | Teste de regressão no jogo: tudo continua igual | **Eu** | T0.10 | 21–22/11 | 1 | relato "ok" ou lista de falhas |
 
-### Sprint 1: Retorno diário (seg 23/11 a dom 29/11) → Beta 1
+### Sprint 1: Retorno diário (seg 23/11 a dom 29/11) → Alpha 1
 
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
@@ -131,9 +137,9 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T1.8 | Revisão, integração e build de teste instalado no Forever | Claude | T1.4–T1.7 | 27/11 | 2 | lista do que conferir no jogo |
 | T1.9 | Teste no jogo da F1 | **Eu** | T1.8 | 28/11 | 1,5 | relato |
 | T1.10 | Correções do teste | Claude | T1.9 | 29/11 | 1–3 | — |
-| T1.11 | Changelog, tag `v2.0.0-beta1`, conferir o arquivo no CurseForge (como **Beta**) | Claude + **Eu** | T1.10 | 29/11 | 0,5 | beta publicado |
+| T1.11 | Changelog, tag `v2.0.0-alpha1`, conferir o arquivo no CurseForge (como **Alpha**) | Claude + **Eu** | T1.10 | 29/11 | 0,5 | alpha publicado |
 
-### Sprint 2: Disposição e Serviços (seg 30/11 a dom 06/12) → Beta 2
+### Sprint 2: Disposição e Serviços (seg 30/11 a dom 06/12) → Alpha 2
 
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
@@ -148,9 +154,9 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T2.9 | Conferência de equilíbrio: moedas por hora dos serviços contra a Horta | Claude | T2.4 | 04/12 | 1 | serviços rendem menos que a Horta por hora |
 | T2.10 | Revisão, integração, build de teste | Claude | T2.4–T2.9 | 04/12 | 2 | lista do que conferir |
 | T2.11 | Teste no jogo da F2 | **Eu** | T2.10 | 05/12 | 1,5 | relato |
-| T2.12 | Correções e tag `v2.0.0-beta2` | Claude + **Eu** | T2.11 | 06/12 | 1–3 | beta publicado |
+| T2.12 | Correções e tag `v2.0.0-alpha2` | Claude + **Eu** | T2.11 | 06/12 | 1–3 | alpha publicado |
 
-### Sprint 3: Personagem e seguidores (seg 07/12 a dom 13/12) → Beta 3
+### Sprint 3: Personagem e seguidores (seg 07/12 a dom 13/12) → Alpha 3
 
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
@@ -164,7 +170,7 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T3.8 | Cenas do simulador da F3 | **Codex** | T3.6 | 11/12 | 1 | imagens |
 | T3.9 | Revisão, integração, build de teste | Claude | T3.4–T3.8 | 11/12 | 2 | lista do que conferir |
 | T3.10 | Teste no jogo da F3 | **Eu** | T3.9 | 12/12 | 1,5 | relato |
-| T3.11 | Correções e tag `v2.0.0-beta3` | Claude + **Eu** | T3.10 | 13/12 | 1–3 | beta publicado |
+| T3.11 | Correções e tag `v2.0.0-alpha3` | Claude + **Eu** | T3.10 | 13/12 | 1–3 | alpha publicado |
 
 ### Arte das decorações (em paralelo, 07/12 a 16/12)
 
@@ -176,7 +182,7 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | A4 | Revisar a arte (estilo, medidas, pixels soltos) e pedir ajustes | Claude | A3 | 15/12 | 1 | aprovado ou lista de ajustes |
 | A5 | Importar para o addon (estender o importador) | **Codex** | A4 | 16/12 | 1 | TGAs em `Media/Village/` |
 
-### Sprint 4: Coleção, conquistas e decorações (seg 14/12 a dom 20/12) → Beta 4
+### Sprint 4: Coleção, conquistas e decorações (seg 14/12 a dom 20/12) → Alpha 4
 
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
@@ -191,7 +197,7 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T4.9 | Cenas do simulador da F4 | **Codex** | T4.6, T4.7 | 18/12 | 1 | imagens |
 | T4.10 | Revisão, integração, build de teste | Claude | T4.3–T4.9 | 18/12 | 2 | lista do que conferir |
 | T4.11 | Teste no jogo da F4 | **Eu** | T4.10 | 19/12 | 2 | relato |
-| T4.12 | Correções e tag `v2.0.0-beta4` | Claude + **Eu** | T4.11 | 20/12 | 1–3 | beta publicado |
+| T4.12 | Correções e tag `v2.0.0-alpha4` | Claude + **Eu** | T4.11 | 20/12 | 1–3 | alpha publicado |
 
 ### Sprint 5: Temporadas, polimento e lançamento (seg 21/12 a ter 05/01, com festas)
 
@@ -210,10 +216,10 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T5.11 | Análise do equilíbrio e proposta de ajustes em `Balance.lua` | Claude | T5.10 | 30/12 | 2 | proposta |
 | T5.12 | Aprovar os ajustes de equilíbrio | **Eu** | T5.11 | 30/12 | 0,5 | decisão |
 | T5.13 | Textos EN/ptBR da F5 e F6, guia do jogo atualizado com tudo da 2.0 | **Codex** | T5.6 | 30/12 | 2 | chaves completas; guia com as novidades |
-| T5.14 | Revisão final, build e tag `v2.0.0-rc1` | Claude | T5.3–T5.13 | 02/01 | 3 | RC publicado como Beta |
+| T5.14 | Revisão final, build e tag `v2.0.0-alpha5` (candidato final) | Claude | T5.3–T5.13 | 02/01 | 3 | candidato publicado como Alpha |
 | T5.15 | Teste completo no jogo (começar do zero e com save antigo) | **Eu** | T5.14 | 03/01 | 2–3 | relato |
 | T5.16 | Capturas de tela reais no jogo, em inglês, para o CurseForge e o GitHub | **Eu** | T5.14 | 03/01 | 1 | 7 imagens |
-| T5.17 | Correções do RC | Claude | T5.15 | 04/01 | 1–4 | — |
+| T5.17 | Correções do candidato | Claude | T5.15 | 04/01 | 1–4 | — |
 | T5.18 | Página do CurseForge e README da 2.0 (texto e imagens) | Claude | T5.16 | 04/01 | 1,5 | `description.md` e README novos |
 | T5.19 | Tag `v2.0.0`, conferir o arquivo e atualizar a página no CurseForge | Claude + **Eu** | T5.17, T5.18 | 05/01 | 0,5 | **2.0.0 publicada** |
 
@@ -253,23 +259,23 @@ Seu tempo se concentra no **sábado** (teste no jogo) e em decisões curtas na *
 
 | Risco | Prob. | Impacto | Resposta |
 |---|---|---|---|
-| Teste no jogo atrasa (sábado sem tempo) | média | beta escorrega uma semana | o beta sai no domingo seguinte; o sprint seguinte começa mesmo assim |
-| Arte das decorações demora ou não fica boa | média | F4 sem decorações | F4 sai com herbário e conquistas; decorações entram no beta seguinte |
+| Teste no jogo atrasa (sábado sem tempo) | média | alpha escorrega uma semana | o alpha sai no domingo seguinte; o sprint seguinte começa mesmo assim |
+| Arte das decorações demora ou não fica boa | média | F4 sem decorações | F4 sai com herbário e conquistas; decorações entram no alpha seguinte |
 | Janela cheia com cinco sistemas novos | média | telas apertadas | cada sistema entra por um lugar só; revisão de layout no simulador em toda tarefa de tela |
 | Briefing do Codex ambíguo gera retrabalho | média | +1 dia | briefing com critério de aceite e testes obrigatórios; dúvidas do Codex respondidas no pull request |
 | Save antigo quebra numa migração | baixa | alto (jogador perde vila) | teste de migração com save real em todo pull request; migração nunca apaga campos |
 | Som ou mensagens de addon não funcionam no Forever | média | F6 ou F7 reduzidas | conferido no jogo antes de implementar (T5.8, T6.2); F7 tem ponto de decisão |
-| Webhook do CurseForge falha numa tag | baixa | beta não sai | Claude confere a entrega do webhook; reenvio da tag ou zip à mão |
+| Webhook do CurseForge falha numa tag | baixa | alpha não sai | Claude confere a entrega do webhook; reenvio da tag ou zip à mão |
 | Festas de fim de ano | alta | S5 mais lento | S5 já tem duas semanas |
 
-## 7. Lista de verificação de lançamento (cada beta e a 2.0.0)
+## 7. Lista de verificação de lançamento (cada alpha e a 2.0.0)
 
 - [ ] GitHub Actions verde na `main`
 - [ ] `## Version` do `.toc` e `CHANGELOG.md` atualizados
-- [ ] Save da 1.0 e do beta anterior abrem no jogo
+- [ ] Save da 1.0 e do alpha anterior abrem no jogo
 - [ ] Teste de sábado sem falha aberta
 - [ ] Tag enviada e entrega do webhook com resposta 200
-- [ ] Arquivo no CurseForge com o tipo certo (Beta ou Release) e a versão do jogo certa
+- [ ] Arquivo no CurseForge com o tipo certo (Alpha ou Release) e a versão do jogo certa
 - [ ] Página e README atualizados (na 2.0.0)
 
 ## 8. Próximo passo
