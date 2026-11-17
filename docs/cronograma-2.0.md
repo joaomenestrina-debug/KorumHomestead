@@ -118,9 +118,9 @@ Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
 | T0.5 | Briefings das tarefas T0.6, T0.8 e T0.9 | Claude | T0.1 | 18/11 | 1,5 | ✅ feito em 17/11 |
 | T0.6 | Dividir `UI.lua` em `UI.lua` + `Screens/*.lua` (um arquivo por tela), sem mudar comportamento | **Codex** | T0.5 | 19–20/11 | 5 | ✅ feito em 17/11 (PR #1: 53 testes, 17 capturas idênticas) |
 | T0.7 | `db.schema` e `Migrate.lua` (uma função por versão), com a amostra real como teste | Claude | T0.4 | 19/11 | 2 | ✅ feito em 17/11 (PR #2) |
-| T0.8 | `Balance.lua`: levar todos os números de equilíbrio para um arquivo | **Codex** | T0.6 | 20/11 | 2 | nenhum número de equilíbrio fora de `Balance.lua`; testes iguais |
-| T0.9 | `KH.Day()` (dia local virando à meia-noite) e um relógio controlável nos testes | **Codex** | T0.5 | 20/11 | 1 | testes de virada de dia e de fuso |
-| T0.10 | Revisar e integrar T0.6, T0.8, T0.9 | Claude | T0.6–T0.9 | 21/11 | 2 | `main` verde |
+| T0.8 | `Balance.lua`: levar todos os números de equilíbrio para um arquivo | **Codex** | T0.6 | 20/11 | 2 | ✅ feito em 17/11 |
+| T0.9 | `KH.Day()` (dia local virando à meia-noite) e um relógio controlável nos testes | **Codex** | T0.5 | 20/11 | 1 | ✅ feito em 17/11 |
+| T0.10 | Revisar e integrar T0.6, T0.8, T0.9 | Claude | T0.6–T0.9 | 21/11 | 2 | ✅ feito em 17/11 |
 | T0.11 | Teste de regressão no jogo: tudo continua igual | **Eu** | T0.10 | 21–22/11 | 1 | relato "ok" ou lista de falhas |
 
 ### Sprint 1: Retorno diário (seg 23/11 a dom 29/11) → Alpha 1

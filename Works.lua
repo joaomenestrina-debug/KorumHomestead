@@ -20,6 +20,7 @@
 local addonName, KH = ...
 local V = KH.Village
 local D = KH.Data
+local B = KH.Balance
 
 local W = {}
 KH.Workshop = W
@@ -32,18 +33,7 @@ KH.Inn = I
 -- Three trades, three recipes each. An input is {herb item id, amount} (from the Barn's herbs) or {"fish" | "ore", amount}
 -- (from the Pond and the Mine). Cooking lives on fish, smithing on ore, alchemy on herbs.
 W.TRADES = {"alchemy", "cooking", "smithing"}
--- {id, trade, workshop level, seconds, inputs}
-W.RECIPES = {
-    {id = "heal", trade = "alchemy", level = 1, time = 120, inputs = {{2447, 3}, {765, 1}}},
-    {id = "mana", trade = "alchemy", level = 2, time = 300, inputs = {{785, 2}, {2449, 2}}},
-    {id = "agil", trade = "alchemy", level = 3, time = 600, inputs = {{2450, 2}, {2453, 2}}},
-    {id = "stew", trade = "cooking", level = 1, time = 90, inputs = {{"fish", 4}}},
-    {id = "roast", trade = "cooking", level = 3, time = 240, inputs = {{"fish", 10}, {2447, 2}}},
-    {id = "feast", trade = "cooking", level = 5, time = 720, inputs = {{"fish", 24}, {785, 2}}},
-    {id = "bar", trade = "smithing", level = 2, time = 200, inputs = {{"ore", 6}}},
-    {id = "tools", trade = "smithing", level = 4, time = 540, inputs = {{"ore", 16}}},
-    {id = "blade", trade = "smithing", level = 6, time = 1500, inputs = {{"ore", 40}, {2450, 1}}},
-}
+W.RECIPES = B.RECIPES
 
 -- the recipes of one trade, in order
 function W.OfTrade(trade)
@@ -137,13 +127,8 @@ end
 -- The Inn
 -- ----------------------------------------------------------------------------
 I.NAMES = {"Mira", "Tobin", "Elda", "Garrick", "Sela", "Bram"}
-I.MAX = 6
--- {id, seconds, fish for the road, coins, ore}
-I.MISSIONS = {
-    {id = "short", time = 1800, fish = 2, coins = 40, ore = 0},
-    {id = "medium", time = 7200, fish = 6, coins = 170, ore = 2},
-    {id = "long", time = 28800, fish = 20, coins = 750, ore = 8},
-}
+I.MAX = B.INN.maxFollowers
+I.MISSIONS = B.MISSIONS
 
 function I.Mission(id)
     for _, m in ipairs(I.MISSIONS) do
@@ -159,13 +144,13 @@ function I:Follower(i)
     return db.followers[i]
 end
 
--- level 1 to 5: a level for every three missions done
+-- follower progression uses the cap and mission interval in Balance.lua
 function I:Level(i)
-    return math.min(5, 1 + math.floor(self:Follower(i).done / 3))
+    return math.min(B.INN.maxLevel, 1 + math.floor(self:Follower(i).done / B.INN.missionsPerLevel))
 end
 
 function I:Pay(i, mission)
-    return math.floor(mission.coins * (1 + 0.1 * (self:Level(i) - 1)))
+    return math.floor(mission.coins * (1 + B.INN.payBonusPerLevel * (self:Level(i) - 1)))
 end
 
 function I:Status(i)

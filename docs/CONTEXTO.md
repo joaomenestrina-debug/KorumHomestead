@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 17/11/2026, após T0.9.*
+*Última atualização: 17/11/2026, por Claude (T0.8, T0.9 e T0.10 integradas; falta só o teste no jogo).*
 
 ---
 
@@ -28,16 +28,17 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T0.5 Briefings T0.6, T0.8, T0.9 | Claude | ✅ |
 | T0.6 `UI.lua` dividido em `UI/` | Codex | ✅ PR #1 integrado |
 | T0.7 `db.schema` + `Migrate.lua` | Claude | ✅ PR #2 |
-| T0.8 `Balance.lua` | **Codex** | ▶️ pode começar ([briefing](tarefas/T0.8.md)) |
-| T0.9 `KH.Day()` | **Codex** | 🔍 PR em revisão ([briefing](tarefas/T0.9.md)) |
-| T0.10 Revisão e integração | Claude | aguarda T0.8 e revisão da T0.9 |
+| T0.8 `Balance.lua` | Codex | ✅ PR #4 |
+| T0.9 `KH.Day()` | Codex | ✅ PR #3 |
+| T0.10 Revisão e integração | Claude | ✅ |
 | T0.11 Teste de regressão no jogo | **Eu** | sábado 21–22/11 |
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** T0.4 concluída; sábado: T0.11 (teste de regressão no jogo).
-- **Codex:** T0.9 em revisão; depois T0.8 (uma por pull request).
-- **Claude:** revisar os pull requests do Codex; T0.7 concluída; briefings da S1 até segunda 23/11.
+- **Eu:** sábado 21–22/11, **T0.11**: `/reload` e conferir que tudo está igual (vila, telas, seu save migrado).
+  Segunda 23/11: decisões rápidas da S1 (T1.2: prêmios da sequência).
+- **Codex:** nada até os briefings da S1 (segunda 23/11).
+- **Claude:** briefings da S1 (T1.1) até segunda 23/11; correções se a T0.11 achar algo.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
@@ -59,10 +60,11 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 | Arquivo | Responsabilidade |
 |---|---|
 | `Kit.lua` | kit visual próprio (janela, botões, textos, cores, barras, animações) — cópia independente |
-| `Core.lua` | `KH`, padrões do save `KorumHomesteadDB`, eventos, `KH.Now()`, `/kh` |
+| `Core.lua` | `KH`, padrões do save `KorumHomesteadDB`, eventos, `KH.Now()`, `KH.Day()` (dia local), `KH.UntilNextDay()`, `/kh` |
 | `Migrate.lua` | `KH.SCHEMA` (versão do formato do save) e as migrações, aplicadas ao carregar, antes dos padrões |
 | `Locales.lua` | todos os textos, `enUS` e `ptBR`, via `KH.T("chave")` |
-| `Data.lua` | as 13 ervas (item id, nível, tempo, custo, venda, xp), nome e ícone vindos do jogo |
+| `Balance.lua` | **todos os números do jogo** (ervas, encomendas, construções, produtos, receitas, Estalagem, início): ajuste de equilíbrio é aqui |
+| `Data.lua` | as ervas (tabela vem do `Balance.lua`), nome e ícone vindos do jogo |
 | `Farm.lua` | plantar, colher, vender ervas, encomendas do Mercado |
 | `Village.lua` | construções, níveis, obras, Mina e Lagoa, produtos (`GOODS`, `ITEM` = ícones), Celeiro |
 | `Works.lua` | Oficina (3 ofícios, fila) e Estalagem (seguidores, missões) |

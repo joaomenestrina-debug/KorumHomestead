@@ -10,27 +10,13 @@
 local addonName, KH = ...
 local D = {}
 KH.Data = D
+local B = KH.Balance
 
-D.PLANTS = {
-    {2447, 1, 45, 4, 4, 4, 3, "Peacebloom"},
-    {765, 1, 120, 10, 9, 6, 3, "Silverleaf"},
-    {2449, 2, 300, 25, 18, 12, 4, "Earthroot"},
-    {785, 3, 600, 50, 28, 20, 4, "Mageroyal"},
-    {2450, 4, 1200, 100, 50, 35, 5, "Briarthorn"},
-    {2453, 6, 1800, 150, 75, 50, 5, "Bruiseweed"},
-    {3355, 7, 2700, 250, 110, 75, 5, "Wild Steelbloom"},
-    {3356, 9, 3600, 400, 170, 110, 5, "Kingsblood"},
-    {3357, 11, 5400, 700, 260, 170, 6, "Liferoot"},
-    {3818, 13, 7200, 1000, 330, 240, 6, "Fadeleaf"},
-    {3821, 15, 10800, 1800, 520, 360, 7, "Goldthorn"},
-    {3358, 17, 14400, 3000, 800, 520, 7, "Khadgar's Whisker"},
-    {3369, 19, 21600, 5000, 1100, 800, 8, "Grave Moss"},
-}
-
-D.MAX_LEVEL = 20
-D.MAX_PLOTS = 8
-D.ORDER_SLOTS = 3
-D.NPC_COUNT = 6
+D.PLANTS = B.PLANTS
+D.MAX_LEVEL = B.HERBALISM.maxLevel
+D.MAX_PLOTS = B.HERBALISM.maxPlots
+D.ORDER_SLOTS = B.ORDERS.slots
+D.NPC_COUNT = B.ORDERS.npcCount
 
 local byId
 function D.Plant(id)
@@ -45,12 +31,12 @@ end
 
 -- the xp that takes the homestead from `level` to the next one
 function D.XPToNext(level)
-    return 40 * level
+    return B.HERBALISM.xpPerLevel * level
 end
 
--- harvest of a plant at this level: a plant more every 6 levels
+-- harvest at this level, including the extra amount awarded by Herbalism progression.
 function D.Yield(plant, level)
-    return plant.yield + math.floor((level or 1) / 6)
+    return plant.yield + math.floor((level or 1) / B.HERBALISM.extraHarvestLevels)
 end
 
 -- Name and icon come from the game; the fallbacks keep the screen alive before the client knows the item

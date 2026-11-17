@@ -6,11 +6,11 @@
     everything here.
 
         hall     the Hall: no other building can be above its level
-        garden   the Garden: one more plot per level (2 at level 1, 8 at level 7)
-        barn     the Barn: how many herbs fit (40 per level), and as much of each good
-        market   the Market: sales and orders pay 4% more per level above the first
-        mine     the Mine: makes ore by itself, every hour (it is built when the Hall reaches level 2)
-        pond     the Pond: makes fish by itself, every hour (built when the Hall reaches level 3)
+        garden   the Garden: one more plot per level, up to its cap
+        barn     the Barn: how many herbs fit, and as much of each good
+        market   the Market: sales and orders pay more per level above the first
+        mine     the Mine: makes ore by itself, every hour (opened by the Hall)
+        pond     the Pond: makes fish by itself, every hour (opened by the Hall)
 
     The Mine and the Pond start as empty lots (level 0). What they make goes to the Barn by itself, until it is full.
 
@@ -27,48 +27,31 @@
 local addonName, KH = ...
 local V = {}
 KH.Village = V
+local B = KH.Balance
 
 V.BUILDINGS = {"hall", "garden", "barn", "market", "mine", "pond", "workshop", "inn"}
-V.MAX_LEVEL = 7
+V.MAX_LEVEL = B.VILLAGE_MAX_LEVEL
 V.BUILT = {hall = true, garden = true, barn = true, market = true}     -- these exist from the start, at level 1
-V.NEEDS_HALL = {mine = 2, pond = 3, workshop = 4, inn = 5}                                    -- the Hall level that opens the lot
+V.NEEDS_HALL = B.NEEDS_HALL                                                    -- the Hall level that opens the lot
 V.MAKES = {mine = "ore", pond = "fish"}
-V.GOODS = {ore = {sell = 6, perHour = 6}, fish = {sell = 5, perHour = 5}, heal = {sell = 60}, mana = {sell = 150}, agil = {sell = 400},
-    stew = {sell = 32}, roast = {sell = 110}, feast = {sell = 330}, bar = {sell = 60}, tools = {sell = 190}, blade = {sell = 560}}
+V.GOODS = B.GOODS
 V.GOOD_ORDER = {"ore", "fish", "heal", "mana", "agil", "stew", "roast", "feast", "bar", "tools", "blade"}
 -- every good is shown with the icon of an item of the game, as the herbs are
+-- Item ids used for the game's icons.
 V.ITEM = {ore = 2770, fish = 6303, heal = 118, mana = 2455, agil = 2457,
-    stew = 13931, roast = 13935, feast = 21023, bar = 3575, tools = 5956, blade = 3487}                     -- perHour: for each level of its building
+    stew = 13931, roast = 13935, feast = 21023, bar = 3575, tools = 5956, blade = 3487}
 -- [target level]
-V.COST = {
-    hall = {0, 100, 300, 800, 2000, 5000, 12000},
-    garden = {0, 150, 400, 1000, 2500, 6000, 15000},
-    barn = {0, 60, 180, 500, 1300, 3200, 8000},
-    market = {0, 80, 220, 600, 1500, 3800, 9500},
-    mine = {200, 350, 700, 1500, 3200, 6500, 13000},
-    pond = {350, 500, 900, 1800, 3600, 7000, 14000},
-    workshop = {400, 600, 1100, 2200, 4200, 8000, 15000},
-    inn = {600, 800, 1400, 2600, 4800, 9000, 16000},
-}
-V.TIME = {
-    hall = {0, 45, 240, 600, 1500, 3000, 6000},
-    garden = {0, 60, 300, 900, 1800, 3600, 7200},
-    barn = {0, 30, 180, 480, 1200, 2400, 4800},
-    market = {0, 30, 180, 480, 1200, 2400, 4800},
-    mine = {300, 480, 900, 1800, 3000, 4800, 7200},
-    pond = {480, 600, 1200, 2100, 3300, 5400, 7800},
-    workshop = {600, 900, 1500, 2400, 3600, 5400, 7800},
-    inn = {900, 1200, 1800, 2700, 3900, 5700, 8400},
-}
+V.COST = B.COST
+V.TIME = B.TIME
 -- ore that a building asks for, by target level (the Mine itself never asks for ore, or the village could get stuck)
-V.ORE = {[3] = 10, [4] = 25, [5] = 50, [6] = 90, [7] = 150}
+V.ORE = B.ORE
 
 -- a save from before the village: the plots that were bought become the level of the Garden
 function V:Migrate()
     local db = KH.db
     db.buildings = db.buildings or {}
     local b = db.buildings
-    if not b.garden then b.garden = math.max(1, math.min(V.MAX_LEVEL, (db.nplots or 2) - 1)) end
+    if not b.garden then b.garden = math.max(1, math.min(V.MAX_LEVEL, (db.nplots or B.STARTING.plots) - 1)) end
     b.hall = b.hall or b.garden
     b.barn = b.barn or 1
     b.market = b.market or 1
@@ -155,12 +138,12 @@ function V:Produce()
             if have >= cap then
                 db.made[id] = now                              -- full: nothing is made, and no time is owed
             else
-                local units = math.floor((now - since) * rate / 3600)
+                local units = math.floor((now - since) * rate / B.SECONDS_PER_HOUR)
                 if units > 0 then
                     local add = math.min(units, cap - have)
                     db.goods[good] = have + add
                     -- the time those units took is spent; the rest keeps counting towards the next one
-                    db.made[id] = (have + add >= cap) and now or (since + units * 3600 / rate)
+                    db.made[id] = (have + add >= cap) and now or (since + units * B.SECONDS_PER_HOUR / rate)
                 elseif not db.made[id] then
                     db.made[id] = now
                 end
@@ -202,7 +185,7 @@ function V:Plots()
 end
 
 function V:BarnCap(level)
-    return 40 * (level or self:Level("barn"))
+    return B.BARN_PER_LEVEL * (level or self:Level("barn"))
 end
 
 function V:Stored()
@@ -213,7 +196,7 @@ end
 
 -- what sales and orders are multiplied by
 function V:PayBonus(level)
-    return 1 + 0.04 * ((level or self:Level("market")) - 1)
+    return 1 + B.MARKET_BONUS_PER_LEVEL * ((level or self:Level("market")) - 1)
 end
 
 -- Is there a building the player could start now?
