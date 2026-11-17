@@ -23,7 +23,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 |---|---|---|
 | T1.1 Especificação e briefings T1.4, T1.6, T1.7 | Claude | ✅ em `docs/tarefas/` |
 | T1.2 Aprovar prêmios da sequência | Eu | ✅ 17/11: aprovada a proposta de `T1.4.md` (`B.DAILY`) como está |
-| T1.3 Resumo ao voltar (lógica) | Claude | em andamento |
+| T1.3 Resumo ao voltar (lógica, `Away.lua`) | Claude | ✅ |
 | T1.4 Encomenda do dia e sequência (`Daily.lua`) | **Codex** | **pode começar** |
 | T1.5 Telas: cartão "Enquanto você esteve fora", encomenda do dia no Mercado, ponto no ícone | Claude | depois de T1.3 e T1.4 |
 | T1.6 Textos EN/ptBR da F1 + Novidades | Codex | depois de T1.5 |
@@ -50,7 +50,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 - **Eu:** nada até o teste da alpha1 no jogo (T1.9, 28/11).
 - **Codex:** **T1.4** (`docs/tarefas/T1.4.md`), branch `codex/T1.4-daily`. Depois T1.6 e T1.7, quando a T1.5 estiver na `main`.
-- **Claude:** T1.3 (resumo ao voltar), depois T1.5 (telas) quando a T1.4 entrar.
+- **Claude:** T1.5 (telas) quando a T1.4 entrar na `main`.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
@@ -82,6 +82,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 | `Farm.lua` | plantar, colher, vender ervas, encomendas do Mercado |
 | `Village.lua` | construções, níveis, obras, Mina e Lagoa, produtos (`GOODS`, `ITEM` = ícones), Celeiro |
 | `Works.lua` | Oficina (3 ofícios, fila) e Estalagem (seguidores, missões) |
+| `Away.lua` | resumo "Enquanto você esteve fora": `db.lastSeen` + `db.snapshot`, `Away:Mark/Summary/CollectAll` |
 | `UI/Common.lua` | `KH.UI`, helpers compartilhados em `UI.P` (Screen, Notice, GoodTex, BuildingArt...) |
 | `UI/Window.lua` | a janela, navegação, cabeçalho, cartão "como funciona", `UI:Tick` |
 | `UI/<Tela>.lua` | uma tela cada: Village (mapa), Garden, Barn, Market, Hall (+ Mina/Lagoa), Workshop, Inn, Guide, Settings; cada uma registra `P.builders.<id>` |

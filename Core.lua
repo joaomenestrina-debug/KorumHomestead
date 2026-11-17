@@ -35,6 +35,8 @@ KH.defaults = {
     made = {},             -- mine, pond -> the time up to which their production was counted
     work = nil,            -- the building being built: {id, at, time}
     bubble = {show = true},      -- the icon on the screen; x, y where the player dragged it
+    lastSeen = 0,          -- when the window was last seen (Away.lua); 0 = never stamped
+    snapshot = nil,        -- the counters at lastSeen: {goods = {...}, buildings = {...}}
     seen = {},             -- the buildings whose "how this works" card was read
     tutorial = {done = false},   -- the first steps shown in the window (plant, wait, harvest, sell); over after the first sale
     newsSeen = 0,          -- the id of the last "What's new" entry seen (News.lua); an older save sees what came after it
