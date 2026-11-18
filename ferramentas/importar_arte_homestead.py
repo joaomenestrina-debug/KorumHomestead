@@ -19,7 +19,9 @@ LOGO = ROOT / "Media" / "logo.tga"
 BUILDINGS = ["hall", "garden", "barn", "market", "mine", "pond", "workshop", "inn"]
 # the goods (ore, fish, potions, meals, tools) use the icons of items of the game, not drawings
 NAMES = (["map", "works", "lot", "logo"]
-         + [f"{b}{t}" for b in BUILDINGS for t in (1, 2, 3)] + [f"follower{i}" for i in range(1, 7)])
+         + [f"{b}{t}" for b in BUILDINGS for t in (1, 2, 3)] + [f"follower{i}" for i in range(1, 7)]
+         # the random events (arte_v4): the visitors' cart on the map and the three visitors
+         + ["cart", "visitor_merchant", "visitor_caravan", "visitor_messenger"])
 KEEP_WHOLE = {"map", "works"}           # one piece by nature: nothing is a stray pixel there
 
 
