@@ -24,6 +24,7 @@ P.Effect = Effect
 local function BuildSource(id)
     return function(win)
         local s = Screen(win, id)
+        s.sub:SetWordWrap(true)                     -- the description of the place can take two lines
         s.rate = Kit.Text(s.frame, 18, C.text)
         s.rate:SetPoint("TOPLEFT", 0, -90)
         s.have = Kit.Text(s.frame, 12, C.textSoft)
@@ -36,7 +37,7 @@ local function BuildSource(id)
             self.head:SetText(BuildingName(id))
             self.sub:SetText(T("b_" .. id .. "D"))
             self.rate:SetText(level > 0 and T("fx_" .. id, V:Rate(id)) or "")
-            self.have:SetText(level > 0 and T("stored", V:Stored(), V:BarnCap()) or "")
+            self.have:SetText(level > 0 and T("storedHere", V:Good(V.MAKES[id]), V:BarnCap()) or "")
             self.action:SetShown(level > 0)
         end
         return s

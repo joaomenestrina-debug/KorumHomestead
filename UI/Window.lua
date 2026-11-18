@@ -93,10 +93,28 @@ function UI:Create()
     help:SetScript("OnClick", function() Kit.ClickSound(); UI:Show("guide") end)
     self.help = help
 
+    -- the sparkle: what changed in the latest versions, to read again whenever the player wants
+    local news = CreateFrame("Button", nil, h)
+    news:SetSize(26, 26)
+    news:SetPoint("RIGHT", help, "LEFT", -8, 0)
+    news.bg = news:CreateTexture(nil, "BACKGROUND")
+    news.bg:SetAllPoints()
+    news.bg:SetTexture(Kit.Icon("dot"))
+    news.bg:SetVertexColor(1, 1, 1, 0.06)
+    news.icon = news:CreateTexture(nil, "ARTWORK")
+    news.icon:SetSize(14, 14)
+    news.icon:SetPoint("CENTER")
+    news.icon:SetTexture(Kit.Icon("news"))
+    news.icon:SetVertexColor(C.gold[1], C.gold[2], C.gold[3])
+    news:SetScript("OnEnter", function(frame) frame.bg:SetVertexColor(1, 1, 1, 0.16); Tip(frame, T("newsH"), {T("newsS")}) end)
+    news:SetScript("OnLeave", function(frame) frame.bg:SetVertexColor(1, 1, 1, 0.06); if GameTooltip then GameTooltip:Hide() end end)
+    news:SetScript("OnClick", function() Kit.ClickSound(); UI:ShowNews(false) end)
+    self.newsButton = news
+
     -- the zoom of the window, 60% to 150%: the whole window scales at once, so texts and places keep their layout
     local zoom = CreateFrame("Frame", nil, h)
     zoom:SetSize(110, 26)
-    zoom:SetPoint("RIGHT", help, "LEFT", -14, 0)
+    zoom:SetPoint("RIGHT", news, "LEFT", -14, 0)
     zoom.plus = Kit.Button(zoom, 24, 22, "+", function() UI:Zoom(0.1) end)
     zoom.plus:SetPoint("RIGHT", 0, 0)
     zoom.value = Kit.Text(zoom, 11, C.textSoft, "CENTER")

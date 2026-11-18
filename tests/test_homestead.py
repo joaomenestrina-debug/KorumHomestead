@@ -370,7 +370,7 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev(v + ".head:GetText()"), "Welcome to your village")
         self.assertTrue(self.ev(v + ".spots.garden.calls"))           # the first step points at the Garden
         self.assertEqual(self.ev(v + ".spots.garden.name:GetText()"), "Garden · 1")
-        self.assertEqual(self.ev(v + ".spots.barn.note:GetText()"), "0 / 40 herbs")
+        self.assertEqual(self.ev(v + ".spots.barn.note:GetText()"), "0% full")
         for building, view in (("garden", "garden"), ("barn", "barn"), ("market", "orders"), ("hall", "hall")):
             self.press(v + ".spots." + building)
             self.assertEqual(self.ev("NS.UI.view"), view)
@@ -443,7 +443,7 @@ class Homestead(unittest.TestCase):
         self.press("NS.UI.screens.orders.rows[1].deliver")
         self.assertEqual(self.ev("NS.Village:Stored()"), before - qty)
         self.open("barn")
-        self.assertIn("%d / " % (before - qty), self.ev("NS.UI.screens.barn.stats:GetText()"))
+        self.assertIn("Herbs %d / " % (before - qty), self.ev("NS.UI.screens.barn.fill:GetText()"))
 
     def test_texts_follow_the_language_and_fall_back_to_english(self):
         self.assertEqual(self.ev("NS.T('harvest')"), "Harvest")

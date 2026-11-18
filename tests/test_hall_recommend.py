@@ -28,6 +28,17 @@ class Recommend(unittest.TestCase):
         self.lua.execute("NS.db.level = 60; NS.db.buildings.hall = 3; NS.db.crops[2447] = math.floor(NS.Village:BarnCap() * 0.9)")
         self.assertEqual(self.best(), "barn")
 
+    def test_the_barn_when_the_ore_almost_fills_it(self):
+        self.lua.execute("NS.db.level = 60; NS.db.buildings.hall = 3; NS.db.buildings.mine = 1; NS.db.goods.ore = math.floor(NS.Village:BarnCap() * 0.9)")
+        self.assertEqual(self.best(), "barn")
+
+    def test_the_mine_screen_counts_its_ore_not_the_herbs(self):
+        self.lua.execute("NS.db.level = 60; NS.db.buildings.hall = 3; NS.db.buildings.mine = 1; NS.db.buildings.barn = 1;"
+                         " NS.db.goods.ore = 7; NS.db.crops[2447] = 30; NS.db.tutorial.done = true; NS.db.seen.mine = true")
+        self.open("mine")
+        cap = self.ev("NS.Village:BarnCap()")
+        self.assertEqual(self.ev("NS.UI.screens.mine.have:GetText()"), "In the barn: 7 / %d" % cap)
+
     def test_nothing_when_the_village_level_holds_everything(self):
         self.lua.execute("NS.db.level = 1")
         self.assertIsNone(self.best())

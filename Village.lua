@@ -21,7 +21,7 @@
         Village:Work()               the work going on: {id, at, time}, seconds left, progress 0..1   (nil when idle)
         Village:Update()             makes what the Mine and the Pond made since the last time, and finishes the work whose
                                      time is over; returns the building that got ready and its level
-        Village:Plots() / BarnCap() / Stored() / PayBonus() / Rate(id) / SellGood(good, n)
+        Village:Plots() / BarnCap() / Stored() / Fill() / PayBonus() / Rate(id) / SellGood(good, n)
 ]]
 
 local addonName, KH = ...
@@ -208,6 +208,18 @@ function V:Stored()
     return n
 end
 
+-- how full the Barn is (0 to 1): the herbs share one space, and each good the village makes has a space of its own;
+-- the fullest of them counts
+function V:Fill()
+    local cap = self:BarnCap()
+    if cap <= 0 then return 0 end
+    local most = self:Stored()
+    for id, good in pairs(V.MAKES) do
+        if self:Level(id) > 0 then most = math.max(most, self:Good(good)) end
+    end
+    return math.min(1, most / cap)
+end
+
 -- The upgrade the Hall recommends: the one that helps the most now, among those the player can reach (only coins, ore
 -- or the work going on stand in the way). A Barn about to fill comes first, then the Hall when it holds the Garden back,
 -- then the Garden (income), the Workshop, the Market, the Mine, the Pond, the Inn, the Barn, the Hall.
@@ -218,7 +230,7 @@ function V:Recommend()
         local ok, why = self:CanUpgrade(id)
         return ok or why == "coins" or why == "ore" or why == "busy"
     end
-    if Reachable("barn") and self:Stored() >= 0.8 * self:BarnCap() then return "barn", "barn" end
+    if Reachable("barn") and self:Fill() >= 0.8 then return "barn", "barn" end
     local _, gardenWhy = self:CanUpgrade("garden")
     if gardenWhy == "hall" and Reachable("hall") then return "hall", "hall" end
     for _, id in ipairs(V.RECOMMEND_ORDER) do

@@ -176,7 +176,7 @@ local function BuildVillage(win)
         if KH.Daily:CanDeliver() then deliverable = deliverable + 1 end
         local work, left = V:Work()
         local affordable = V:Affordable()
-        local stored, cap = V:Stored(), V:BarnCap()
+        local cap, fill = V:BarnCap(), V:Fill()
 
         for _, id in ipairs(V.BUILDINGS) do
             local b = self.spots[id]
@@ -210,7 +210,7 @@ local function BuildVillage(win)
                 elseif empty > 0 then note, calls = T(empty == 1 and "emptyOne" or "emptyMany", empty), step == "plant"
                 else note = T("timeLeft", KH.Duration(soonest or 0)) end
             elseif id == "barn" then
-                note, calls = T("stored", stored, cap), step == "sell" or stored >= cap
+                note, calls = T("barnFill", math.floor(fill * 100 + 0.5)), step == "sell" or fill >= 1
             elseif id == "market" then
                 if deliverable > 0 then note, calls = T(deliverable == 1 and "deliverOne" or "deliverMany", deliverable), true
                 else note = T("ordersWaiting", D.ORDER_SLOTS) end

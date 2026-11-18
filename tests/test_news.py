@@ -73,3 +73,10 @@ class NewHomestead(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TheButtonOnTop(Base):
+    def test_the_sparkle_on_top_opens_the_news_any_time(self):
+        self.open("village")
+        self.lua.execute("NS.UI.newsButton:GetScript('OnClick')(NS.UI.newsButton)")
+        self.assertEqual(self.shown(), "news")

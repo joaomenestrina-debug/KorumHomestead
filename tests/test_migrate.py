@@ -55,7 +55,7 @@ class SaveOf101(Base):
         for view in VIEWS:
             self.open(view)
             self.assertEqual(self.ev("NS.UI.view"), view)
-        self.assertEqual(self.ev("NS.UI.screens.barn.stats:GetText()").split(" ")[0], "27")
+        self.assertEqual(self.ev("NS.UI.screens.barn.fill:GetText()").split(" ")[1], "27")
 
     def test_migrating_twice_changes_nothing(self):
         before = self.ev("NS.db.coins")

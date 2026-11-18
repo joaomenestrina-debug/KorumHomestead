@@ -72,6 +72,10 @@ local function BuildBarn(win)
         s.rows[#s.rows + 1] = row
     end
 
+    s.fill = Kit.Text(s.frame, 10, C.textSoft)
+    s.fill:SetPoint("BOTTOMLEFT", 0, 28)
+    s.fill:SetWidth(W - 280)
+    s.fill:SetWordWrap(false)
     s.stats = Kit.Text(s.frame, 10, C.textMuted)
     s.stats:SetPoint("BOTTOMLEFT", 0, 12)
     s.stats:SetWidth(W - 280)
@@ -148,8 +152,17 @@ local function BuildBarn(win)
             self.action:SetLabel(T("goGarden"))
             self.action:SetStyle("quiet")
         end
-        self.stats:SetText(T("stored", KH.Village:Stored(), KH.Village:BarnCap()) .. "  ·  "
-            .. T("stats", db.stats.harvested, db.stats.delivered, KH.Number(db.stats.earned)))
+        -- the space of the herbs, and of each good the village makes
+        local cap = KH.Village:BarnCap()
+        local parts = {T("storedHerbs", KH.Village:Stored(), cap)}
+        for _, id in ipairs(KH.Village.BUILDINGS) do
+            local good = KH.Village.MAKES[id]
+            if good and KH.Village:Level(id) > 0 then
+                parts[#parts + 1] = T("storedGood", T("good_" .. good), KH.Village:Good(good), cap)
+            end
+        end
+        self.fill:SetText(table.concat(parts, "  ·  "))
+        self.stats:SetText(T("stats", db.stats.harvested, db.stats.delivered, KH.Number(db.stats.earned)))
     end
     return s
 end
