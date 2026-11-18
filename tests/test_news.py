@@ -80,3 +80,20 @@ class TheButtonOnTop(Base):
         self.open("village")
         self.lua.execute("NS.UI.newsButton:GetScript('OnClick')(NS.UI.newsButton)")
         self.assertEqual(self.shown(), "news")
+
+
+class Scrolling(Base):
+    def test_the_wheel_and_the_bar_scroll_the_lines(self):
+        self.lua.execute("for i = 3, 12 do NS.NEWS[i] = {id = i, version = '9.' .. i} ; NS.L.enUS['news' .. i .. '_1'] = 'line ' .. i end")
+        self.lua.execute("NS.UI:ShowNews(false)")
+        s = "NS.UI.screens.news"
+        self.assertGreater(self.ev(s + ".maxOff"), 0)
+        self.assertTrue(self.ev(s + ".track:IsShown()"))
+        self.assertTrue(self.ev(s + ".pool[1].title:IsShown()"))
+        self.lua.execute(s + ".frame:GetScript('OnMouseWheel')(" + s + ".frame, -1)")
+        self.assertEqual(self.ev(s + ".off"), 40)
+        self.lua.execute(s + ":ScrollTo(1e9)")
+        self.assertEqual(self.ev(s + ".off"), self.ev(s + ".maxOff"))
+        self.assertFalse(self.ev(s + ".pool[1].title:IsShown()"))         # the top went out of sight
+        self.lua.execute("NS.UI:ShowNews(false)")
+        self.assertEqual(self.ev(s + ".off"), 0)                          # opening again starts from the top

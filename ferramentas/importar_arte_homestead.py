@@ -2,7 +2,8 @@
 
     python ferramentas/importar_arte_homestead.py [pasta]        (default: arquivo/arte_v5)
 
-A drawing in high resolution, `nome@hd.png`, wins: it goes into the game as it is (no grid, no cleaning). Otherwise
+A drawing in high resolution, `nome@hd.png`, wins: it goes into the game with no grid and no cleaning, reduced with a
+good filter to near the size it shows at (see SIZE). Otherwise
 the folder has every image twice: `nome.png` on the real pixel grid (128x128 buildings, 32x32 icons, 512x256 map) and
 `nome@2x.png` (the same, doubled). This script takes the real grid, cleans the stray pixels that the drawing left at the edges
 of the images, doubles it again with no smoothing (so what is in the game is exactly what was drawn) and writes the 32-bit
@@ -23,7 +24,10 @@ NAMES = (["map", "works", "lot", "logo"]
          + [f"{b}{t}" for b in BUILDINGS for t in (1, 2, 3)] + [f"follower{i}" for i in range(1, 7)]
          # the random events (arte_v4): the visitors' cart on the map and the three visitors
          + ["cart", "visitor_merchant", "visitor_caravan", "visitor_messenger"])
-KEEP_WHOLE = {"map", "works"}           # one piece by nature: nothing is a stray pixel there
+KEEP_WHOLE = {"map", "works"}
+# the width each high-resolution drawing goes into the game at (the rest: 256)
+SIZE = {"map": 1024, "logo": 64, "visitor_merchant": 128, "visitor_caravan": 128, "visitor_messenger": 128,
+        **{f"follower{i}": 128 for i in range(1, 7)}}           # one piece by nature: nothing is a stray pixel there
 
 
 def pieces(alpha):
@@ -101,16 +105,16 @@ def main():
     for name in NAMES:
         hd = src / f"{name}@hd.png"
         if hd.exists():
-            # the high-resolution drawing (512 x 512 buildings, 1024 x 512 map, 256 x 256 portraits): it goes into the
-            # game exactly as it was drawn, only made to a size the game can load (powers of two, at most 1024)
+            # the high-resolution drawing: no grid and no cleaning, only made to the size it shows at in the game
             done += 1
             art = Image.open(hd).convert("RGBA")
-            # the width to a power of two (at most 1024), the height to the power of two closest to the drawing's shape
-            # (the 2:1 map stays 2:1)
-            # 512 is the cap of a building, portrait or logo: they show at most ~92 px (~280 px at 150% zoom on a 4K
-            # screen), so 1024 would only make the addon four times bigger; the map is the one 1024 wide
-            w = min(1024 if name == "map" else 512, 1 << (art.width - 1).bit_length())
-            h = 1 << max(0, round(w * art.height / art.width) - 1).bit_length()
+            # The game does not smooth a texture drawn much smaller than it is (no mipmaps for addon images): it skips
+            # pixels, and a big drawing shown small sparkles with noise. So each drawing is made here, with a good filter,
+            # close to the size it shows at (at most ~2.5x of it): the 24 px logo from 64, the 42-64 px portraits from
+            # 128, the ~92 px buildings and cart from 256, the ~640 px map from 1024 x 512.
+            w = SIZE.get(name, 256)
+            h = max(1, round(w * art.height / art.width))
+            h = 1 << (h - 1).bit_length()
             if (w, h) != art.size:
                 art = art.resize((w, h), Image.LANCZOS)
             art.save(LOGO if name == "logo" else OUT / f"{name}.tga", compression=None)
