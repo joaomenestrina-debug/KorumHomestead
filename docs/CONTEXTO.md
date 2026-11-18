@@ -81,6 +81,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). |
 | 17/11 | Nada castiga quem fica fora; progresso nunca se perde. Saves antigos sempre abrem. |
 | 17/11 | **Cuidar do excesso de moedas.** A encomenda do dia paga 2,5× uma encomenda normal (o dobro de ervas × 1,25 por erva); os prêmios da sequência são XP e Lótus Negra, **nunca moedas**. Nenhuma recompensa nova dá moedas sem passar pela conta da economia (T2.0). |
+| 17/11 | **Eventos aleatórios** entram na S2 no lugar dos Serviços (a Disposição fica suspensa). Evento não atendido: perde a oportunidade e o XP, nada além disso. |
 | 17/11 | A alpha1 e a economia (F2.0) saem **juntas** num build só (`main` desde e77d8d5). |
 | 17/11 | **Papéis:** Claude faz **todo o código** (lógica, telas, testes, simulador, textos EN/ptBR). O Codex faz **só arte** (pixel art a partir do kit de arte, aprovada pelo dono) **e revisão de texto**. |
 | 17/11 | **Economia da 2.0** aprovada (`docs/economia.md`): Nível da Vila 1–60; ervas na perícia do jogo ÷ 5; colher dá pouco XP; a Oficina sempre dá mais moedas e XP; Mercado 4 + 4; prédios pedem nível da vila e custam horas de renda. |
@@ -130,7 +131,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 
 ## 6. Pendências e riscos conhecidos
 
-- **Ideia nova do dono (17/11): eventos aleatórios** (pedido urgente, caravana de troca, mercador generoso, peixe/mineral raro), avisados no ícone: descrita no `plano-2.0.md` (F-Eventos), falta encaixar no cronograma.
+- **Ideia nova do dono (17/11): eventos aleatórios** (pedido urgente, caravana de troca, mercador generoso, peixe/mineral raro), avisados no ícone: descrita no `plano-2.0.md` (F-Eventos), entra na S2 (alpha2) no lugar dos Serviços (decisão de 17/11).
 - `python ferramentas/conferir_textos.py` confere se algum texto sai da janela ou se sobrepõe (fonte do jogo ~18% mais larga que a do simulador); rodar antes de cada build.
 - Ainda não visto no jogo: ícones de itens nos produtos (1.0.1), Celeiro com muitos itens, fila da Oficina com "+N".
 - Capturas do CurseForge vêm do simulador (ícones de ervas desenhados por ele); trocar por capturas reais na S5 (T5.16).
@@ -144,7 +145,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 |---|---|---|
 | M0 | 22/11 | Fundação técnica |
 | alpha1 | 29/11 | Resumo ao voltar, encomenda do dia, sequência |
-| alpha2 | 06/12 | Disposição e Serviços |
+| alpha2 | 06/12 | Eventos aleatórios (no lugar dos Serviços) |
 | alpha3 | 13/12 | Atributos, seguidores com especialidade |
 | alpha4 | 20/12 | Herbário, conquistas, decorações |
 | alpha5 | 03/01 | Temporadas, som, animação, equilíbrio (candidato final) |

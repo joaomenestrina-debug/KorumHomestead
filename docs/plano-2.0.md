@@ -80,6 +80,8 @@ resumo mostra os números certos depois de 8 h fora.
 
 ## F2. Disposição e Serviços
 
+*Substituída em 17/11 pela F-Eventos (abaixo), por decisão do dono; o texto fica como referência.*
+
 O segundo ritmo do jogo, mais curto que o das plantas, pensado para a fila de masmorra.
 
 - **Disposição:** barra no cabeçalho, ao lado das moedas. Máximo 10, recarrega 1 a cada 12 min (cheia em 2 h), também
@@ -189,7 +191,7 @@ são dados uma vez só.
 - **No jogo**, antes de cada alpha: lista curta do que conferir (o que o simulador não mostra: ícones do jogo, sons,
   fontes, desempenho).
 
-## F-Eventos. Visitas e achados aleatórios (ideia do dono, 17/11; a encaixar no cronograma)
+## F-Eventos. Visitas e achados aleatórios (ideia do dono, 17/11; S2, alpha2, no lugar dos Serviços)
 
 De vez em quando acontece algo na vila, avisado **no ícone flutuante como alerta** (e no cartão "Enquanto você esteve
 fora"):

@@ -158,21 +158,24 @@ Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com
 | T2.0g | Teste que simula um jogador: vila inteira ≥ ~200 h de Horta; nenhuma atividade rende mais que a Horta | Claude | T2.0a–d | 25/11 | 2 | teste verde |
 | T2.0h | Teste no jogo da economia | **Eu** | T2.0e–g | 28/11 | 1,5 | relato |
 
-### Sprint 2: Disposição e Serviços (seg 30/11 a dom 06/12) → Alpha 2
+### Sprint 2: Eventos aleatórios (seg 30/11 a dom 06/12) → Alpha 2
+
+Decisão do dono em 17/11: os **eventos aleatórios** (F-Eventos do `plano-2.0.md`) entram no lugar dos Serviços. A
+Disposição, que só existia para os Serviços, fica suspensa.
 
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
-| T2.1 | Especificação da F2 e briefings T2.4, T2.5, T2.7, T2.8 | Claude | M1 | 30/11 | 2 | briefings |
-| T2.2 | Aprovar os 6 serviços (nomes, custos, chances, recompensas) | **Eu** | T2.1 | 30/11 | 0,3 | decisão |
-| T2.3 | Disposição: valor, recarga com o jogo fechado, máximo por nível, gasto | Claude | M1 | 01/12 | 2 | testes de recarga (12 min, 2 h, 3 dias) |
-| T2.4 | Serviços: quadro de 3 por hora, sorteio com semente fixa, sucesso, falha com consolo | Claude | T2.1 | 01–02/12 | 4 | testes com sorteio fixo batendo com a tabela |
-| T2.5 | Propor itens do jogo para os ícones dos serviços e recompensas (IDs conferidos na base do guia) | Claude | T2.1 | 01/12 | 1 | lista de IDs no pull request |
-| T2.6 | Barra de Disposição no cabeçalho; tela do Quadro de Serviços; resultado com animação curta | Claude | T2.3, T2.4 | 03/12 | 4 | capturas; cabeçalho cabe em EN e ptBR |
-| T2.7 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) dos serviços (nome, descrição, frase de sucesso e de falha) | **Codex** | T2.2 | 03/12 | 1,5 | chaves completas |
-| T2.8 | Cenas do simulador da F2 | Claude | T2.6 | 04/12 | 1 | imagens |
-| T2.9 | Conferência de equilíbrio: moedas por hora dos serviços contra a Horta | Claude | T2.4 | 04/12 | 1 | serviços rendem menos que a Horta por hora |
-| T2.10 | Revisão, integração, build de teste | Claude | T2.4–T2.9 | 04/12 | 2 | lista do que conferir |
-| T2.11 | Teste no jogo da F2 | **Eu** | T2.10 | 05/12 | 1,5 | relato |
+| T2.1 | Especificação dos eventos: tipos, frequência, prazos, recompensas (pela conta da economia) | Claude | alpha1 | 30/11 | 2 | `docs/tarefas/T2.1.md` |
+| T2.2 | Aprovar a lista de eventos e recompensas | **Eu** | T2.1 | 30/11 | 0,3 | decisão no chat |
+| T2.3 | Motor de eventos: sorteio com semente (`KH.Rand`), prazo, expiração (perde a oportunidade e o XP), dados salvos | Claude | T2.2 | 01/12 | 3 | testes com o relógio adiantado |
+| T2.4 | Pedido urgente e mercador generoso | Claude | T2.3 | 01–02/12 | 3 | testes |
+| T2.5 | Caravana de troca | Claude | T2.3 | 02/12 | 2 | testes: troca nunca cria moedas do nada |
+| T2.6 | Achados raros: peixe na Lagoa, mineral na Mina, erva rara (itens do jogo) | Claude | T2.3 | 03/12 | 2 | testes; ícones do jogo |
+| T2.7 | Telas: alerta no ícone, cartão do evento, linha no "Enquanto você esteve fora" | Claude | T2.4–T2.6 | 03–04/12 | 4 | capturas; `conferir_textos.py` limpo |
+| T2.8 | Revisão dos textos EN/ptBR dos eventos | **Codex** | T2.7 | 04/12 | 1,5 | só valores do `Locales.lua` |
+| T2.9 | Arte, se faltar (retrato do mercador, da caravana) | **Codex** (você aprova) | T2.1 | 01–04/12 | 2 | PNG no `arquivo/` |
+| T2.10 | Conferência de economia: eventos não passam da Horta por hora | Claude | T2.4–T2.6 | 04/12 | 1 | teste |
+| T2.11 | Teste no jogo dos eventos | **Eu** | T2.7–T2.10 | 05/12 | 1,5 | relato |
 | T2.12 | Correções e tag `v2.0.0-alpha2` | Claude + **Eu** | T2.11 | 06/12 | 1–3 | alpha publicado |
 
 ### Sprint 3: Personagem e seguidores (seg 07/12 a dom 13/12) → Alpha 3
