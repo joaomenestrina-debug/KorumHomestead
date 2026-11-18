@@ -30,7 +30,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T1.7 Cenas do simulador da F1 | Codex | ✅ PR #10 |
 | T1.8 Revisão, integração e build no jogo | Claude | ✅ 17/11 |
 | T1.9 Teste no jogo da F1 | **Eu** | **agora** (era 28/11) |
-| T1.10–T1.11 Correções e tag `v2.0.0-alpha1` | Claude + Eu | depois da T1.9 (sai com a economia atual) |
+| T1.10–T1.11 Correções e tag `v2.0.0-alpha1` | Claude + Eu | depois do teste: a alpha1 sai **com a economia nova** (decisão de 17/11) |
 
 ### F2.0 Economia: andamento (proposta aprovada em `docs/economia.md`)
 
@@ -44,7 +44,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T2.0e Telas | Claude | quase pronta: Mercado 4 + 4, sementes, Guia e Oficina com janela, "Vila N"; falta revisar no jogo |
 | T2.0f Revisão dos textos | Codex | depois da T2.0e |
 | T2.0g Teste de simulação | Claude | depois da T2.0d |
-| T2.0h Teste no jogo | Eu | 28/11 |
+| T2.0h Teste no jogo | **Eu** | **agora**, junto da T1.9 (build único instalado em 17/11) |
 
 ### Sprint 0: concluída
 
@@ -64,9 +64,9 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** **T1.9**: testar a alpha1 no jogo (Mercado com a encomenda do dia, cartão "Enquanto você esteve fora", tela Novidades).
-- **Codex:** **só arte e revisão de texto** (decisão de 17/11). Agora: nada; a próxima é a revisão dos textos da economia (T2.0f). Não escrever código.
-- **Claude:** T2.0a (nível da Vila e as 27 ervas), depois T2.0b2 e T2.0d; correções da T1.9 e tag `v2.0.0-alpha1` quando você testar.
+- **Eu:** **testar o build único** (alpha1 + economia): Novidades, Mercado 4 + 4 e encomenda do dia, cartão "Enquanto você esteve fora", arrancar canteiro, Vila 1–60 e ervas novas, Oficina com receitas novas, custos dos prédios.
+- **Codex:** **só arte e revisão de texto**. Agora: **T2.0f**, revisar em `Locales.lua` (EN e ptBR) as chaves `news1_*`, `good_*`, `herbalism`, `levelNotice`, `newSeed`, `needLevel`, `capLotus`, `maxLevel`, `xpHow`, `ordersNoWorkshop`, `short_village`, `why_village`, `clear*`. Não escrever código.
+- **Claude:** correções do teste, revisão do Codex, tag `v2.0.0-alpha1`; depois o teste que simula um jogador (T2.0g) e os briefings da S2.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
@@ -81,6 +81,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). |
 | 17/11 | Nada castiga quem fica fora; progresso nunca se perde. Saves antigos sempre abrem. |
 | 17/11 | **Cuidar do excesso de moedas.** A encomenda do dia paga 2,5× uma encomenda normal (o dobro de ervas × 1,25 por erva); os prêmios da sequência são XP e Lótus Negra, **nunca moedas**. Nenhuma recompensa nova dá moedas sem passar pela conta da economia (T2.0). |
+| 17/11 | A alpha1 e a economia (F2.0) saem **juntas** num build só (`main` desde e77d8d5). |
 | 17/11 | **Papéis:** Claude faz **todo o código** (lógica, telas, testes, simulador, textos EN/ptBR). O Codex faz **só arte** (pixel art a partir do kit de arte, aprovada pelo dono) **e revisão de texto**. |
 | 17/11 | **Economia da 2.0** aprovada (`docs/economia.md`): Nível da Vila 1–60; ervas na perícia do jogo ÷ 5; colher dá pouco XP; a Oficina sempre dá mais moedas e XP; Mercado 4 + 4; prédios pedem nível da vila e custam horas de renda. |
 | 17/11 | Toda mudança que o jogador percebe ganha linha na tela **Novidades** (`News.lua` + `news<id>_<n>` no `Locales.lua`). A tela abre sozinha uma vez ao logar depois da atualização; save novo não vê novidades antigas. A entrada 1 é a `2.0.0-alpha1`: as tarefas da S1 acrescentam linhas nela. |
