@@ -655,6 +655,10 @@ class Homestead(unittest.TestCase):
         for _ in range(9):
             self.press(g + ".menu.card.more")
         self.assertEqual(self.ev(g + ".menu.card.qty:GetText()"), "6")              # no more than the empty plots
+        self.press(g + ".menu.card.less")
+        self.press(g + ".menu.card.all")                                            # "All": every empty plot
+        self.assertEqual(self.ev(g + ".menu.card.qty:GetText()"), "6")
+        self.assertFalse(self.ev(g + ".menu.card.all.enabledState"))
         self.press(g + ".menu.cells[2]")                                            # another herb: the amount is 1 again
         self.assertEqual(self.ev(g + ".menu.card.qty:GetText()"), "1")
         for _ in range(3):

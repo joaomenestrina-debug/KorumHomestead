@@ -235,8 +235,10 @@ local function BuildGarden(win)
         card.qty:SetWidth(30)
         card.less = Kit.Button(card, 28, 28, "−", function() s:MenuQty(-1) end)
         card.less:SetPoint("RIGHT", card.qty, "LEFT", -4, 0)
+        card.all = Kit.Button(card, 64, 28, "", function() s:MenuQty(math.huge) end)     -- every empty plot
+        card.all:SetPoint("RIGHT", card.less, "LEFT", -10, 0)
         card.qtyLabel = Kit.Text(card, 10, C.textMuted, "RIGHT")
-        card.qtyLabel:SetPoint("RIGHT", card.less, "LEFT", -8, 0)
+        card.qtyLabel:SetPoint("RIGHT", card.all, "LEFT", -8, 0)
         dim.card = card
         dim:Hide()
         s.menu = dim
@@ -249,7 +251,8 @@ local function BuildGarden(win)
     end
 
     function s:MenuQty(step)
-        self.menuQty = math.max(1, math.min(EmptyPlots(), (self.menuQty or 1) + step))
+        local qty = step == math.huge and EmptyPlots() or (self.menuQty or 1) + step
+        self.menuQty = math.max(1, math.min(EmptyPlots(), qty))
         self:RefreshMenu()
     end
 
@@ -335,6 +338,8 @@ local function BuildGarden(win)
         menu.card.qtyLabel:SetText(T("menuPlots"))
         menu.card.less:SetEnabledState(qty > 1)
         menu.card.more:SetEnabledState(qty < EmptyPlots())
+        menu.card.all:SetLabel(T("menuAll"))
+        menu.card.all:SetEnabledState(qty < EmptyPlots())
         menu.card.again:SetLabel(qty > 1 and T("plantSeedN", qty, D.Name(db.selected)) or T("plantSeed", D.Name(db.selected)))
         menu.card.again:SetEnabledState(CanPlant(db.selected))
         menu.card.close:SetLabel(T("close"))
