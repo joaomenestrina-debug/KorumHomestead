@@ -220,9 +220,9 @@ class Homestead(unittest.TestCase):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.goods.fish = 5; NS.db.tutorial.done = true")
         self.open("workshop")
         rows = "NS.UI.screens.workshop.rows"
-        self.assertEqual(self.ev(rows + "[1].name:GetText()").split("   ")[0], "Minor healing potion")
+        self.assertEqual(self.ev(rows + "[1].name:GetText()").split("   ")[0], self.ev("NS.T('good_heal')"))
         self.lua.execute("NS.UI.trade = 'cooking'; NS.UI:Refresh()")
-        self.assertEqual(self.ev(rows + "[1].name:GetText()").split("   ")[0], "Fish stew")
+        self.assertEqual(self.ev(rows + "[1].name:GetText()").split("   ")[0], self.ev("NS.T('good_stew')"))
         self.press(rows + "[1].button")
         self.assertEqual(self.ev("NS.Village:Good('fish')"), 1)
         self.assertEqual(self.ev("#NS.db.queue"), 1)
@@ -628,10 +628,10 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.garden("tiles[1].note:GetText()"), "Plant Silverleaf")
         self.press("NS.UI.screens.garden.seeds[3]")                  # locked: stays, and says why
         self.assertEqual(self.ev("NS.db.selected"), 765)
-        self.assertEqual(self.ev("NS.UI.msg"), "Unlocks at Village 3")
+        self.assertEqual(self.ev("NS.UI.msg"), self.ev("NS.T('needLevel', 3)"))
         self.lua.execute("local b = NS.UI.screens.garden.seeds[3]; b:GetScript('OnEnter')(b)")
         self.assertIn("Earthroot", self.garden("detail:GetText()"))  # the seed under the mouse explains itself
-        self.assertIn("Unlocks at Village 3", self.garden("detail:GetText()"))
+        self.assertIn(self.ev("NS.T('needLevel', 3)"), self.garden("detail:GetText()"))
         self.lua.execute("local b = NS.UI.screens.garden.seeds[3]; b:GetScript('OnLeave')(b)")
         self.assertIn("Silverleaf", self.garden("detail:GetText()"))
 
@@ -694,9 +694,9 @@ class Homestead(unittest.TestCase):
         self.assertAlmostEqual(self.ev("NS.UI.levelBox.bar.value"), self.ev("NS.Data.Plant(2447).xp / NS.Data.XPToNext(1)"))
         self.lua.execute("NS.Farm:AddXP(NS.Data.XPToNext(1) - NS.db.xp + NS.Data.XPToNext(2)); NS.UI:Refresh(); NS.Kit.Step(5)")
         self.assertEqual(self.ev("NS.UI.levelBox.label:GetText()"), "Village 3")
-        self.assertEqual(self.ev("NS.UI.msg"), "Village 3! New seed: Earthroot")
+        self.assertEqual(self.ev("NS.UI.msg"), self.ev("NS.T('newSeed', 3, 'Earthroot')"))
         self.assertEqual(self.ev("NS.UI.levelBox.bar.value"), 0)
-        self.assertEqual(self.ev("NS.UI.win.notice:GetText()"), "Village 3! New seed: Earthroot")
+        self.assertEqual(self.ev("NS.UI.win.notice:GetText()"), self.ev("NS.T('newSeed', 3, 'Earthroot')"))
 
     def test_the_map_marks_where_something_waits(self):
         self.lua.execute("NS.db.tutorial.done = true; NS.Farm:Plant(1, 2447); NOW = NOW + 60")

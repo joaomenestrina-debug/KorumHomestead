@@ -395,7 +395,7 @@ L.ptBR = {
     news1_9 = "A Oficina tem 21 receitas. Fabricar um item e entregá-lo sempre rende mais moedas e xp do que vender ou entregar os ingredientes usados.",
     news1_10 = "Melhorias de prédios agora exigem um nível mínimo da Vila e ficam mais caras conforme você avança. Há metas que levam mais tempo para alcançar.",
     clearTip = "Arrancar", clearTipS = "Clique no × de um canteiro crescendo para liberá-lo e plantar outra semente. A semente se perde.",
-    clearAsk = "Clique no × de novo para arrancar %s e plantar outra semente. Você perderá a semente atual.", cleared = "%s foi arrancada. O canteiro está livre.",
+    clearAsk = "Clique no × de novo para arrancar %s e plantar outra semente. Você perderá a semente atual.", cleared = "Arrancado: %s. O canteiro está livre.",
     why_notGrowing = "Só dá para arrancar um canteiro que está crescendo.",
     levelUp = "Sua vila chegou ao nível %d!",
     readyAlert = "%s está pronta para colher.", welcomeReady = "%d canteiro(s) pronto(s) para colher. /kh abre.",
