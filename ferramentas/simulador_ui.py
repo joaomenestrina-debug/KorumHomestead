@@ -369,6 +369,7 @@ def homestead(out):
     scene("10-oficina", "ptBR", mid, "workshop", after="NS.Workshop:Craft('heal'); NS.Workshop:Craft('heal'); NS.UI:Refresh()")
     scene("10b-oficina-culinaria", "ptBR", mid, "workshop", after="NS.UI.trade = 'cooking'; NS.Workshop:Craft('stew'); NS.UI:Refresh()")
     scene("11-estalagem", "ptBR", mid, "inn", after="NS.Inn:Start(1, 'short'); NS.Inn:Start(2, 'medium'); NS.db.followers[3] = {done = 4, mission = {kind = 'short', at = NS.Now() - 2000, time = 1800}}; NS.UI:Refresh()")
+    scene("16-ajustes", "ptBR", mid, "settings")
     scene("12-novidades", "ptBR", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
     scene("12b-whats-new-english", "enUS", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
     scene("13-fora-8h", "ptBR", away, "village", settle=5)
@@ -394,6 +395,8 @@ def homestead(out):
     g.load("KorumHomestead", HOMESTEAD)
     g.advance(6.6)
     made.append(g.shot(out / "8-icone-na-tela.png", "KorumHomesteadIcon", margin=44, right=300))
+    g.advance(8)
+    made.append(g.shot(out / "8b-icone-alerta.png", "KorumHomesteadIcon", margin=44, right=320))
 
     g = Game("ptBR", PT_NAMES)
     g.run("math.randomseed(11)")

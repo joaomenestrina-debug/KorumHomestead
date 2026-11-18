@@ -36,7 +36,7 @@ KH.defaults = {
     goods = {},            -- ore, fish: what the Mine and the Pond made and was not sold or used
     made = {},             -- mine, pond -> the time up to which their production was counted
     work = nil,            -- the building being built: {id, at, time}
-    bubble = {show = true},      -- the icon on the screen; x, y where the player dragged it
+    bubble = {show = true, label = true},   -- the icon on the screen (label: the alert in words beside it); x, y where it was dragged
     lastSeen = 0,          -- when the window was last seen (Away.lua); 0 = never stamped
     snapshot = nil,        -- the counters at lastSeen: {goods = {...}, buildings = {...}}
     seen = {},             -- the buildings whose "how this works" card was read
