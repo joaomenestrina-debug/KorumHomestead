@@ -219,22 +219,44 @@ local function BuildGarden(win)
             dim.cells[k] = b
         end
         card.detail = Kit.Text(card, 11, C.textSoft)
-        card.detail:SetPoint("BOTTOMLEFT", 22, 26)
-        card.detail:SetWidth(W - 20 - 44 - 300)
+        card.detail:SetPoint("BOTTOMLEFT", 22, 62)              -- its own line, above the buttons
+        card.detail:SetWidth(W - 20 - 44)
         card.detail:SetWordWrap(false)
-        card.again = Kit.Button(card, 170, 32, "", function() s:PlantFromMenu(KH.db.selected) end)
+        card.again = Kit.Button(card, 200, 32, "", function() s:PlantFromMenu(KH.db.selected) end)
         card.again:SetPoint("BOTTOMRIGHT", -22, 16)
         card.again:SetStyle("primary")
-        card.close = Kit.Button(card, 100, 32, "", function() s:CloseMenu() end)
+        card.close = Kit.Button(card, 90, 32, "", function() s:CloseMenu() end)
         card.close:SetPoint("RIGHT", card.again, "LEFT", -10, 0)
+        -- how many plots get the seed: the one clicked and the next empty ones
+        card.more = Kit.Button(card, 28, 28, "+", function() s:MenuQty(1) end)
+        card.more:SetPoint("RIGHT", card.close, "LEFT", -16, 0)
+        card.qty = Kit.Text(card, 14, C.text, "CENTER")
+        card.qty:SetPoint("RIGHT", card.more, "LEFT", -4, 0)
+        card.qty:SetWidth(30)
+        card.less = Kit.Button(card, 28, 28, "−", function() s:MenuQty(-1) end)
+        card.less:SetPoint("RIGHT", card.qty, "LEFT", -4, 0)
+        card.qtyLabel = Kit.Text(card, 10, C.textMuted, "RIGHT")
+        card.qtyLabel:SetPoint("RIGHT", card.less, "LEFT", -8, 0)
         dim.card = card
         dim:Hide()
         s.menu = dim
     end
 
+    local function EmptyPlots()
+        local n = 0
+        for k = 1, KH.db.nplots do if KH.Farm:Status(k) == "empty" then n = n + 1 end end
+        return n
+    end
+
+    function s:MenuQty(step)
+        self.menuQty = math.max(1, math.min(EmptyPlots(), (self.menuQty or 1) + step))
+        self:RefreshMenu()
+    end
+
     function s:OpenMenu(i)
         if not self.menu then BuildMenu() end
         self.menuPlot = i
+        self.menuQty = math.max(1, math.min(EmptyPlots(), self.menuQty or 1))
         self.menu:Show()
         self:RefreshMenu()
     end
@@ -256,6 +278,18 @@ local function BuildGarden(win)
         KH.db.selected = id
         local ok, why = KH.Farm:Plant(self.menuPlot or 1, id)
         if not ok then Notice(Reason(why)) return self:RefreshMenu() end
+        -- then the next empty plots, up to the amount asked (stops when the coins end)
+        local planted = 1
+        for k = 1, KH.db.nplots do
+            if planted >= (self.menuQty or 1) then break end
+            if KH.Farm:Status(k) == "empty" then
+                local more, reason = KH.Farm:Plant(k, id)
+                if not more then why = reason break end
+                planted = planted + 1
+            end
+        end
+        if planted > 1 then Notice(T("plantedN", planted)) end
+        if why then Notice(Reason(why)) end
         self:CloseMenu()
     end
 
@@ -283,7 +317,12 @@ local function BuildGarden(win)
         else
             menu.card.detail:SetText(WHITE .. D.Name(id) .. "|r   " .. T("seedInfo", KH.Number(p.cost), KH.Duration(p.grow), D.Yield(p, db.level)))
         end
-        menu.card.again:SetLabel(T("plantSeed", D.Name(db.selected)))
+        local qty = self.menuQty or 1
+        menu.card.qty:SetText(tostring(qty))
+        menu.card.qtyLabel:SetText(T("menuPlots"))
+        menu.card.less:SetEnabledState(qty > 1)
+        menu.card.more:SetEnabledState(qty < EmptyPlots())
+        menu.card.again:SetLabel(qty > 1 and T("plantSeedN", qty, D.Name(db.selected)) or T("plantSeed", D.Name(db.selected)))
         menu.card.again:SetEnabledState(CanPlant(db.selected))
         menu.card.close:SetLabel(T("close"))
     end
