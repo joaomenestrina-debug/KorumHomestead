@@ -215,7 +215,7 @@ local function BuildGarden(win)
             b.note:SetWordWrap(false)
             b:SetScript("OnEnter", function(self) self.hover = true; s.hoverSeed = self.id; s:RefreshMenu() end)
             b:SetScript("OnLeave", function(self) self.hover = false; s.hoverSeed = nil; s:RefreshMenu() end)
-            b:SetScript("OnClick", function(self) Kit.ClickSound(); s:PlantFromMenu(self.id) end)
+            b:SetScript("OnClick", function(self) Kit.ClickSound(); s:ChooseInMenu(self.id) end)
             dim.cells[k] = b
         end
         card.detail = Kit.Text(card, 11, C.textSoft)
@@ -256,7 +256,7 @@ local function BuildGarden(win)
     function s:OpenMenu(i)
         if not self.menu then BuildMenu() end
         self.menuPlot = i
-        self.menuQty = math.max(1, math.min(EmptyPlots(), self.menuQty or 1))
+        self.menuQty = 1
         self.menu:Show()
         self:RefreshMenu()
     end
@@ -265,6 +265,19 @@ local function BuildGarden(win)
         if self.menu then self.menu:Hide() end
         self.menuPlot = nil
         UI:Refresh()
+    end
+
+    -- a click on a herb only chooses it; the amount starts again from 1 and the big button plants
+    function s:ChooseInMenu(id)
+        local plant = D.Plant(id)
+        if not plant then return end
+        if KH.db.level < plant.level then
+            Notice(T("needLevel", plant.level))
+            return
+        end
+        if KH.db.selected ~= id then self.menuQty = 1 end
+        KH.db.selected = id
+        self:RefreshMenu()
     end
 
     -- the seed chosen goes in the plot that was clicked, and stays chosen for "Plant all"

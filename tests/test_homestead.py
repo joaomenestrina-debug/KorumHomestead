@@ -633,7 +633,10 @@ class Homestead(unittest.TestCase):
         self.press(g + ".menu.cells[27]")                                               # Icecap: Village 58
         self.assertEqual(self.ev("NS.UI.msg"), self.ev("NS.T('needLevel', 58)"))
         self.assertTrue(self.ev(g + ".menu:IsShown()"))
-        self.press(g + ".menu.cells[2]")                                                # Silverleaf
+        self.press(g + ".menu.cells[2]")                                                # Silverleaf: chosen
+        self.assertTrue(self.ev(g + ".menu:IsShown()"))
+        self.assertEqual(self.ev("(NS.Farm:Status(1))"), "empty")
+        self.press(g + ".menu.card.again")                                              # and planted
         self.assertFalse(self.ev(g + ".menu:IsShown()"))
         self.assertEqual(self.ev("NS.db.plots[1].plant"), 765)
         self.assertEqual(self.ev("NS.db.selected"), 765)                                # and "Plant all" uses it
@@ -652,10 +655,12 @@ class Homestead(unittest.TestCase):
         for _ in range(9):
             self.press(g + ".menu.card.more")
         self.assertEqual(self.ev(g + ".menu.card.qty:GetText()"), "6")              # no more than the empty plots
-        self.press(g + ".menu.card.less")
-        self.press(g + ".menu.card.less")
-        self.assertEqual(self.ev(g + ".menu.card.again.label:GetText()"), "Plant 4 × Peacebloom")
-        self.press(g + ".menu.cells[2]")                                            # Silverleaf, in 4 plots
+        self.press(g + ".menu.cells[2]")                                            # another herb: the amount is 1 again
+        self.assertEqual(self.ev(g + ".menu.card.qty:GetText()"), "1")
+        for _ in range(3):
+            self.press(g + ".menu.card.more")
+        self.assertEqual(self.ev(g + ".menu.card.again.label:GetText()"), "Plant 4 × Silverleaf")
+        self.press(g + ".menu.card.again")                                          # Silverleaf, in 4 plots
         self.assertEqual(self.ev("(NS.Farm:Status(3))"), "growing")                 # the plot clicked first
         planted = [self.ev(f"NS.db.plots[{k}] and NS.db.plots[{k}].plant or 0") for k in range(1, 7)]
         self.assertEqual(planted.count(765), 4)
