@@ -37,6 +37,7 @@ KH.defaults = {
     made = {},             -- mine, pond -> the time up to which their production was counted
     work = nil,            -- the building being built: {id, at, time}
     bubble = {show = true, label = true},   -- the icon on the screen (label: the alert in words beside it); x, y where it was dragged
+    scale = 1,             -- the zoom of the window (0.6 to 1.5), the - % + in its header
     lastSeen = 0,          -- when the window was last seen (Away.lua); 0 = never stamped
     snapshot = nil,        -- the counters at lastSeen: {goods = {...}, buildings = {...}}
     seen = {},             -- the buildings whose "how this works" card was read

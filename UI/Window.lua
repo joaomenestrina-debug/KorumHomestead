@@ -93,6 +93,25 @@ function UI:Create()
     help:SetScript("OnClick", function() Kit.ClickSound(); UI:Show("guide") end)
     self.help = help
 
+    -- the zoom of the window, 60% to 150%: the whole window scales at once, so texts and places keep their layout
+    local zoom = CreateFrame("Frame", nil, h)
+    zoom:SetSize(110, 26)
+    zoom:SetPoint("RIGHT", help, "LEFT", -14, 0)
+    zoom.plus = Kit.Button(zoom, 24, 22, "+", function() UI:Zoom(0.1) end)
+    zoom.plus:SetPoint("RIGHT", 0, 0)
+    zoom.value = Kit.Text(zoom, 11, C.textSoft, "CENTER")
+    zoom.value:SetPoint("RIGHT", zoom.plus, "LEFT", -2, 0)
+    zoom.value:SetWidth(44)
+    zoom.minus = Kit.Button(zoom, 24, 22, "−", function() UI:Zoom(-0.1) end)
+    zoom.minus:SetPoint("RIGHT", zoom.value, "LEFT", -2, 0)
+    for _, b in ipairs({zoom.plus, zoom.minus}) do
+        local enter, leave = b:GetScript("OnEnter"), b:GetScript("OnLeave")
+        b:SetScript("OnEnter", function(frame) enter(frame); Tip(frame, T("zoomTip"), {T("zoomHow")}) end)
+        b:SetScript("OnLeave", function(frame) leave(frame); if GameTooltip then GameTooltip:Hide() end end)
+    end
+    self.zoom = zoom
+    self:ApplyZoom()
+
     -- the path, where the tabs were: "Village" always takes you back to the map; after it, where you are
     local row = win.tabRow
     local home = CreateFrame("Button", nil, row)
@@ -110,6 +129,27 @@ function UI:Create()
     self.home = home
     self.here = Kit.Text(row, 13, C.text)
     self.here:SetPoint("LEFT", home, "RIGHT", 0, 0)
+end
+
+UI.ZOOM_MIN, UI.ZOOM_MAX = 0.6, 1.5
+
+function UI:ApplyZoom()
+    local db = KH.db
+    if not (db and self.frame) then return end
+    local scale = math.max(UI.ZOOM_MIN, math.min(UI.ZOOM_MAX, tonumber(db.scale) or 1))
+    db.scale = scale
+    self.frame:SetScale(scale)
+    if self.zoom then
+        self.zoom.value:SetText(math.floor(scale * 100 + 0.5) .. "%")
+        self.zoom.minus:SetEnabledState(scale > UI.ZOOM_MIN + 0.001)
+        self.zoom.plus:SetEnabledState(scale < UI.ZOOM_MAX - 0.001)
+    end
+end
+
+function UI:Zoom(step)
+    local db = KH.db
+    db.scale = math.floor(((tonumber(db.scale) or 1) + step) * 10 + 0.5) / 10       -- steps of 10%
+    self:ApplyZoom()
 end
 
 function UI:PaintPath()
