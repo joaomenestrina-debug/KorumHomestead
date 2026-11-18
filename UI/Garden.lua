@@ -169,10 +169,123 @@ local function BuildGarden(win)
             local n, why = KH.Farm:Harvest(i)
             if n > 0 then Kit.Float(tile.ring, "+" .. n, C.accentBright, 1, 16) elseif why then Notice(Reason(why)) end
         elseif status == "empty" then
-            local ok, why = KH.Farm:Plant(i, db.selected)
-            if not ok then Notice(Reason(why)) end
+            self:OpenMenu(i)                          -- an empty plot asks which seed goes in it
+            return
         end
         UI:Refresh()
+    end
+
+    -- ------------------------------------------------------------------------
+    -- The seed menu: every herb at once (the open ones to pick, the next ones faded with their level)
+    -- ------------------------------------------------------------------------
+    local MENU_COLS = 9
+    local function BuildMenu()
+        local dim = CreateFrame("Frame", nil, s.frame)
+        dim:SetAllPoints(s.frame)
+        dim:SetFrameLevel(s.frame:GetFrameLevel() + 50)
+        dim:EnableMouse(true)
+        dim.fill = dim:CreateTexture(nil, "BACKGROUND")
+        dim.fill:SetAllPoints(dim)
+        dim.fill:SetColorTexture(0, 0, 0, 0.62)
+        local card = CreateFrame("Frame", nil, dim)
+        card:SetSize(W - 20, 330)
+        card:SetPoint("CENTER", 0, 0)
+        card.surface, card.outline = Kit.Rounded(card, 16, 0.07, 0.085, 0.095, 0.99, 0.14)
+        card.title = Kit.Text(card, 16, C.text)
+        card.title:SetPoint("TOPLEFT", 22, -18)
+        local cellW = math.floor((W - 64) / MENU_COLS)
+        dim.cells = {}
+        for k, p in ipairs(D.PLANTS) do
+            local b = CreateFrame("Button", nil, card)
+            b:SetSize(cellW, 66)
+            b:SetPoint("TOPLEFT", 22 + ((k - 1) % MENU_COLS) * cellW, -50 - math.floor((k - 1) / MENU_COLS) * 70)
+            b.id = p[1]
+            b.frame = CreateFrame("Frame", nil, b)
+            b.frame:SetSize(44, 44)
+            b.frame:SetPoint("TOP", 0, 0)
+            b.fill, b.edge = Kit.Rounded(b.frame, 10, 1, 1, 1, 0, 0)
+            b.icon = b.frame:CreateTexture(nil, "ARTWORK")
+            b.icon:SetSize(34, 34)
+            b.icon:SetPoint("CENTER")
+            b.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+            Kit.RoundMask(b.frame, b.icon)
+            b.note = Kit.Text(b, 9, C.textMuted, "CENTER")
+            b.note:SetPoint("TOP", 0, -48)
+            b.note:SetWidth(cellW)
+            b.note:SetWordWrap(false)
+            b:SetScript("OnEnter", function(self) self.hover = true; s.hoverSeed = self.id; s:RefreshMenu() end)
+            b:SetScript("OnLeave", function(self) self.hover = false; s.hoverSeed = nil; s:RefreshMenu() end)
+            b:SetScript("OnClick", function(self) Kit.ClickSound(); s:PlantFromMenu(self.id) end)
+            dim.cells[k] = b
+        end
+        card.detail = Kit.Text(card, 11, C.textSoft)
+        card.detail:SetPoint("BOTTOMLEFT", 22, 26)
+        card.detail:SetWidth(W - 20 - 44 - 300)
+        card.detail:SetWordWrap(false)
+        card.again = Kit.Button(card, 170, 32, "", function() s:PlantFromMenu(KH.db.selected) end)
+        card.again:SetPoint("BOTTOMRIGHT", -22, 16)
+        card.again:SetStyle("primary")
+        card.close = Kit.Button(card, 100, 32, "", function() s:CloseMenu() end)
+        card.close:SetPoint("RIGHT", card.again, "LEFT", -10, 0)
+        dim.card = card
+        dim:Hide()
+        s.menu = dim
+    end
+
+    function s:OpenMenu(i)
+        if not self.menu then BuildMenu() end
+        self.menuPlot = i
+        self.menu:Show()
+        self:RefreshMenu()
+    end
+
+    function s:CloseMenu()
+        if self.menu then self.menu:Hide() end
+        self.menuPlot = nil
+        UI:Refresh()
+    end
+
+    -- the seed chosen goes in the plot that was clicked, and stays chosen for "Plant all"
+    function s:PlantFromMenu(id)
+        local plant = D.Plant(id)
+        if not plant then return end
+        if KH.db.level < plant.level then
+            Notice(T("needLevel", plant.level))
+            return
+        end
+        KH.db.selected = id
+        local ok, why = KH.Farm:Plant(self.menuPlot or 1, id)
+        if not ok then Notice(Reason(why)) return self:RefreshMenu() end
+        self:CloseMenu()
+    end
+
+    function s:RefreshMenu()
+        local menu = self.menu
+        if not (menu and menu:IsShown()) then return end
+        local db = KH.db
+        menu.card.title:SetText(T("menuTitle"))
+        for _, b in ipairs(menu.cells) do
+            local p = D.Plant(b.id)
+            local locked = db.level < p.level
+            local chosen = db.selected == b.id
+            SetIcon(b.icon, b.id)
+            b.icon:SetAlpha(locked and 0.22 or 1)
+            if b.icon.SetDesaturated then b.icon:SetDesaturated(locked) end
+            b.edge:SetColor(C.accent[1], C.accent[2], C.accent[3], chosen and 0.9 or 0)
+            b.fill:SetColor(1, 1, 1, (b.hover and not locked) and 0.10 or (chosen and 0.06 or 0))
+            b.note:SetText(locked and T("seedLevel", p.level) or KH.Duration(p.grow))
+            Kit.Paint(b.note, locked and C.textFaint or (chosen and C.accent or C.textMuted))
+        end
+        local id = self.hoverSeed or db.selected
+        local p = D.Plant(id)
+        if db.level < p.level then
+            menu.card.detail:SetText(WHITE .. D.Name(id) .. "|r   " .. T("needLevel", p.level))
+        else
+            menu.card.detail:SetText(WHITE .. D.Name(id) .. "|r   " .. T("seedInfo", KH.Number(p.cost), KH.Duration(p.grow), D.Yield(p, db.level)))
+        end
+        menu.card.again:SetLabel(T("plantSeed", D.Name(db.selected)))
+        menu.card.again:SetEnabledState(CanPlant(db.selected))
+        menu.card.close:SetLabel(T("close"))
     end
 
     -- the first click on the x asks, the second (within a few seconds) pulls the plant up

@@ -362,6 +362,7 @@ def homestead(out):
     scene("10c-oficina-tutorial", "ptBR", first, "workshop")
     scene("3-sede", "ptBR", mid, "hall")
     scene("4-horta", "ptBR", mid, "garden")
+    scene("4b-horta-menu-sementes", "ptBR", mid, "garden", after="NS.UI.screens.garden:OpenMenu(5)")
     scene("5-celeiro", "ptBR", mid, "barn")
     scene("6-mercado", "ptBR", mid, "orders")
     scene("7-village-english", "enUS", mid, "village")
