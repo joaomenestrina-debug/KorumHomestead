@@ -642,6 +642,24 @@ class Homestead(unittest.TestCase):
         self.assertFalse(self.ev(g + ".menu:IsShown()"))
         self.assertEqual(self.ev("(NS.Farm:Status(2))"), "empty")
 
+    def test_the_seed_menu_plants_the_amount_asked(self):
+        self.lua.execute("NS.db.level = 37; NS.db.coins = 100000; NS.db.nplots = 6; NS.db.tutorial.done = true; NS.db.seen.garden = true")
+        self.open()
+        g = "NS.UI.screens.garden"
+        self.press(g + ".tiles[3]")
+        self.assertEqual(self.ev(g + ".menu.card.qty:GetText()"), "1")
+        self.assertFalse(self.ev(g + ".menu.card.less.enabledState"))
+        for _ in range(9):
+            self.press(g + ".menu.card.more")
+        self.assertEqual(self.ev(g + ".menu.card.qty:GetText()"), "6")              # no more than the empty plots
+        self.press(g + ".menu.card.less")
+        self.press(g + ".menu.card.less")
+        self.assertEqual(self.ev(g + ".menu.card.again.label:GetText()"), "Plant 4 × Peacebloom")
+        self.press(g + ".menu.cells[2]")                                            # Silverleaf, in 4 plots
+        self.assertEqual(self.ev("(NS.Farm:Status(3))"), "growing")                 # the plot clicked first
+        planted = [self.ev(f"NS.db.plots[{k}] and NS.db.plots[{k}].plant or 0") for k in range(1, 7)]
+        self.assertEqual(planted.count(765), 4)
+
     def test_the_arrows_reach_every_open_seed(self):
         self.lua.execute("NS.db.level = 37; NS.db.tutorial.done = true; NS.db.seen.garden = true")
         self.open()
