@@ -163,7 +163,8 @@ B.MARKET_BONUS_PER_LEVEL = 0.04
 --   value  = markup * (sell price of the inputs) + perMinute * minutes of crafting
 --   xp     = xpFactor * (harvest xp of the herb inputs, per herb) + xpPerMinute * minutes
 --   ore and fish count goodXP each as an input
-B.CRAFT = {markup = 1.5, perMinute = 2, xpFactor = 4, xpPerMinute = 1, goodXP = 0.5}
+B.CRAFT = {markup = 1.5, perMinute = 2, xpFactor = 4, xpPerMinute = 1, goodXP = 0.5,
+    queueBase = 3, queuePerLevel = 1}        -- places in the queue: 3 at Workshop 1, one more each level (9 at 7)
 
 -- Workshop recipes: recipe id, trade, required level, craft seconds, and input item ids or goods.
 -- One recipe per trade at each Workshop level (1-7), following the game's own ladder, with the herbs open at the Village

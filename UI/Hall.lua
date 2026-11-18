@@ -11,7 +11,8 @@ local HALL_ROW, HALL_GAP = 46, 4
 
 local function Effect(id, level)
     if V.MAKES[id] then return level == 0 and T("emptyLot") or T("fx_" .. id, V:Rate(id, level)) end
-    if id == "workshop" or id == "inn" then return level == 0 and T("emptyLot") or T("fx_" .. id, level) end
+    if id == "workshop" then return level == 0 and T("emptyLot") or T("fx_workshop", KH.Workshop.QueueAt(level)) end
+    if id == "inn" then return level == 0 and T("emptyLot") or T("fx_" .. id, level) end
     if id == "garden" then return T("fx_garden", math.min(D.MAX_PLOTS, 1 + level)) end
     if id == "barn" then return T("fx_barn", V:BarnCap(level)) end
     if id == "market" then return T("fx_market", math.floor((V:PayBonus(level) - 1) * 100 + 0.5)) end

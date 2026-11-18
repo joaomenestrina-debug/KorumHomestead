@@ -166,6 +166,8 @@ class Homestead(unittest.TestCase):
 
     def test_the_workshop_crafts_potions_in_a_queue_that_runs_by_the_clock(self):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.crops[2447] = 9; NS.db.crops[765] = 3; NS.db.crops[785] = 2; NS.db.crops[2449] = 2")
+        self.assertEqual(self.ev("NS.Workshop:Slots()"), 4)                    # 3 at Workshop 1, one more a level
+        self.lua.execute("NS.Balance.CRAFT.queueBase = 1")                     # a short queue, to see it fill up
         self.assertEqual(self.ev("NS.Workshop:Slots()"), 2)
         self.assertTrue(self.ev("(NS.Workshop:Craft('heal'))"))
         self.assertEqual(self.ev("NS.db.crops[2447]"), 6)                      # 3 peacebloom and 1 silverleaf went

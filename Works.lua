@@ -89,7 +89,12 @@ function W.Recipe(id)
     end
 end
 
-function W:Slots() return V:Level("workshop") end
+-- places in the queue at this Workshop level (or the one it has)
+function W.QueueAt(level)
+    if level <= 0 then return 0 end
+    return B.CRAFT.queueBase + (level - 1) * B.CRAFT.queuePerLevel
+end
+function W:Slots() return W.QueueAt(V:Level("workshop")) end
 
 function W:Unlocked(id)
     local r = W.Recipe(id)
