@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 17/11/2026, por Korum (T1.6 e T1.7 prontas para revisão).*
+*Última atualização: 17/11/2026, por Codex (T2.0f revisão de textos pronta para revisão).*
 
 ---
 
@@ -42,7 +42,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T2.0c Mercado 4 + 4 e Oficina pagando mais | Claude | ✅ PR #15 (empilhada na T2.0a) |
 | T2.0d Prédios com nível mínimo e custos pela renda + escada de 21 receitas (aprovada 17/11) | Claude | ✅ PR (empilhada na T2.0c) |
 | T2.0e Telas | Claude | quase pronta: Mercado 4 + 4, sementes, Guia e Oficina com janela, "Vila N"; falta revisar no jogo |
-| T2.0f Revisão dos textos | Codex | depois da T2.0e |
+| T2.0f Revisão dos textos | Codex | ✅ revisão EN/ptBR pronta para revisão |
 | T2.0g Teste de simulação | Claude | depois da T2.0d |
 | T2.0h Teste no jogo | **Eu** | **agora**, junto da T1.9 (build único instalado em 17/11) |
 
@@ -65,7 +65,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** **testar o build único** (alpha1 + economia): Novidades, Mercado 4 + 4 e encomenda do dia, cartão "Enquanto você esteve fora", arrancar canteiro, Vila 1–60 e ervas novas, Oficina com receitas novas, custos dos prédios.
-- **Codex:** **só arte e revisão de texto**. Agora: **T2.0f**, revisar em `Locales.lua` (EN e ptBR) as chaves `news1_*`, `good_*`, `herbalism`, `levelNotice`, `newSeed`, `needLevel`, `capLotus`, `maxLevel`, `xpHow`, `ordersNoWorkshop`, `short_village`, `why_village`, `clear*`. Não escrever código.
+- **Codex:** **só arte e revisão de texto**. **T2.0f concluída**: textos EN/ptBR revisados em `Locales.lua`; PR para revisão. Não escrever código.
 - **Claude:** correções do teste, revisão do Codex, tag `v2.0.0-alpha1`; depois o teste que simula um jogador (T2.0g) e os briefings da S2.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)

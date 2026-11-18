@@ -77,7 +77,7 @@ class MarketFourAndFour(unittest.TestCase):
         coins, xp = self.ev("NS.db.coins"), self.ev("NS.db.orders[5].coins")
         self.open("orders")
         self.assertEqual(self.ev("NS.UI.screens.orders.rows[5].wants:GetText()"),
-                         f"{self.ev('NS.db.orders[5].qty')} × Minor healing potion")
+                         f"{self.ev('NS.db.orders[5].qty')} × " + self.ev("NS.T('good_heal')"))
         self.press("NS.UI.screens.orders.rows[5].deliver")
         self.assertEqual(self.ev("NS.db.goods.heal"), 0)
         self.assertGreater(self.ev("NS.db.coins"), coins)
@@ -86,7 +86,7 @@ class MarketFourAndFour(unittest.TestCase):
         self.lua.execute("NS.db.tutorial.done = true; NS.db.seen.market = true")
         self.open("orders")
         self.assertTrue(self.ev("NS.UI.screens.orders.rows[5].empty:IsShown()"))
-        self.assertEqual(self.ev("NS.UI.screens.orders.rows[5].empty:GetText()"), "Build the Workshop to get orders for its items.")
+        self.assertEqual(self.ev("NS.UI.screens.orders.rows[5].empty:GetText()"), self.ev("NS.T('ordersNoWorkshop')"))
 
 
 if __name__ == "__main__":
