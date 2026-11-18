@@ -189,6 +189,20 @@ são dados uma vez só.
 - **No jogo**, antes de cada alpha: lista curta do que conferir (o que o simulador não mostra: ícones do jogo, sons,
   fontes, desempenho).
 
+## F-Eventos. Visitas e achados aleatórios (ideia do dono, 17/11; a encaixar no cronograma)
+
+De vez em quando acontece algo na vila, avisado **no ícone flutuante como alerta** (e no cartão "Enquanto você esteve
+fora"):
+
+- **Pedido urgente:** um NPC aparece com uma encomenda de prazo curto que paga bem.
+- **Caravana de troca:** troca itens por outros (ervas por minério, peixe por poções...), por algumas horas.
+- **Mercador generoso:** paga mais por um item específico enquanto está na vila.
+- **Achados raros:** um peixe diferente na Lagoa, um mineral raro na Mina, uma erva rara num canteiro (itens do jogo,
+  com ícone do jogo; vão para o Celeiro e para o Herbário da F4).
+
+Regras: perder um evento não castiga (ele só vai embora); as recompensas passam pela conta da economia (trocas, XP e
+itens antes de moedas); frequência baixa, sorteada com semente fixa para os testes (`KH.Rand`).
+
 ## Equilíbrio
 
 Os números deste plano são o ponto de partida. A rodada de ajuste foi **adiantada para o início da S2 (T2.0)**: a soma de
