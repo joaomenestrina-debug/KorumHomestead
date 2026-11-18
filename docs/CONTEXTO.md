@@ -65,7 +65,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** conferir no CurseForge o arquivo `2.0.0-alpha1` (Alpha). Revisar e aprovar a arte da T2.9 no PR.
-- **Codex:** **A6: revisar toda a arte** (`docs/tarefas/A6.md`): as 34 peças, uma por uma (cortes, qualidade), entregando só as corrigidas em `arquivo/arte_v5/`. Não escrever código.
+- **Codex:** **A6: refazer as 34 artes em alta qualidade** (`docs/tarefas/A6.md`), no nível dos originais da T2.9; pode entregar em partes. Não escrever código.
 - **Claude:** **T2.3–T2.7**: motor de eventos e os 5 tipos (`docs/eventos.md`, aprovado), depois as telas.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
