@@ -157,6 +157,9 @@ SlashCmdList["KORUMHOMESTEAD"] = function(msg)
         local n = KH.Farm:HarvestAll()
         KH:Print(KH.T("harvestedN", n))
         if KH.UI then KH.UI:Refresh() end
+    --@debug@
+    -- Only in the copy installed from the repository: the CurseForge packager turns this block into a comment,
+    -- so the zip the players download has no debug command at all.
     elseif msg == "debug" then                         -- testing: turns the commands below on and off
         KH.db.debug = not KH.db.debug
         KH:Print("debug " .. (KH.db.debug and "on" or "off"))
@@ -164,6 +167,7 @@ SlashCmdList["KORUMHOMESTEAD"] = function(msg)
         local e = KH.Events:Spawn()                    -- a visitor now, without waiting (only with debug on)
         KH:Notify(KH.T("ev_new_" .. e.kind))
         if KH.UI then KH.UI:Refresh() end
+    --@end-debug@
     elseif msg == "help" or msg == "ajuda" then
         KH:Print(KH.T("help"))
     elseif KH.UI then

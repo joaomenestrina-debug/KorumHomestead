@@ -934,6 +934,31 @@ class Homestead(unittest.TestCase):
         self.lua.execute("SlashCmdList.KORUMHOMESTEAD('')")
         self.assertTrue(self.ev("KorumHomesteadFrame:IsShown()"))
 
+    def test_the_debug_commands_are_not_in_the_packaged_zip(self):
+        """/kh debug and /kh evento are for the copy installed from the repository: the CurseForge packager comments
+        out what is between --@debug@ and --@end-debug@, and the players' /kh then knows neither."""
+        core = (HOME / "Core.lua").read_text(encoding="utf-8")
+        self.assertEqual(core.count("--@debug@"), 1)
+        self.assertEqual(core.count("--@end-debug@"), 1)
+        # in the repository they work
+        self.lua.execute("SlashCmdList.KORUMHOMESTEAD('debug')")
+        self.assertTrue(self.ev("NS.db.debug"))
+        self.lua.execute("SlashCmdList.KORUMHOMESTEAD('debug')")
+        self.assertFalse(self.ev("NS.db.debug"))
+        # the slash commands as the packager leaves them, run again over this same homestead
+        packed = core.replace("--@debug@", "--[===[@debug@").replace("--@end-debug@", "--@end-debug@]===]")
+        packed = packed[packed.index("SLASH_KORUMHOMESTEAD1"):]
+        self.lua.globals().PACKED = "local addonName, KH = ...\n" + packed
+        self.lua.execute("assert(loadstring(PACKED))('KorumHomestead', NS)")
+        self.lua.execute("NS.db.debug = true")                     # even a save that had it on gets nothing
+        before = self.ev("#NS.db.events.open")
+        self.lua.execute("SlashCmdList.KORUMHOMESTEAD('evento')")
+        self.assertEqual(self.ev("#NS.db.events.open"), before)
+        self.assertTrue(self.ev("KorumHomesteadFrame:IsShown()"))  # an unknown word just opens the village
+        self.lua.execute("NS.db.debug = nil; SlashCmdList.KORUMHOMESTEAD('debug')")
+        self.assertFalse(self.ev("NS.db.debug"))
+        self.assertFalse(self.ev("KorumHomesteadFrame:IsShown()")) # ... or closes it
+
     def test_it_is_independent_of_the_other_addons(self):
         for toc in HOME.glob("*.toc"):
             text = toc.read_text(encoding="utf-8")

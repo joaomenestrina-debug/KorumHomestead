@@ -11,7 +11,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 | | |
 |---|---|
-| **Versão publicada** | **2.0.0** no CurseForge (Release, 17/11) — é a que os jogadores usam. A **2.1** (eventos aleatórios + arte A6) saiu como **`v2.1.0-alpha1`** e **`v2.1.0-alpha2`** em 18/11 (Alpha no CurseForge) |
+| **Versão publicada** | **2.0.0** no CurseForge (Release, 17/11) — é a que os jogadores usam. A **2.1** (eventos aleatórios + arte A6) saiu como **`v2.1.0-alpha1`**, **`v2.1.0-alpha2`** e **`v2.1.0-alpha3`** em 18/11 (Alpha no CurseForge; a alpha3 tira o `/kh debug` do zip) |
 | **Em desenvolvimento** | **2.0** (plano em [plano-2.0.md](plano-2.0.md), cronograma em [cronograma-2.0.md](cronograma-2.0.md)) |
 | **Sprint atual** | **S2 — Eventos aleatórios**: motor, telas e arte na `v2.1.0-alpha1`; T2.10 (economia) feita em 18/11; T2.8 (textos) integrada; **`v2.1.0-alpha2`** publicada em 18/11 |
 | **Próximo marco** | **2.0.0-alpha1** em 29/11 (M0 atingido em 17/11) |
@@ -68,7 +68,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 - **Eu:** jogar a alpha2 e relatar o que aparecer. A S3 (F3, Personagem) fica para a data do cronograma (07/12), por decisão de 18/11.
 - **Codex:** T2.8 concluída e integrada (PR #20). Sem tarefa aberta. Não escrever código.
-- **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11. Próximo: o que o dono relatar.
+- **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11; `v2.1.0-alpha3` também, só para tirar o `/kh debug` e o `/kh evento` do zip (entre `--@debug@`, o empacotador comenta). Próximo: o que o dono relatar.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
