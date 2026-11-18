@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 17/11/2026, por Codex (T2.0f revisão de textos pronta para revisão).*
+*Última atualização: 17/11/2026, por Codex (arte da T2.9 enviada para aprovação).*
 
 ---
 
@@ -64,8 +64,8 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** conferir no CurseForge o arquivo `2.0.0-alpha1` (Alpha). Aprovar a arte do Codex (T2.9) quando chegar.
-- **Codex:** **T2.9: arte dos eventos** (`docs/tarefas/T2.9.md`): carrinho do visitante e 3 retratos, em `arquivo/arte_v4/`. Não escrever código.
+- **Eu:** conferir no CurseForge o arquivo `2.0.0-alpha1` (Alpha). Revisar e aprovar a arte da T2.9 no PR.
+- **Codex:** **T2.9 concluída**: carrinho do visitante e 3 retratos em `arquivo/arte_v4/`, aguardando aprovação neste PR. Não escrever código.
 - **Claude:** **T2.3–T2.7**: motor de eventos e os 5 tipos (`docs/eventos.md`, aprovado), depois as telas.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)

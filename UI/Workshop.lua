@@ -44,6 +44,8 @@ local function BuildWorkshop(win)
             UI:Refresh()
         end)
         row.button:SetPoint("RIGHT", -14, 0)
+        row.tag = Kit.Text(row, 10, C.accent)                -- "Recommended": the craft worth the most now
+        row.tag:SetPoint("LEFT", row.name, "RIGHT", 10, 0)
         s.rows[i] = row
     end
     s.queueHead = Kit.Text(s.frame, 11, C.textMuted)
@@ -76,7 +78,8 @@ local function BuildWorkshop(win)
         else
             self.head:SetText(T("shopH")); self.sub:SetText(T("shopS", Wk:Slots()))
         end
-        local first = true
+        -- the recommended craft: of the recipes shown that can be made now (Advice.lua)
+        local best, why
         self.trades:Sync()
         self.tradeHint:SetText(T("tradeHint_" .. UI.trade))
         local recipes = Wk.OfTrade(UI.trade)
@@ -84,6 +87,12 @@ local function BuildWorkshop(win)
         local open = 0
         for i, r in ipairs(recipes) do if r.level <= level then open = i end end
         local from = math.max(1, math.min(#recipes - #self.rows + 1, open - (#self.rows - 2)))
+        local shown = {}
+        for i = 1, #self.rows do
+            local r = recipes[from + i - 1]
+            if r then shown[#shown + 1] = r.id end
+        end
+        best, why = KH.Advice:Craft(shown)                  -- what the Market asks first, then what is worth the most
         for i, row in ipairs(self.rows) do
             local r = recipes[from + i - 1]
             row:SetShown(r ~= nil)
@@ -101,16 +110,20 @@ local function BuildWorkshop(win)
             row.needs:SetText(unlocked and table.concat(parts, "   ") or T("short_recipe", r.level))
             row.icon:SetAlpha(unlocked and 1 or 0.3)
             local ok, why, n = Wk:CanCraft(row.id)
+            row.tag:SetText(row.id == best and T(why == "order" and "recommendedOrder" or "recommended") or "")
             if ok then
                 row.button:SetLabel(T("craft"))
-                row.button:SetStyle(first and "primary" or "quiet")
-                first = false
+                row.button:SetStyle(row.id == best and "primary" or "quiet")
             else
                 row.button:SetLabel(T("short_" .. why, n))
                 row.button:SetStyle("quiet")
             end
             row.button:SetEnabledState(ok)
-            row.outline:SetColor(1, 1, 1, ok and 0.12 or 0.05)
+            if row.id == best then
+                row.outline:SetColor(C.accent[1], C.accent[2], C.accent[3], 0.4)
+            else
+                row.outline:SetColor(1, 1, 1, ok and 0.12 or 0.05)
+            end
         end
         self.queueHead:SetText(level > 0 and T("queueHead", #jobs, Wk:Slots()) or "")
         for i, row in ipairs(self.queue) do

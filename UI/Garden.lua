@@ -118,6 +118,12 @@ local function BuildGarden(win)
         b.icon:SetPoint("CENTER")
         b.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
         Kit.RoundMask(b.frame, b.icon)
+        b.star = b.frame:CreateTexture(nil, "OVERLAY")           -- the suggested seed: a small accent dot
+        b.star:SetTexture(Kit.Icon("dot"))
+        b.star:SetSize(12, 12)
+        b.star:SetPoint("TOPRIGHT", 3, 3)
+        b.star:SetVertexColor(C.accent[1], C.accent[2], C.accent[3], 1)
+        b.star:Hide()
         b.note = Kit.Text(b, 9, C.textMuted, "CENTER")
         b.note:SetPoint("TOP", 0, -47)
         b.note:SetWidth(slotW)
@@ -193,6 +199,10 @@ local function BuildGarden(win)
         card.surface, card.outline = Kit.Rounded(card, 16, 0.07, 0.085, 0.095, 0.99, 0.14)
         card.title = Kit.Text(card, 16, C.text)
         card.title:SetPoint("TOPLEFT", 22, -18)
+        card.advice = Kit.Text(card, 11, C.accent, "RIGHT")      -- what the Market needs, or what pays the most
+        card.advice:SetPoint("TOPRIGHT", -22, -22)
+        card.advice:SetWidth(W - 20 - 44 - 330)
+        card.advice:SetWordWrap(false)
         local cellW = math.floor((W - 64) / MENU_COLS)
         dim.cells = {}
         for k, p in ipairs(D.PLANTS) do
@@ -209,6 +219,12 @@ local function BuildGarden(win)
             b.icon:SetPoint("CENTER")
             b.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
             Kit.RoundMask(b.frame, b.icon)
+            b.star = b.frame:CreateTexture(nil, "OVERLAY")           -- the suggested seed: a small accent dot
+            b.star:SetTexture(Kit.Icon("dot"))
+            b.star:SetSize(12, 12)
+            b.star:SetPoint("TOPRIGHT", 3, 3)
+            b.star:SetVertexColor(C.accent[1], C.accent[2], C.accent[3], 1)
+            b.star:Hide()
             b.note = Kit.Text(b, 9, C.textMuted, "CENTER")
             b.note:SetPoint("TOP", 0, -48)
             b.note:SetWidth(cellW)
@@ -314,7 +330,10 @@ local function BuildGarden(win)
         if not (menu and menu:IsShown()) then return end
         local db = KH.db
         menu.card.title:SetText(T("menuTitle"))
+        local advised, why = KH.Advice:Seed()
+        menu.card.advice:SetText(advised and T(why == "order" and "seedAdviceOrder" or "seedAdviceValue", D.Name(advised)) or "")
         for _, b in ipairs(menu.cells) do
+            b.star:SetShown(b.id == advised)
             local p = D.Plant(b.id)
             local locked = db.level < p.level
             local chosen = db.selected == b.id
@@ -384,7 +403,10 @@ local function BuildGarden(win)
         local first = UI.seedFirst or SeedWindow(db.level)
         self.seedPrev:SetEnabledState(first > 1)
         self.seedNext:SetEnabledState(first < #D.PLANTS - STRIP + 1)
+        local advised, why = KH.Advice:Seed()
+        self.seedsLabel:SetText(T("seedsTitle") .. (advised and ("   |cff40d9c4" .. T(why == "order" and "seedAdviceOrder" or "seedAdviceValue", D.Name(advised)) .. "|r") or ""))
         for i, b in ipairs(self.seeds) do
+            b.star:SetShown(D.PLANTS[first + i - 1][1] == advised)
             b.id = D.PLANTS[first + i - 1][1]
             local p = D.Plant(b.id)
             local locked = db.level < p.level
