@@ -4,7 +4,7 @@ local P = UI.P
 local Kit, C, D, V, T = P.Kit, P.C, P.D, P.V, P.T
 local VDIR = P.VDIR
 local Reason, Notice, Screen = P.Reason, P.Notice, P.Screen
-local GoodTex = P.GoodTex
+local GoodTex, BuildingArt = P.GoodTex, P.BuildingArt
 
 -- ----------------------------------------------------------------------------
 -- Visitors: the random events that are open now (Events.lua), one card each, with the time left and the answer
@@ -140,7 +140,8 @@ local function BuildVisitors(win)
 
     function s:Paint(card, e)
         local kind = e.kind
-        card.portrait:SetTexture(PORTRAIT[kind] and (VDIR .. PORTRAIT[kind]) or Icon(e.key))
+        -- who came; a rare find shows the place where it turned up (the item itself is on the line below)
+        card.portrait:SetTexture(PORTRAIT[kind] and (VDIR .. PORTRAIT[kind]) or BuildingArt(kind == "fish" and "pond" or "mine"))
         card.title:SetText(T("evTitle_" .. kind))
         card.left:SetText(T("evLeft", KH.Duration(KH.Events:Left(e))))
         card.item:SetShown(kind ~= "caravan")

@@ -157,6 +157,13 @@ SlashCmdList["KORUMHOMESTEAD"] = function(msg)
         local n = KH.Farm:HarvestAll()
         KH:Print(KH.T("harvestedN", n))
         if KH.UI then KH.UI:Refresh() end
+    elseif msg == "debug" then                         -- testing: turns the commands below on and off
+        KH.db.debug = not KH.db.debug
+        KH:Print("debug " .. (KH.db.debug and "on" or "off"))
+    elseif (msg == "evento" or msg == "event") and KH.db.debug then
+        local e = KH.Events:Spawn()                    -- a visitor now, without waiting (only with debug on)
+        KH:Notify(KH.T("ev_new_" .. e.kind))
+        if KH.UI then KH.UI:Refresh() end
     elseif msg == "help" or msg == "ajuda" then
         KH:Print(KH.T("help"))
     elseif KH.UI then
