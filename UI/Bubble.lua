@@ -206,6 +206,10 @@ end
 -- what waits, most useful first: {text, the screen it is on}
 function UI:AlertLines()
     local out = {}
+    for _, e in ipairs(KH.Events:Open()) do                -- a visitor waits: it goes away when its time is over
+        local name = e.key and UI.VisitorName and UI.VisitorName(e.key) or ""
+        out[#out + 1] = {T("alertEv_" .. e.kind, name, KH.Duration(KH.Events:Left(e))), "visitors"}
+    end
     if KH.Daily:CanDeliver() then out[#out + 1] = {T("alertDaily"), "orders"} end
     local orders = 0
     for i = 1, D.ORDER_SLOTS do if KH.Orders:CanDeliver(i) then orders = orders + 1 end end

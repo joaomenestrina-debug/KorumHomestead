@@ -70,6 +70,38 @@ local function BuildVillage(win)
         s.spots[id] = b
     end
 
+    -- the visitors' cart: on the road between the two rows while someone came (Events.lua); a click opens Visitors
+    local CART = 90
+    local cart = CreateFrame("Button", nil, map)
+    cart:SetSize(CART, CART)
+    cart:SetPoint("TOPLEFT", map, "TOPLEFT", 330 * scale - CART / 2, -(222 * scale - CART * 0.844))
+    cart:SetFrameLevel(map:GetFrameLevel() + 20)
+    cart.glow = cart:CreateTexture(nil, "BACKGROUND")
+    cart.glow:SetTexture(Kit.Icon("glow"))
+    cart.glow:SetSize(CART * 1.4, CART * 1.4)
+    cart.glow:SetPoint("CENTER", 0, -CART * 0.15)
+    cart.glow:SetVertexColor(C.gold[1], C.gold[2], C.gold[3])
+    if cart.glow.SetBlendMode then cart.glow:SetBlendMode("ADD") end
+    cart.art = cart:CreateTexture(nil, "ARTWORK")
+    cart.art:SetAllPoints()
+    cart.art:SetTexture(VDIR .. "cart")
+    cart.badge = Kit.Text(cart, 11, C.onAccent, "CENTER")
+    cart.disc = cart:CreateTexture(nil, "OVERLAY")
+    cart.disc:SetTexture(Kit.Icon("dot"))
+    cart.disc:SetSize(20, 20)
+    cart.disc:SetPoint("TOPRIGHT", -14, -18)
+    cart.disc:SetVertexColor(C.gold[1], C.gold[2], C.gold[3], 1)
+    cart.badge:SetPoint("CENTER", cart.disc, "CENTER", 0, 0)
+    cart.badge:SetDrawLayer("OVERLAY", 7)
+    cart:SetScript("OnEnter", function(self)
+        self.hover = true
+        Tip(self, T("visitorsTab"), {T("cartTip")})
+    end)
+    cart:SetScript("OnLeave", function(self) self.hover = false; if GameTooltip then GameTooltip:Hide() end end)
+    cart:SetScript("OnClick", function() Kit.ClickSound(); UI:Show("visitors") end)
+    cart:Hide()
+    s.cart = cart
+
     s.primary = Kit.Button(s.frame, 220, 36, "", function() s:Primary() end)
     s.primary:SetPoint("BOTTOMRIGHT", 0, 0)
     s.primary:SetStyle("primary")
@@ -83,6 +115,7 @@ local function BuildVillage(win)
     s.frame:SetScript("OnUpdate", function(_, elapsed)
         s.clock = s.clock + (tonumber(elapsed) or 0)
         local wave = 0.5 + 0.5 * math.sin(s.clock * 3)
+        s.cart.glow:SetAlpha(s.cart.hover and 0.5 or (0.15 + 0.25 * wave))
         for _, b in pairs(s.spots) do
             if b.hover then
                 b.glow:SetAlpha(0.42)
@@ -123,6 +156,9 @@ local function BuildVillage(win)
 
     function s:Refresh()
         local db = KH.db
+        local visitors = #KH.Events:Open()
+        self.cart:SetShown(visitors > 0)
+        self.cart.badge:SetText(tostring(visitors))
         local step = UI:Step()
         local ready, growing, empty, soonest = 0, 0, 0, nil
         for i = 1, db.nplots do

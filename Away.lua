@@ -52,7 +52,8 @@ function A:Summary()
     -- bring the counters up to now; buildings that finished are told here (the clock will not announce them again)
     V:Update()
     KH.Workshop:Update()
-    local out = {seconds = seconds, ready = KH.Farm:ReadyCount(), back = KH.Inn:BackCount(), goods = {}, built = {}}
+    local out = {seconds = seconds, ready = KH.Farm:ReadyCount(), back = KH.Inn:BackCount(), goods = {}, built = {},
+        visitors = KH.Events and #KH.Events:Open() or 0, missed = KH.Events and KH.Events:Missed() or {}}
     local before = shot.goods or {}
     for _, id in ipairs(GoodsOrder()) do
         local n = (db.goods[id] or 0) - (before[id] or 0)
@@ -63,7 +64,9 @@ function A:Summary()
         local level = V:Level(id)
         if level > (was[id] or 0) then out.built[#out.built + 1] = {id = id, level = level} end
     end
-    if out.ready == 0 and out.back == 0 and #out.goods == 0 and #out.built == 0 then return nil end
+    if out.ready == 0 and out.back == 0 and #out.goods == 0 and #out.built == 0 and out.visitors == 0 and #out.missed == 0 then
+        return nil
+    end
     return out
 end
 

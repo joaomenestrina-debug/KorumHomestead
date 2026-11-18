@@ -14,6 +14,7 @@ local addonName, KH = ...
 
 KH.NEWS = {
     {id = 1, version = "2.0.0-alpha1"},
+    {id = 2, version = "2.0.0-alpha2"},
 }
 
 function KH.LatestNews()
