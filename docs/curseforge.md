@@ -33,7 +33,7 @@ Korum Homestead is a little world of its own. It doesn't interact with your char
 
 ![The Workshop](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/3-workshop.png)
 
-![The Inn](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/4-inn.png)
+![The Garden](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/6-garden.png)
 
 ## How to start
 
@@ -92,7 +92,7 @@ Korum Homestead é um pequeno mundo à parte. Ele não interfere no seu personag
 
 ![A Oficina](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/3-workshop.png)
 
-![A Estalagem](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/4-inn.png)
+![A Horta](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/6-garden.png)
 
 ## Como começar
 
