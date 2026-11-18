@@ -1,7 +1,7 @@
 # Changelog
 
-## 2.0.0-alpha1 (test version)
-A test version of 2.0. Your 1.0 village is carried over: nothing you have is lost.
+## 2.0.0
+The big update of the homestead. Your 1.0 village is carried over: nothing you have is lost.
 
 **Village level and economy**
 - Your Village now has its own level, from 1 to 60, in place of Herbalism. Your old level becomes the Village level that keeps every herb you had (Herbalism 20 becomes Village 37).
@@ -9,6 +9,10 @@ A test version of 2.0. Your 1.0 village is carried over: nothing you have is los
 - Harvesting gives a little xp; Market orders and the Workshop give most of it. At level 60 the xp turns into Black Lotus keepsakes.
 - Buildings ask for a Village level and their cost follows what the Garden earns, so the village lasts much longer.
 - The Hall shows the best upgrade for now ("Recommended").
+
+**Help to decide**
+- The Hall marks the best upgrade for now ("Recommended").
+- The Workshop marks what the Market is asking for (or the craft worth the most), and the Garden says which seed the Market needs.
 
 **Market**
 - 4 herb orders and 4 Workshop item orders.
@@ -26,6 +30,8 @@ A test version of 2.0. Your 1.0 village is carried over: nothing you have is los
 - "While you were away": what happened while the window was closed, with "Collect all".
 - The icon on the screen says in words what waits, and a click opens the place.
 - A "What's new" screen opens once after each update.
+- The window has a zoom at the top, from 60% to 150%.
+- Texts that ran out of the window on some screens now fit.
 
 ## 1.0.1
 - Ore, fish, potions, meals and tools now use the icons of items of the game, like the herbs.
