@@ -26,33 +26,38 @@ def logo():
 
 
 def screens():
+    """A village in the middle of the game (Village 30, every building built), in English."""
     now = 1700000000
     seen = "seen = {hall = true, garden = true, barn = true, market = true, mine = true, pond = true, workshop = true, inn = true},"
-    mid = ("{coins = 1240, xp = 150, level = 6, nplots = 5, selected = 2450, tutorial = {done = true}, lang = 'enUS', " + seen +
-           " stats = {harvested = 412, earned = 3980, delivered = 9},"
-           " buildings = {hall = 5, garden = 4, barn = 3, market = 2, mine = 2, pond = 3, workshop = 3, inn = 3},"
-           " goods = {ore = 34, fish = 18, heal = 2},"
-           f" work = {{id = 'barn', at = {now - 200}, time = 480}},"
-           f" plots = {{[1] = {{plant = 2450, at = {now - 2000}}}, [2] = {{plant = 2453, at = {now - 700}}},"
-           f" [3] = {{plant = 785, at = {now - 330}}}, [4] = {{plant = 2447, at = {now - 20}}}}},"
-           " crops = {[2447] = 14, [765] = 9, [2449] = 6, [785] = 12, [2450] = 5},"
-           " orders = {{plant = 785, qty = 8, coins = 358, xp = 80, npc = 2}, {plant = 2450, qty = 7, coins = 560, xp = 122, npc = 4},"
-           " {plant = 2449, qty = 4, coins = 115, xp = 24, npc = 1}}}")
-    first = mid.replace(seen, "seen = {},")
+    mid = ("{schema = 3, coins = 48200, xp = 2100, level = 30, selected = 3356, tutorial = {done = true}, newsSeen = 1000,"
+           " lang = 'enUS', " + seen +
+           " stats = {harvested = 4120, earned = 398000, delivered = 96},"
+           " buildings = {hall = 5, garden = 5, barn = 4, market = 4, mine = 4, pond = 3, workshop = 4, inn = 4},"
+           " goods = {ore = 64, fish = 38, heal = 4, healing = 2, stew = 3, bar = 5},"
+           f" work = {{id = 'pond', at = {now - 900}, time = 3300}},"
+           f" plots = {{[1] = {{plant = 3357, at = {now - 2000}}}, [2] = {{plant = 3356, at = {now - 300}}},"
+           f" [3] = {{plant = 3356, at = {now - 120}}}, [4] = {{plant = 2453, at = {now - 600}}},"
+           f" [5] = {{plant = 3369, at = {now - 40}}}, [6] = {{plant = 3355, at = {now - 2000}}}}},"
+           " crops = {[2447] = 24, [765] = 19, [2449] = 16, [785] = 22, [2450] = 15, [2453] = 30, [3356] = 12, [3357] = 8, [3369] = 14}}")
     shots = [
-        ("1-village", mid, "village", ""),
-        ("2-garden", mid, "garden", ""),
-        ("3-workshop", mid, "workshop", "NS.UI.trade = 'alchemy'; NS.Workshop:Craft('heal'); NS.Workshop:Craft('heal'); NS.UI:Refresh()"),
-        ("4-inn", mid, "inn", "NS.Inn:Start(1, 'short'); NS.Inn:Start(2, 'medium'); NS.UI:Refresh()"),
-        ("5-market", mid, "orders", ""),
-        ("6-how-it-works", first, "hall", ""),
-        ("7-guide", mid, "guide", "NS.UI.guidePage = 'buildings'; NS.UI:Refresh()"),
+        ("1-village", "village", "NS.Events:Spawn('merchant')", ""),
+        ("2-garden", "garden", "", ""),
+        ("3-workshop", "workshop", "", "NS.UI.trade = 'alchemy'; NS.Workshop:Craft('heal'); NS.Workshop:Craft('heal'); NS.UI:Refresh()"),
+        ("4-inn", "inn", "", "NS.Inn:Start(1, 'short'); NS.Inn:Start(2, 'medium'); NS.Inn:Start(3, 'long'); NS.UI:Refresh()"),
+        ("5-market", "orders", "", ""),
+        ("6-visitors", "visitors", "NS.Events:Spawn('urgent'); local e = NS.Events:Spawn('caravan'); local t = e.trades[1];"
+         " if type(t.give) == 'number' then NS.db.crops[t.give] = t.n else NS.db.goods[t.give] = t.n end", ""),
+        ("7-barn", "barn", "", ""),
     ]
-    for name, setup, view, after in shots:
+    for name, view, before, after in shots:
         g = sim.Game("enUS")
         g.run("math.randomseed(11)")
-        g.run("KorumHomesteadDB = " + setup)
+        g.run(f"SIM.clock = {now}")
+        g.run("KorumHomesteadDB = " + mid)
         g.load("KorumHomestead", sim.HOMESTEAD)
+        g.run("NS.Orders:Ensure()")
+        if before:
+            g.run(before)
         g.run(f"NS.UI:Show('{view}')")
         g.advance(2.0)
         if after:
