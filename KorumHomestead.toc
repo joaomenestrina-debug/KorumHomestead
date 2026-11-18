@@ -20,6 +20,7 @@ Farm.lua
 Daily.lua
 Village.lua
 Works.lua
+Advice.lua
 Away.lua
 UI/Common.lua
 UI/Garden.lua

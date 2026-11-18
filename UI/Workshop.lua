@@ -78,8 +78,8 @@ local function BuildWorkshop(win)
         else
             self.head:SetText(T("shopH")); self.sub:SetText(T("shopS", Wk:Slots()))
         end
-        -- the recommended craft: of the recipes shown that can be made now, the one worth the most
-        local best, bestValue = nil, -1
+        -- the recommended craft: of the recipes shown that can be made now (Advice.lua)
+        local best, why
         self.trades:Sync()
         self.tradeHint:SetText(T("tradeHint_" .. UI.trade))
         local recipes = Wk.OfTrade(UI.trade)
@@ -87,10 +87,12 @@ local function BuildWorkshop(win)
         local open = 0
         for i, r in ipairs(recipes) do if r.level <= level then open = i end end
         local from = math.max(1, math.min(#recipes - #self.rows + 1, open - (#self.rows - 2)))
+        local shown = {}
         for i = 1, #self.rows do
             local r = recipes[from + i - 1]
-            if r and Wk:CanCraft(r.id) and V:GoodSell(r.id) > bestValue then best, bestValue = r.id, V:GoodSell(r.id) end
+            if r then shown[#shown + 1] = r.id end
         end
+        best, why = KH.Advice:Craft(shown)                  -- what the Market asks first, then what is worth the most
         for i, row in ipairs(self.rows) do
             local r = recipes[from + i - 1]
             row:SetShown(r ~= nil)
@@ -108,7 +110,7 @@ local function BuildWorkshop(win)
             row.needs:SetText(unlocked and table.concat(parts, "   ") or T("short_recipe", r.level))
             row.icon:SetAlpha(unlocked and 1 or 0.3)
             local ok, why, n = Wk:CanCraft(row.id)
-            row.tag:SetText(row.id == best and T("recommended") or "")
+            row.tag:SetText(row.id == best and T(why == "order" and "recommendedOrder" or "recommended") or "")
             if ok then
                 row.button:SetLabel(T("craft"))
                 row.button:SetStyle(row.id == best and "primary" or "quiet")
