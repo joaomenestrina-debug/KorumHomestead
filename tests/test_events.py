@@ -105,6 +105,12 @@ class Kinds(Base):
             self.assertEqual(self.ev(f"NS.Village:Good('{key}')"), 1)
             self.assertGreater(self.ev(f"NS.Village:GoodSell('{key}')"), 0)
 
+    def test_a_rare_find_is_not_a_workshop_item(self):
+        # one key, one thing: the Firefin Snapper of the Pond once shared "snapper" with the Mud Snapper of the Workshop
+        for key in self.lua.eval("NS.Balance.RARE_ORDER").values():
+            self.assertIsNone(self.lua.eval(f"NS.Workshop.Recipe('{key}')"), key)
+            self.assertNotEqual(self.ev(f"NS.T('good_{key}')"), f"good_{key}")
+
     def test_no_rare_fish_without_a_pond(self):
         self.lua.execute("NS.db.buildings.pond = 0; NS.db.buildings.mine = 0")
         for _ in range(60):

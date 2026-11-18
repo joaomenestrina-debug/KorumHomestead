@@ -154,12 +154,12 @@ B.GOODS = {
     -- twelve minutes of the Garden when found (their price grows with the Village like the herbs)
     lobster = {sell = 600, item = 13888, rare = "fish"},     -- Darkclaw Lobster
     eel = {sell = 720, item = 13422, rare = "fish"},         -- Stonescale Eel
-    snapper = {sell = 480, item = 6359, rare = "fish"},      -- Firefin Snapper
+    firefin = {sell = 480, item = 6359, rare = "fish"},      -- Firefin Snapper (not "snapper": that is the Workshop recipe)
     truesilver = {sell = 600, item = 7911, rare = "ore"},    -- Truesilver Ore
     darkiron = {sell = 720, item = 11370, rare = "ore"},     -- Dark Iron Ore
     arcane = {sell = 960, item = 12363, rare = "ore"},       -- Arcane Crystal
 }
-B.RARE_ORDER = {"lobster", "eel", "snapper", "truesilver", "darkiron", "arcane"}
+B.RARE_ORDER = {"lobster", "eel", "firefin", "truesilver", "darkiron", "arcane"}
 
 -- Random events (docs/eventos.md, approved on 17/11). Only with the game open; at most maxOpen at once; the deadline runs
 -- by the clock. Missing one loses its chance and its xp, nothing else.

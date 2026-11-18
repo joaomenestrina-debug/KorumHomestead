@@ -3,6 +3,8 @@
 ## 2.1.0-alpha2
 **Visitors**
 - At high levels the urgent orders and the merchants ask for or buy fewer units of late herbs and Workshop items, so each visit stays a bonus next to the Garden; the price is still double.
+- The rare Firefin Snapper of the Pond shows its own name and price (it was taking the ones of the Mud Snapper of the Workshop).
+- The texts of the visitors were reviewed in both languages; "XP" is now written the same way everywhere.
 
 ## 2.1.0-alpha1
 Visitors come to the village, and all its art was redrawn.
