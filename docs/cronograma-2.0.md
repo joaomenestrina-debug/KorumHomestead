@@ -165,8 +165,8 @@ Disposição, que só existia para os Serviços, fica suspensa.
 
 | ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
 |---|---|---|---|---|---|---|
-| T2.1 | Especificação dos eventos: tipos, frequência, prazos, recompensas (pela conta da economia) | Claude | alpha1 | 30/11 | 2 | `docs/tarefas/T2.1.md` |
-| T2.2 | Aprovar a lista de eventos e recompensas | **Eu** | T2.1 | 30/11 | 0,3 | decisão no chat |
+| T2.1 | Especificação dos eventos: tipos, frequência, prazos, recompensas (pela conta da economia) | Claude | alpha1 | 30/11 | 2 | ✅ 17/11: `docs/eventos.md` |
+| T2.2 | Aprovar a lista de eventos e recompensas | **Eu** | T2.1 | 30/11 | 0,3 | ✅ 17/11: aprovado como proposto |
 | T2.3 | Motor de eventos: sorteio com semente (`KH.Rand`), prazo, expiração (perde a oportunidade e o XP), dados salvos | Claude | T2.2 | 01/12 | 3 | testes com o relógio adiantado |
 | T2.4 | Pedido urgente e mercador generoso | Claude | T2.3 | 01–02/12 | 3 | testes |
 | T2.5 | Caravana de troca | Claude | T2.3 | 02/12 | 2 | testes: troca nunca cria moedas do nada |
