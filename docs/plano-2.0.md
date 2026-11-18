@@ -200,7 +200,8 @@ fora"):
 - **Achados raros:** um peixe diferente na Lagoa, um mineral raro na Mina, uma erva rara num canteiro (itens do jogo,
   com ícone do jogo; vão para o Celeiro e para o Herbário da F4).
 
-Regras: perder um evento não castiga (ele só vai embora); as recompensas passam pela conta da economia (trocas, XP e
+Regras: cada evento tem prazo; quem não atende **perde a oportunidade**: a recompensa e o XP do evento vão embora com
+ele (decisão do dono, 17/11). Não há castigo além disso (nada do que o jogador já tem é tirado); as recompensas passam pela conta da economia (trocas, XP e
 itens antes de moedas); frequência baixa, sorteada com semente fixa para os testes (`KH.Rand`).
 
 ## Equilíbrio
