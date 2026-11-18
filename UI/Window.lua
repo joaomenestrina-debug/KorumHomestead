@@ -362,6 +362,9 @@ end)
 
 function UI:Tick()
     KH.Daily:Ensure()
+    -- the random events: they only come with the game open (this clock), and go away when their time is over
+    local new = KH.Events:Update()
+    if new then KH:Notify(T("ev_new_" .. new.kind)) end
     for _, recipe in ipairs(KH.Workshop:Update()) do
         if KH.db.alerts then KH:Notify(T("craftDone", T("good_" .. recipe))) end
     end

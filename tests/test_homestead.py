@@ -734,6 +734,7 @@ class Homestead(unittest.TestCase):
             NS.db.orders[1].plant = 765
             NS.db.orders[2].plant = 765
             NS.db.orders[3].plant = 765
+            NS.db.orders[4].plant = 765
             for _, p in ipairs(NS.Data.PLANTS) do NS.db.crops[p[1]] = 2 end
             NS.UI:Show("barn")
         """)
