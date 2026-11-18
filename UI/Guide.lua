@@ -163,7 +163,7 @@ local function BuildGuide(win)
 
         local h = self.pages.herbs
         for c, key in ipairs({"g_cHerb", "g_cLevel", "g_cGrow", "g_cSeed", "g_cYield", "g_cSell"}) do h.head[c]:SetText(T(key)) end
-        local first = UI.SeedWindow(db.level)
+        local first = UI.seedFirst or UI.SeedWindow(db.level)        -- the Garden's arrows move this page too
         for i, row in ipairs(h.rows) do
             row.id = D.PLANTS[first + i - 1][1]
             local plant = D.Plant(row.id)

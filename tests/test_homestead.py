@@ -618,6 +618,21 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("NS.UI.msg"), "Not enough coins.")
         self.assertEqual(self.ev("(NS.Farm:Status(2))"), "empty")
 
+    def test_the_arrows_reach_every_open_seed(self):
+        self.lua.execute("NS.db.level = 37; NS.db.tutorial.done = true; NS.db.seen.garden = true")
+        self.open()
+        self.assertNotEqual(self.garden("seeds[1].id"), 765)                   # the strip starts with the best ones
+        self.press("NS.UI.screens.garden.seedPrev")
+        self.assertEqual(self.garden("seeds[1].id"), 2447)                    # back to Peacebloom
+        self.press("NS.UI.screens.garden.seeds[2]")
+        self.assertEqual(self.ev("NS.db.selected"), 765)                      # Silverleaf can be planted again
+        self.assertFalse(self.ev("NS.UI.screens.garden.seedPrev.enabledState"))
+        self.press("NS.UI.screens.garden.seedNext")
+        self.press("NS.UI.screens.garden.seedNext")
+        self.assertEqual(self.garden("seeds[13].id"), self.ev("NS.Data.PLANTS[#NS.Data.PLANTS][1]"))
+        self.assertFalse(self.ev("NS.UI.screens.garden.seedNext.enabledState"))
+        self.lua.execute("NS.UI.seedFirst = nil")
+
     def test_the_seed_is_picked_on_the_strip(self):
         self.open()
         self.assertEqual(self.ev("#NS.UI.screens.garden.seeds"), 13)
