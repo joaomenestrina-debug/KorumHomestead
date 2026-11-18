@@ -37,7 +37,7 @@ W.RECIPES = B.RECIPES
 
 -- what one item is worth and the xp of crafting it (Balance.lua B.CRAFT): always more than its raw materials
 local function InputValue(key)
-    if type(key) == "string" then return B.GOODS[key].sell end
+    if type(key) == "string" then return KH.Village:GoodSell(key) end
     return D.Plant(key).sell
 end
 local function InputXP(key)

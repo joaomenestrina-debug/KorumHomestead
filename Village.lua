@@ -35,11 +35,13 @@ V.BUILT = {hall = true, garden = true, barn = true, market = true}     -- these 
 V.NEEDS_HALL = B.NEEDS_HALL                                                    -- the Hall level that opens the lot
 V.MAKES = {mine = "ore", pond = "fish"}
 V.GOODS = B.GOODS
-V.GOOD_ORDER = {"ore", "fish", "heal", "mana", "agil", "stew", "roast", "feast", "bar", "tools", "blade"}
+-- ore, fish, then every Workshop item in the order of the recipes
+V.GOOD_ORDER = {"ore", "fish"}
+for _, r in ipairs(B.RECIPES) do V.GOOD_ORDER[#V.GOOD_ORDER + 1] = r.id end
 -- every good is shown with the icon of an item of the game, as the herbs are
 -- Item ids used for the game's icons.
-V.ITEM = {ore = 2770, fish = 6303, heal = 118, mana = 2455, agil = 2457,
-    stew = 13931, roast = 13935, feast = 21023, bar = 3575, tools = 5956, blade = 3487}
+V.ITEM = {ore = B.GOODS.ore.item, fish = B.GOODS.fish.item}
+for _, r in ipairs(B.RECIPES) do V.ITEM[r.id] = r.item end
 -- [target level]
 V.COST = B.COST
 V.TIME = B.TIME
@@ -93,6 +95,8 @@ function V:CanUpgrade(id)
     local hall = self:Level("hall")
     if V.NEEDS_HALL[id] and hall < V.NEEDS_HALL[id] then return false, "hall", V.NEEDS_HALL[id] end
     if id ~= "hall" and nxt.level > hall then return false, "hall", nxt.level end
+    local gate = B.BUILD_GATE[nxt.level]
+    if gate and (KH.db.level or 1) < gate then return false, "village", gate end    -- the buildings walk with the Village
     if KH.db.coins < nxt.cost then return false, "coins", nxt.cost end
     if nxt.ore > self:Good("ore") then return false, "ore", nxt.ore end
     return true
@@ -155,15 +159,17 @@ end
 -- the sell price of a good: ore and fish have theirs; a Workshop item is worth its recipe (Workshop.Value)
 function V:GoodSell(good)
     if KH.Workshop and KH.Workshop.Recipe(good) then return KH.Workshop.Value(good) end
-    return V.GOODS[good] and V.GOODS[good].sell or 0
+    local info = V.GOODS[good]
+    if not info then return 0 end
+    -- ore and fish are worth more as the Village grows, like the herbs it opens
+    return B.Round(info.sell * B.HERB_CURVE.profitStep ^ ((KH.db and KH.db.level or 1) - 1))
 end
 
 function V:SellGood(good, n)
     local db = KH.db
-    local info = V.GOODS[good]
     local have = self:Good(good)
     n = math.min(n or have, have)
-    if not info or n <= 0 then return 0 end
+    if self:GoodSell(good) <= 0 or n <= 0 then return 0 end
     db.goods[good] = have - n
     local coins = math.floor(n * self:GoodSell(good) * self:PayBonus())
     db.coins = db.coins + coins

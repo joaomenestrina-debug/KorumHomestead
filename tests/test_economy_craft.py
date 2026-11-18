@@ -23,7 +23,7 @@ class CraftPaysMore(unittest.TestCase):
             for _, input in ipairs(NS.Workshop.Recipe('{recipe}').inputs) do
                 local key, n = input[1], input[2]
                 if type(key) == 'string' then
-                    coins = coins + n * B.GOODS[key].sell * B.ORDERS.payMultiplier
+                    coins = coins + n * NS.Village:GoodSell(key) * B.ORDERS.payMultiplier
                 else
                     local p = NS.Data.Plant(key)
                     coins = coins + n * p.sell * B.ORDERS.payMultiplier
@@ -40,7 +40,7 @@ class CraftPaysMore(unittest.TestCase):
             self.assertGreater(value * self.ev("NS.Balance.ORDERS.goodsPayMultiplier"), coins, r)   # in an order
             sold_raw = self.lua.eval(f"""function() local s = 0
                 for _, i in ipairs(NS.Workshop.Recipe('{r}').inputs) do
-                    s = s + i[2] * (type(i[1]) == 'string' and NS.Balance.GOODS[i[1]].sell or NS.Data.Plant(i[1]).sell) end
+                    s = s + i[2] * (type(i[1]) == 'string' and NS.Village:GoodSell(i[1]) or NS.Data.Plant(i[1]).sell) end
                 return s end""")()
             self.assertGreater(value, sold_raw, r)                                                    # at the Barn
 
@@ -72,12 +72,12 @@ class MarketFourAndFour(unittest.TestCase):
         for i in range(1, 5):
             self.assertIsNotNone(self.ev(f"NS.db.orders[{i}].plant"))
         for i in range(5, 9):
-            self.assertIn(self.ev(f"NS.db.orders[{i}].good"), ("heal", "stew"))  # the recipes open at Workshop 1
+            self.assertIn(self.ev(f"NS.db.orders[{i}].good"), ("heal", "stew", "copper"))  # the recipes open at Workshop 1
         self.lua.execute("local o = NS.db.orders[5]; o.good = 'heal'; NS.db.goods.heal = o.qty; NS.db.tutorial.done = true; NS.db.seen.market = true")
         coins, xp = self.ev("NS.db.coins"), self.ev("NS.db.orders[5].coins")
         self.open("orders")
         self.assertEqual(self.ev("NS.UI.screens.orders.rows[5].wants:GetText()"),
-                         f"{self.ev('NS.db.orders[5].qty')} × Healing potion")
+                         f"{self.ev('NS.db.orders[5].qty')} × Minor healing potion")
         self.press("NS.UI.screens.orders.rows[5].deliver")
         self.assertEqual(self.ev("NS.db.goods.heal"), 0)
         self.assertGreater(self.ev("NS.db.coins"), coins)

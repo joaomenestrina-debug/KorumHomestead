@@ -106,17 +106,29 @@ B.DAILY = {
 B.VILLAGE_MAX_LEVEL = 7
 B.NEEDS_HALL = {mine = 2, pond = 3, workshop = 4, inn = 5}
 
--- Building upgrade costs in coins, indexed by target level.
-B.COST = {
-    hall = {0, 100, 300, 800, 2000, 5000, 12000},
-    garden = {0, 150, 400, 1000, 2500, 6000, 15000},
-    barn = {0, 60, 180, 500, 1300, 3200, 8000},
-    market = {0, 80, 220, 600, 1500, 3800, 9500},
-    mine = {200, 350, 700, 1500, 3200, 6500, 13000},
-    pond = {350, 500, 900, 1800, 3600, 7000, 14000},
-    workshop = {400, 600, 1100, 2200, 4200, 8000, 15000},
-    inn = {600, 800, 1400, 2600, 4800, 9000, 16000},
-}
+-- The buildings walk with the Village (docs/economia.md, rule 6): building level n needs Village level BUILD_GATE[n], and
+-- costs BUILD_HOURS[n] hours of what the Garden earns at that Village level (n + 1 plots, the best herb), times the weight
+-- of the building. So the coins never run far ahead of the costs, and nothing is bought too early.
+B.BUILD_GATE = {1, 5, 12, 20, 30, 42, 55}
+B.BUILD_HOURS = {0.5, 0.5, 1.5, 3, 5, 8, 12}       -- level 1 is free for the buildings the village starts with
+B.BUILD_WEIGHT = {hall = 1.0, garden = 1.2, barn = 0.6, market = 0.8, mine = 1.0, pond = 1.0, workshop = 1.2, inn = 1.3}
+B.STARTS_BUILT = {hall = true, garden = true, barn = true, market = true}
+
+-- coins an hour from the Garden at a Village level with this many plots (the profit the herbs are built on)
+function B.GardenIncome(level, plots)
+    local c = B.HERB_CURVE
+    return c.profitPerHour * c.profitStep ^ (level - 1) * plots
+end
+
+-- Building upgrade costs in coins, indexed by target level (built from the rule above).
+B.COST = {}
+for id, weight in pairs(B.BUILD_WEIGHT) do
+    B.COST[id] = {}
+    for n, gate in ipairs(B.BUILD_GATE) do
+        local free = n == 1 and B.STARTS_BUILT[id]
+        B.COST[id][n] = free and 0 or Round(B.BUILD_HOURS[n] * B.GardenIncome(gate, n + 1) * weight)
+    end
+end
 
 -- Building upgrade times in seconds, indexed by target level.
 B.TIME = {
@@ -134,9 +146,10 @@ B.TIME = {
 B.ORE = {[3] = 10, [4] = 25, [5] = 50, [6] = 90, [7] = 150}
 
 -- Goods sell prices in coins and production rates in units per hour.
+-- Ore and fish: sell price at Village 1 (it grows with the Village level like the herbs, B.HERB_CURVE.profitStep) and
+-- units an hour per level of the Mine or the Pond. Workshop items have no fixed price: Workshop.Value.
 B.GOODS = {
-    ore = {sell = 6, perHour = 6}, fish = {sell = 5, perHour = 5}, heal = {sell = 60}, mana = {sell = 150}, agil = {sell = 400},
-    stew = {sell = 32}, roast = {sell = 110}, feast = {sell = 330}, bar = {sell = 60}, tools = {sell = 190}, blade = {sell = 560},
+    ore = {sell = 6, perHour = 6, item = 2770}, fish = {sell = 5, perHour = 5, item = 6303},
 }
 
 -- Seconds in one hour, used to convert a per-hour production rate into elapsed seconds.
@@ -153,16 +166,30 @@ B.MARKET_BONUS_PER_LEVEL = 0.04
 B.CRAFT = {markup = 1.5, perMinute = 2, xpFactor = 4, xpPerMinute = 1, goodXP = 0.5}
 
 -- Workshop recipes: recipe id, trade, required level, craft seconds, and input item ids or goods.
+-- One recipe per trade at each Workshop level (1-7), following the game's own ladder, with the herbs open at the Village
+-- level that Workshop level asks (B.BUILD_GATE). `item` is the game item whose icon (and look) the good takes.
 B.RECIPES = {
-    {id = "heal", trade = "alchemy", level = 1, time = 120, inputs = {{2447, 3}, {765, 1}}},
-    {id = "mana", trade = "alchemy", level = 2, time = 300, inputs = {{785, 2}, {2449, 2}}},
-    {id = "agil", trade = "alchemy", level = 3, time = 600, inputs = {{2450, 2}, {2453, 2}}},
-    {id = "stew", trade = "cooking", level = 1, time = 90, inputs = {{"fish", 4}}},
-    {id = "roast", trade = "cooking", level = 3, time = 240, inputs = {{"fish", 10}, {2447, 2}}},
-    {id = "feast", trade = "cooking", level = 5, time = 720, inputs = {{"fish", 24}, {785, 2}}},
-    {id = "bar", trade = "smithing", level = 2, time = 200, inputs = {{"ore", 6}}},
-    {id = "tools", trade = "smithing", level = 4, time = 540, inputs = {{"ore", 16}}},
-    {id = "blade", trade = "smithing", level = 6, time = 1500, inputs = {{"ore", 40}, {2450, 1}}},
+    {id = "heal", trade = "alchemy", level = 1, time = 120, item = 118, inputs = {{2447, 3}, {765, 1}}},       -- Minor Healing Potion
+    {id = "agil", trade = "alchemy", level = 2, time = 240, item = 2457, inputs = {{765, 2}, {2449, 2}}},      -- Elixir of Minor Agility
+    {id = "mana", trade = "alchemy", level = 3, time = 360, item = 2455, inputs = {{785, 2}, {2449, 2}}},      -- Minor Mana Potion
+    {id = "healing", trade = "alchemy", level = 4, time = 600, item = 929, inputs = {{2453, 2}, {2450, 2}}},   -- Healing Potion
+    {id = "greater", trade = "alchemy", level = 5, time = 1200, item = 1710, inputs = {{3357, 2}, {3356, 2}}}, -- Greater Healing Potion
+    {id = "superior", trade = "alchemy", level = 6, time = 2400, item = 3928, inputs = {{3358, 2}, {8831, 1}}},-- Superior Healing Potion
+    {id = "major", trade = "alchemy", level = 7, time = 3600, item = 13446, inputs = {{13464, 2}, {13463, 1}}},-- Major Healing Potion
+    {id = "stew", trade = "cooking", level = 1, time = 90, item = 13931, inputs = {{"fish", 4}}},
+    {id = "snapper", trade = "cooking", level = 2, time = 180, item = 4592, inputs = {{"fish", 6}}},           -- Longjaw Mud Snapper
+    {id = "roast", trade = "cooking", level = 3, time = 300, item = 13935, inputs = {{"fish", 10}, {2447, 2}}},
+    {id = "cod", trade = "cooking", level = 4, time = 600, item = 4594, inputs = {{"fish", 14}, {3820, 1}}},   -- Rockscale Cod
+    {id = "feast", trade = "cooking", level = 5, time = 1200, item = 21023, inputs = {{"fish", 24}, {785, 2}}},
+    {id = "yellowtail", trade = "cooking", level = 6, time = 2400, item = 6887, inputs = {{"fish", 30}, {3818, 1}}}, -- Spotted Yellowtail
+    {id = "mightfish", trade = "cooking", level = 7, time = 3600, item = 13927, inputs = {{"fish", 40}, {8838, 1}}}, -- Glossy Mightfish
+    {id = "copper", trade = "smithing", level = 1, time = 100, item = 2840, inputs = {{"ore", 4}}},            -- Copper Bar
+    {id = "bar", trade = "smithing", level = 2, time = 200, item = 3575, inputs = {{"ore", 6}}},
+    {id = "tools", trade = "smithing", level = 3, time = 540, item = 5956, inputs = {{"ore", 16}}},
+    {id = "mithril", trade = "smithing", level = 4, time = 900, item = 3860, inputs = {{"ore", 20}}},         -- Mithril Bar
+    {id = "blade", trade = "smithing", level = 5, time = 1500, item = 3487, inputs = {{"ore", 40}, {2450, 1}}},
+    {id = "thorium", trade = "smithing", level = 6, time = 2400, item = 12359, inputs = {{"ore", 50}}},       -- Thorium Bar
+    {id = "arcanite", trade = "smithing", level = 7, time = 3600, item = 12360, inputs = {{"ore", 60}, {13466, 1}}}, -- Arcanite Bar
 }
 
 -- Inn capacity, follower progression, and bonus pay per follower level.
