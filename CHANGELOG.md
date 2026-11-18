@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.1.0-alpha1
+Visitors come to the village, and all its art was redrawn.
+
+**Visitors**
+- Now and then, while you play, someone comes: an urgent order, a generous merchant, a trading caravan, a rare fish in the Pond or a rare vein in the Mine.
+- A cart by the Hall glows and hops while someone is there; a click opens the new Visitors screen, with what each one wants, how long they stay and the answer (deliver, sell, trade, collect).
+- The alert beside the icon on the screen says who came and how long they stay. If the time runs out, the chance and its xp go with them; nothing you have is taken.
+- "While you were away" tells which visitors left.
+
+**Art**
+- The map, every building at each level, the followers and the visitors were redrawn in high resolution, made to look sharp at the size they show.
+
+**Other changes**
+- A sparkle at the top of the window opens "What's new" whenever you want; the screen now scrolls (bar, drag or mouse wheel).
+- The Barn shows the space of the herbs, the ore and the fish apart; the Mine and the Pond show their own stock, and the Hall recommends a bigger Barn when ore or fish are filling it.
+- The description of the Mine and the Pond no longer gets cut.
+
 ## 2.0.0
 The big update of the homestead. Your 1.0 village is carried over: nothing you have is lost.
 

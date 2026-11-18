@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 18/11/2026, por Korum (A6 aprovada e importada).*
+*Última atualização: 18/11/2026, por Korum (tag `v2.1.0-alpha1`).*
 
 ---
 
@@ -11,12 +11,12 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 | | |
 |---|---|
-| **Versão publicada** | **2.0.0** no CurseForge (Release, 17/11) — é a que os jogadores usam. A próxima é a **2.1** (eventos aleatórios), em alphas `v2.1.0-alphaN` |
+| **Versão publicada** | **2.0.0** no CurseForge (Release, 17/11) — é a que os jogadores usam. A **2.1** (eventos aleatórios + arte A6) saiu como **`v2.1.0-alpha1`** em 18/11 (Alpha no CurseForge) |
 | **Em desenvolvimento** | **2.0** (plano em [plano-2.0.md](plano-2.0.md), cronograma em [cronograma-2.0.md](cronograma-2.0.md)) |
 | **Sprint atual** | S0, S1 e F2.0 concluídas em 17/11 (alpha1 publicada); próxima: **S2 — Eventos aleatórios** |
 | **Próximo marco** | **2.0.0-alpha1** em 29/11 (M0 atingido em 17/11) |
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
-| **Arte A6** | Aprovada e no jogo: 34 peças + carrinho e visitantes da T2.9 em alta (512 px; mapa 1024×512), a partir de `arquivo/arte_v5/*@hd.png` |
+| **Arte A6** | Aprovada e no jogo, a partir de `arquivo/arte_v5/*@hd.png`, reduzida para perto do tamanho de tela (prédios 256, retratos 128, mapa 1024×512); o logo segue o antigo em pixel (ícones pequenos: simples, poucas cores) |
 
 ### Sprint 1: andamento (alpha1 em 29/11)
 
