@@ -66,7 +66,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** jogar a alpha2 e relatar o que aparecer; decidir o próximo passo da 2.x.
+- **Eu:** jogar a alpha2 e relatar o que aparecer. A S3 (F3, Personagem) fica para a data do cronograma (07/12), por decisão de 18/11.
 - **Codex:** T2.8 concluída e integrada (PR #20). Sem tarefa aberta. Não escrever código.
 - **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11. Próximo: o que o dono relatar.
 
