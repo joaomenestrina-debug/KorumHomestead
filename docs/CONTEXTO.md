@@ -11,7 +11,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 | | |
 |---|---|
-| **Versão publicada** | **1.0.1** no CurseForge (Release) — é a que os jogadores usam; **2.0.0-alpha1** como Alpha (17/11) |
+| **Versão publicada** | **2.0.0** no CurseForge (Release, 17/11) — é a que os jogadores usam. A próxima é a **2.1** (eventos aleatórios), em alphas `v2.1.0-alphaN` |
 | **Em desenvolvimento** | **2.0** (plano em [plano-2.0.md](plano-2.0.md), cronograma em [cronograma-2.0.md](cronograma-2.0.md)) |
 | **Sprint atual** | S0, S1 e F2.0 concluídas em 17/11 (alpha1 publicada); próxima: **S2 — Eventos aleatórios** |
 | **Próximo marco** | **2.0.0-alpha1** em 29/11 (M0 atingido em 17/11) |
@@ -81,6 +81,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). |
 | 17/11 | Nada castiga quem fica fora; progresso nunca se perde. Saves antigos sempre abrem. |
 | 17/11 | **Cuidar do excesso de moedas.** A encomenda do dia paga 2,5× uma encomenda normal (o dobro de ervas × 1,25 por erva); os prêmios da sequência são XP e Lótus Negra, **nunca moedas**. Nenhuma recompensa nova dá moedas sem passar pela conta da economia (T2.0). |
+| 17/11 | **2.0.0 publicada como Release** a pedido do dono (alpha1 + economia + correções). O que vem depois sai como **2.1** (eventos: `v2.1.0-alphaN`, depois `v2.1.0`). |
 | 17/11 | **Arte em alta resolução** (pedido do dono): nada de reduzir à grade antiga. Entrega como `nome@hd.png` (construções 512x512, mapa 1024x512, retratos 256x256); o importador põe no jogo como está. |
 | 17/11 | **Eventos** aprovados (`docs/eventos.md`): só com o jogo aberto, 1 a cada 45–120 min, no máximo 2; 5 tipos; carrinho no mapa + tela Visitantes. |
 | 17/11 | **Eventos aleatórios** entram na S2 no lugar dos Serviços (a Disposição fica suspensa). Evento não atendido: perde a oportunidade e o XP, nada além disso. |
