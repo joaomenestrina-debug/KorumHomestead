@@ -37,11 +37,11 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | Tarefa | Quem | Estado |
 |---|---|---|
 | T2.0 / T2.0b Proposta e aprovação | Claude + Eu | ✅ 17/11 |
-| T2.0a Nível da Vila 1–60 e as 27 ervas | Claude | a fazer |
-| T2.0b2 Migração `schema 3` | Claude | depois da T2.0a |
-| T2.0c Mercado 4 + 4 e Oficina pagando mais | Claude | a fazer (`docs/tarefas/T2.0c.md`) |
-| T2.0d Prédios com nível mínimo e custos pela renda | Claude | depois da T2.0a |
-| T2.0e Telas | Claude | depois da T2.0a e T2.0c |
+| T2.0a Nível da Vila 1–60 e as 27 ervas | Claude | ✅ PR (branch `claude/T2.0a-vila`; entra na `main` depois da tag alpha1) |
+| T2.0b2 Migração `schema 3` | Claude | ✅ junto da T2.0a (save real → Vila 37) |
+| T2.0c Mercado 4 + 4 e Oficina pagando mais | Claude | ✅ PR #15 (empilhada na T2.0a) |
+| T2.0d Prédios com nível mínimo e custos pela renda + escada de 21 receitas (aprovada 17/11) | Claude | ✅ PR (empilhada na T2.0c) |
+| T2.0e Telas | Claude | quase pronta: Mercado 4 + 4, sementes, Guia e Oficina com janela, "Vila N"; falta revisar no jogo |
 | T2.0f Revisão dos textos | Codex | depois da T2.0e |
 | T2.0g Teste de simulação | Claude | depois da T2.0d |
 | T2.0h Teste no jogo | Eu | 28/11 |

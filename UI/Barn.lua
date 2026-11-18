@@ -94,7 +94,7 @@ local function BuildBarn(win)
     function s:Refresh()
         local db = KH.db
         local wanted = {}
-        for _, o in ipairs(db.orders) do wanted[o.plant] = true end
+        for i = 1, D.ORDER_SLOTS do local o = db.orders[i]; if o then wanted[o.plant or o.good] = true end end
         local shown, total, worth = 0, 0, 0
         local function Have(row)
             if row.good then return KH.Village:Good(row.id) end
@@ -112,10 +112,10 @@ local function BuildBarn(win)
             local n = Have(row)
             row:SetShown(n > 0 and at < fit)
             if n > 0 then
-                local plant = row.good and KH.Village.GOODS[row.id] or D.Plant(row.id)
+                local sell = row.good and KH.Village:GoodSell(row.id) or D.Plant(row.id).sell
                 total = total + n
                 if not row.good then herbs = herbs + n end
-                worth = worth + math.floor(n * plant.sell * KH.Village:PayBonus())
+                worth = worth + math.floor(n * sell * KH.Village:PayBonus())
                 row:SetHeight(rowH)
                 row:ClearAllPoints()
                 row:SetPoint("TOPLEFT", 0, -66 - at * rowH)
@@ -125,13 +125,13 @@ local function BuildBarn(win)
                 if row.good then
                     row.icon:SetTexture(GoodTex(row.id))
                     row.name:SetText(T("good_" .. row.id))
-                    row.wanted:SetText(row.id == "ore" and T("forWorks") or "")
+                    row.wanted:SetText(wanted[row.id] and T("onOrder") or (row.id == "ore" and T("forWorks") or ""))
                 else
                     SetIcon(row.icon, row.id)
                     row.name:SetText(D.Name(row.id))
                     row.wanted:SetText(wanted[row.id] and T("onOrder") or "")
                 end
-                row.info:SetText(WHITE .. "× " .. n .. "|r     " .. T("worth", KH.Number(math.floor(plant.sell * KH.Village:PayBonus()))))
+                row.info:SetText(WHITE .. "× " .. n .. "|r     " .. T("worth", KH.Number(math.floor(sell * KH.Village:PayBonus()))))
                 row.sell1:SetLabel(T("sell1"))
                 row.sellAll:SetLabel(T("sellAll"))
             end

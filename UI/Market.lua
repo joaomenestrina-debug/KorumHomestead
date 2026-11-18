@@ -7,7 +7,7 @@ local Reason, Notice, Screen = P.Reason, P.Notice, P.Screen
 local GoodTex, SetIcon = P.GoodTex, P.SetIcon
 local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingName, P.Tip
 
-local ORDER_H, ORDER_GAP, DAILY_H = 84, 8, 104
+local CARD_H, GAP, DAILY_H = 68, 6, 92
 
 -- one order card: the herb, who asks, the bar of what the Barn has, the pay and the button
 local function OrderRow(parent, W, y, h, onDeliver, above)
@@ -38,13 +38,52 @@ local function OrderRow(parent, W, y, h, onDeliver, above)
     return row
 end
 
+-- a small card of the two columns: herbs on the left, Workshop items on the right
+local function SmallRow(parent, x, y, w, onDeliver)
+    local row = CreateFrame("Frame", nil, parent)
+    row:SetSize(w, CARD_H)
+    row:SetPoint("TOPLEFT", x, y)
+    row.surface, row.outline = Kit.Rounded(row, 10, 1, 1, 1, 0.045, 0.06)
+    row.icon = row:CreateTexture(nil, "ARTWORK")
+    row.icon:SetSize(34, 34)
+    row.icon:SetPoint("LEFT", 10, 0)
+    row.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    Kit.RoundMask(row, row.icon)
+    row.who = Kit.Text(row, 10, C.textMuted)
+    row.who:SetPoint("TOPLEFT", 54, -9)
+    row.wants = Kit.Text(row, 12, C.text)
+    row.wants:SetPoint("TOPLEFT", 54, -24)
+    row.wants:SetWidth(w - 54 - 170)
+    row.wants:SetWordWrap(false)
+    row.bar = Kit.Bar(row, 96, 3)
+    row.bar:SetPoint("TOPLEFT", 54, -49)
+    row.have = Kit.Text(row, 9, C.textMuted)
+    row.have:SetPoint("LEFT", row.bar, "RIGHT", 6, 0)
+    row.deliver = Kit.Button(row, 86, 26, "", onDeliver)
+    row.deliver:SetPoint("RIGHT", -10, 0)
+    row.coins = Kit.Text(row, 11, C.text, "RIGHT")
+    row.coins:SetPoint("BOTTOMRIGHT", row.deliver, "LEFT", -10, 1)
+    row.xp = Kit.Text(row, 9, C.textMuted, "RIGHT")
+    row.xp:SetPoint("TOPRIGHT", row.deliver, "LEFT", -10, -3)
+    row.short = true                               -- no room for "in the barn": only the numbers
+    row.empty = Kit.Text(row, 10, C.textMuted)
+    row.empty:SetPoint("LEFT", 14, 0)
+    row.empty:SetWidth(w - 28)
+    return row
+end
+
 local function PaintOrder(row, o, extraXP)
-    local have = KH.db.crops[o.plant] or 0
+    local have = KH.Orders.Have(o)
     local can = have >= o.qty
-    SetIcon(row.icon, o.plant)
-    row.wants:SetText(T("orderWants", o.qty, D.Name(o.plant)))
+    if o.good then
+        row.icon:SetTexture(GoodTex(o.good))
+        row.wants:SetText(T("orderWants", o.qty, T("good_" .. o.good)))
+    else
+        SetIcon(row.icon, o.plant)
+        row.wants:SetText(T("orderWants", o.qty, D.Name(o.plant)))
+    end
     row.bar:Glide(have / o.qty, can and C.accentBright or C.accent)
-    row.have:SetText(T("orderHave", math.min(have, o.qty), o.qty))
+    row.have:SetText(T(row.short and "orderHaveShort" or "orderHave", math.min(have, o.qty), o.qty))
     row.coins:SetText(T("orderCoins", KH.Number(math.floor(o.coins * KH.Village:PayBonus()))))
     row.xp:SetText(T("orderXP", o.xp + (extraXP or 0)))
     row.deliver:SetLabel(can and T("deliver") or T("toGo", o.qty - have))
@@ -71,9 +110,13 @@ local function BuildOrders(win)
     daily.rare:SetTexCoord(0.08, 0.92, 0.08, 0.92)
     s.daily = daily
 
+    -- below it, two columns of four: herbs | Workshop items
     s.rows = {}
+    local colW = math.floor((W - 10) / 2)
+    local herbs = KH.Balance.ORDERS.herbSlots
     for i = 1, D.ORDER_SLOTS do
-        s.rows[i] = OrderRow(s.frame, W, -66 - DAILY_H - ORDER_GAP - (i - 1) * (ORDER_H + ORDER_GAP), ORDER_H, function() s:Deliver(i) end)
+        local col, line = (i <= herbs) and 0 or 1, (i <= herbs) and (i - 1) or (i - herbs - 1)
+        s.rows[i] = SmallRow(s.frame, col * (colW + 10), -66 - DAILY_H - 8 - line * (CARD_H + GAP), colW, function() s:Deliver(i) end)
     end
 
     function s:Deliver(i)
@@ -109,8 +152,16 @@ local function BuildOrders(win)
         local ready = 0
         for i, row in ipairs(self.rows) do
             local o = db.orders[i]
-            row.who:SetText(T("npc" .. o.npc))
-            if PaintOrder(row, o) then ready = ready + 1 end
+            local parts = {row.icon, row.who, row.wants, row.bar, row.have, row.deliver, row.coins, row.xp}
+            for _, part in ipairs(parts) do part:SetShown(o ~= nil) end
+            row.empty:SetShown(o == nil)
+            if o then
+                row.who:SetText(T("npc" .. o.npc))
+                if PaintOrder(row, o) then ready = ready + 1 end
+            else
+                row.empty:SetText(T("ordersNoWorkshop"))          -- item orders come with the Workshop's recipes
+                row.outline:SetColor(1, 1, 1, 0.04)
+            end
         end
 
         -- the order of the day

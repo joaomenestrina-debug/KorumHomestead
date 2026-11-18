@@ -78,14 +78,18 @@ local function BuildWorkshop(win)
         self.trades:Sync()
         self.tradeHint:SetText(T("tradeHint_" .. UI.trade))
         local recipes = Wk.OfTrade(UI.trade)
+        -- 7 recipes a trade, 3 rows: the two best already open and the next one to come
+        local open = 0
+        for i, r in ipairs(recipes) do if r.level <= level then open = i end end
+        local from = math.max(1, math.min(#recipes - #self.rows + 1, open - (#self.rows - 2)))
         for i, row in ipairs(self.rows) do
-            local r = recipes[i]
+            local r = recipes[from + i - 1]
             row:SetShown(r ~= nil)
             if not r then break end
             row.id = r.id
             row.icon:SetTexture(GoodTex(r.id))
             local unlocked = level >= r.level
-            row.name:SetText(T("good_" .. r.id) .. "   |cff757a87" .. KH.Duration(r.time) .. "  ·  " .. T("worth", KH.Number(V.GOODS[r.id].sell)) .. "|r")
+            row.name:SetText(T("good_" .. r.id) .. "   |cff757a87" .. KH.Duration(r.time) .. "  ·  " .. T("worth", KH.Number(V:GoodSell(r.id))) .. "|r")
             local parts = {}
             for _, input in ipairs(r.inputs) do
                 local have = Wk.Stock(input[1])

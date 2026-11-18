@@ -87,7 +87,7 @@ class Homestead(unittest.TestCase):
         self.lua.execute("NS.Farm:Plant(1, 2447); NOW = NOW + 60")
         self.assertEqual(self.ev("NS.Farm:Harvest(1)"), 3)
         self.assertEqual(self.ev("NS.db.crops[2447]"), 3)
-        self.assertEqual(self.ev("NS.db.xp"), 4)
+        self.assertEqual(self.ev("NS.db.xp"), self.ev("NS.Data.Plant(2447).xp"))   # a little: herbs give little xp
         self.assertEqual(self.ev("(NS.Farm:Status(1))"), "empty")
         self.assertEqual(self.ev("NS.Farm:Harvest(1)"), 0)           # nothing there
 
@@ -95,7 +95,7 @@ class Homestead(unittest.TestCase):
         ok, why = self.lua.eval("function() return NS.Farm:Plant(1, 3821) end")()    # level 15
         self.assertFalse(ok)
         self.assertEqual(why, "level")
-        self.lua.execute("NS.db.level = 20; NS.db.coins = 1")
+        self.lua.execute("NS.db.level = NS.Data.Plant(3821).level; NS.db.coins = 1")
         ok, why = self.lua.eval("function() return NS.Farm:Plant(1, 3821) end")()
         self.assertEqual(why, "coins")
         self.lua.execute("NS.db.coins = 100; NS.Farm:Plant(1, 2447)")
@@ -103,32 +103,36 @@ class Homestead(unittest.TestCase):
         self.assertEqual(why, "notEmpty")
 
     def test_leveling_up_unlocks_seeds(self):
-        self.lua.execute("NS.Farm:AddXP(40)")
+        self.lua.execute("NS.Farm:AddXP(NS.Data.XPToNext(1))")
         self.assertEqual(self.ev("NS.db.level"), 2)
         self.assertEqual(self.ev("NS.db.xp"), 0)
-        self.lua.execute("NS.Farm:AddXP(1000000)")
-        self.assertEqual(self.ev("NS.db.level"), 20)                  # the cap
+        self.lua.execute("NS.Farm:AddXP(100000000)")
+        self.assertEqual(self.ev("NS.db.level"), 60)                  # the cap: the level of the Village
+        self.lua.execute("NS.db.daily.rare = 0; NS.Farm:AddXP(NS.Balance.HERBALISM.lotusXP * 2 + 5)")
+        self.assertEqual(self.ev("NS.db.daily.rare"), 2)              # at the cap the xp becomes Black Lotus
+        self.assertEqual(self.ev("NS.db.capXP"), 5)
 
     def test_selling_turns_the_barn_into_coins(self):
         self.lua.execute("NS.db.crops[2447] = 5; NS.db.crops[765] = 2")
-        self.assertEqual(self.ev("NS.Farm:Sell(2447, 2)"), 8)
+        a, b = self.ev("NS.Data.Plant(2447).sell"), self.ev("NS.Data.Plant(765).sell")
+        self.assertEqual(self.ev("NS.Farm:Sell(2447, 2)"), 2 * a)
         self.assertEqual(self.ev("NS.db.crops[2447]"), 3)
-        self.assertEqual(self.ev("NS.Farm:SellAll()"), 3 * 4 + 2 * 9)
+        self.assertEqual(self.ev("NS.Farm:SellAll()"), 3 * a + 2 * b)
         self.assertIsNone(self.ev("NS.db.crops[2447]"))
-        self.assertEqual(self.ev("NS.db.stats.earned"), 8 + 30)
+        self.assertEqual(self.ev("NS.db.stats.earned"), 5 * a + 2 * b)
 
     # ------------------------------------------------------------------ the village
     def up(self, building):
         return tuple(self.lua.eval(f"function() return NS.Village:CanUpgrade('{building}') end")())[:2]
 
     def test_the_mine_and_the_pond_are_lots_until_the_hall_grows(self):
-        self.lua.execute("NS.db.coins = 10000")
+        self.lua.execute("NS.db.level = 60; NS.db.coins = 10000000")
         self.assertEqual(self.ev("NS.Village:Level('mine')"), 0)
         self.assertEqual(tuple(self.lua.eval("function() return NS.Village:CanUpgrade('mine') end")()), (False, "hall", 2))
         self.assertEqual(tuple(self.lua.eval("function() return NS.Village:CanUpgrade('pond') end")()), (False, "hall", 3))
         self.lua.execute("NS.db.buildings.hall = 2")
         self.assertTrue(self.ev("(NS.Village:Upgrade('mine'))"))
-        self.assertEqual(self.ev("NS.db.coins"), 10000 - 200)
+        self.assertEqual(self.ev("NS.db.coins"), 10000000 - self.ev("NS.Balance.COST.mine[1]"))
         self.lua.execute("NOW = NOW + 300")
         self.assertEqual(tuple(self.lua.eval("function() return NS.Village:Update() end")()), ("mine", 1))
 
@@ -147,7 +151,7 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("NS.Village:Good('ore')"), 1)                  # no time was owed from the full days
 
     def test_bigger_works_ask_for_ore_and_goods_can_be_sold(self):
-        self.lua.execute("NS.db.coins = 10000; NS.db.buildings.hall = 2")
+        self.lua.execute("NS.db.level = 60; NS.db.coins = 10000000; NS.db.buildings.hall = 2")
         self.assertEqual(self.ev("NS.Village:Next('hall').ore"), 10)            # level 3
         self.assertEqual(tuple(self.lua.eval("function() return NS.Village:CanUpgrade('hall') end")()), (False, "ore", 10))
         self.lua.execute("NS.db.goods.ore = 14; NS.db.goods.fish = 4")
@@ -155,26 +159,27 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("NS.Village:Good('ore')"), 4)
         self.assertEqual(self.ev("NS.Village:Next('mine').ore"), 0)             # the Mine never asks for ore
         coins = self.ev("NS.db.coins")
-        self.assertEqual(self.ev("NS.Village:SellGood('fish')"), 20)
-        self.assertEqual(self.ev("NS.Village:SellGood('ore', 1)"), 6)
-        self.assertEqual(self.ev("NS.db.coins"), coins + 26)
+        fish, ore = self.ev("NS.Village:GoodSell('fish')"), self.ev("NS.Village:GoodSell('ore')")
+        self.assertEqual(self.ev("NS.Village:SellGood('fish')"), 4 * fish)
+        self.assertEqual(self.ev("NS.Village:SellGood('ore', 1)"), ore)
+        self.assertEqual(self.ev("NS.db.coins"), coins + 4 * fish + ore)
 
     def test_the_workshop_crafts_potions_in_a_queue_that_runs_by_the_clock(self):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.crops[2447] = 9; NS.db.crops[765] = 3; NS.db.crops[785] = 2; NS.db.crops[2449] = 2")
         self.assertEqual(self.ev("NS.Workshop:Slots()"), 2)
         self.assertTrue(self.ev("(NS.Workshop:Craft('heal'))"))
         self.assertEqual(self.ev("NS.db.crops[2447]"), 6)                      # 3 peacebloom and 1 silverleaf went
-        self.assertTrue(self.ev("(NS.Workshop:Craft('mana'))"))
+        self.assertTrue(self.ev("(NS.Workshop:Craft('agil'))"))                # 2 silverleaf and 2 earthroot
         ok, why = self.lua.eval("function() return NS.Workshop:CanCraft('heal') end")()[:2]
         self.assertEqual((ok, why), (False, "queueFull"))                      # two places only
-        self.assertEqual(tuple(self.lua.eval("function() return NS.Workshop:CanCraft('agil') end")())[:2], (False, "recipeLevel"))
+        self.assertEqual(tuple(self.lua.eval("function() return NS.Workshop:CanCraft('mana') end")())[:2], (False, "recipeLevel"))
         self.lua.execute("NOW = NOW + 120")
         self.assertEqual(self.lua.eval("NS.Workshop:Update()")[1], "heal")
         self.assertEqual(self.ev("NS.Village:Good('heal')"), 1)
-        self.lua.execute("NOW = NOW + 300")                                     # the second started when the first ended
-        self.assertEqual(self.lua.eval("NS.Workshop:Update()")[1], "mana")
+        self.lua.execute("NOW = NOW + 240")                                     # the second started when the first ended
+        self.assertEqual(self.lua.eval("NS.Workshop:Update()")[1], "agil")
         self.assertEqual(self.ev("#NS.db.queue"), 0)
-        self.assertEqual(self.ev("NS.Village:SellGood('mana')"), 150)
+        self.assertEqual(self.ev("NS.Village:SellGood('agil')"), self.ev("NS.Workshop.Value('agil')"))
 
     def test_every_place_opens_with_its_drawing_and_explains_itself_once(self):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.tutorial.done = true; NS.db.seen = {}")
@@ -202,20 +207,20 @@ class Homestead(unittest.TestCase):
         self.assertTrue(self.ev("(NS.Workshop:Craft('roast'))"))               # 10 fish and 2 peacebloom
         self.assertEqual((self.ev("NS.Village:Good('fish')"), self.ev("NS.db.crops[2447]")), (0, None))
         self.assertTrue(self.ev("(NS.Workshop:Craft('bar'))"))                 # the third place
-        self.lua.execute("NOW = NOW + 90 + 240")
+        self.lua.execute("NOW = NOW + 90 + 300")
         self.assertEqual(len(self.lua.eval("NS.Workshop:Update()")), 2)
         self.assertEqual(self.ev("NS.Village:Good('stew')"), 1)
         self.assertEqual(self.ev("NS.Village:Good('ore')"), 1)
         self.assertEqual(tuple(self.lua.eval("function() return NS.Workshop:CanCraft('blade') end")())[:2], (False, "recipeLevel"))
         self.lua.execute("NOW = NOW + 200")
         self.lua.eval("NS.Workshop:Update()")
-        self.assertEqual(self.ev("NS.Village:SellGood('bar')"), 60)
+        self.assertEqual(self.ev("NS.Village:SellGood('bar')"), self.ev("NS.Workshop.Value('bar')"))
 
     def test_the_workshop_screen_changes_trade(self):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.goods.fish = 5; NS.db.tutorial.done = true")
         self.open("workshop")
         rows = "NS.UI.screens.workshop.rows"
-        self.assertEqual(self.ev(rows + "[1].name:GetText()").split("   ")[0], "Healing potion")
+        self.assertEqual(self.ev(rows + "[1].name:GetText()").split("   ")[0], "Minor healing potion")
         self.lua.execute("NS.UI.trade = 'cooking'; NS.UI:Refresh()")
         self.assertEqual(self.ev(rows + "[1].name:GetText()").split("   ")[0], "Fish stew")
         self.press(rows + "[1].button")
@@ -266,7 +271,7 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("NS.UI.screens.inn.rows[2].state:GetText()"), "Comes when the Inn reaches level 2.")
 
     def test_the_lots_and_the_goods_are_on_the_screens(self):
-        self.lua.execute("NS.db.coins = 500; NS.db.tutorial.done = true; NS.db.stats.harvested = 1; NS.db.stats.earned = 1")
+        self.lua.execute("NS.db.level = 60; NS.db.coins = 10000000; NS.db.tutorial.done = true; NS.db.stats.harvested = 1; NS.db.stats.earned = 1")
         self.open("village")
         v = "NS.UI.screens.village.spots"
         self.assertEqual(self.ev(v + ".mine.name:GetText()"), "Mine")
@@ -287,21 +292,21 @@ class Homestead(unittest.TestCase):
         self.press("NS.UI.screens.mine.action")
         self.assertEqual(self.ev("NS.UI.view"), "barn")
         barn = "NS.UI.screens.barn"
-        ore = f"{barn}.rows[14]"                                                # the goods come after the 13 herbs
+        ore = f"{barn}.rows[{self.ev('#NS.Data.PLANTS') + 1}]"                  # the goods come after the herbs
         self.assertTrue(self.ev(ore + ":IsShown()"))
         self.assertEqual(self.ev(ore + ".name:GetText()"), "Ore")
         coins = self.ev("NS.db.coins")
         self.press(ore + ".sell1")
-        self.assertEqual(self.ev("NS.db.coins"), coins + 6)
+        self.assertEqual(self.ev("NS.db.coins"), coins + self.ev("NS.Village:GoodSell('ore')"))
         self.press(barn + ".action")                                           # sell everything takes the goods too
         self.assertEqual(self.ev("NS.Village:Good('ore')"), 0)
 
     def test_buildings_cost_coins_and_take_time_one_work_at_a_time(self):
-        self.assertEqual(self.up("hall"), (False, "coins"))
-        self.lua.execute("NS.db.coins = 10000")
+        self.assertEqual(self.up("hall"), (False, "village"))         # the buildings walk with the Village level
+        self.lua.execute("NS.db.level = 60; NS.db.coins = 10000000")
         self.assertEqual(self.up("garden"), (False, "hall"))          # nothing goes above the Hall
         self.assertTrue(self.ev("(NS.Village:Upgrade('hall'))"))
-        self.assertEqual(self.ev("NS.db.coins"), 10000 - 100)
+        self.assertEqual(self.ev("NS.db.coins"), 10000000 - self.ev("NS.Balance.COST.hall[2]"))
         self.assertEqual(self.up("barn"), (False, "busy"))
         work, left, progress = self.lua.eval("function() return NS.Village:Work() end")()
         self.assertEqual((work["id"], left, progress), ("hall", 45, 0))
@@ -312,7 +317,7 @@ class Homestead(unittest.TestCase):
         self.assertIsNone(self.ev("NS.db.work"))
 
     def test_a_bigger_garden_has_more_plots(self):
-        self.lua.execute("NS.db.coins = 10000; NS.db.buildings.hall = 3")
+        self.lua.execute("NS.db.level = 60; NS.db.coins = 10000000; NS.db.buildings.hall = 3")
         self.assertEqual(self.ev("NS.db.nplots"), 2)
         self.lua.execute("NS.Village:Upgrade('garden'); NOW = NOW + 60; NS.Village:Update()")
         self.assertEqual(self.ev("NS.db.nplots"), 3)
@@ -331,7 +336,7 @@ class Homestead(unittest.TestCase):
 
     def test_a_bigger_market_pays_more(self):
         self.lua.execute("NS.db.buildings.market = 6; NS.db.crops[785] = 10")     # +20%
-        self.assertEqual(self.ev("NS.Farm:Sell(785, 10)"), 336)       # 10 x 28 x 1.2
+        self.assertEqual(self.ev("NS.Farm:Sell(785, 10)"), self.ev("math.floor(10 * NS.Data.Plant(785).sell * 1.2)"))
         self.lua.execute("local o = NS.db.orders[1]; NS.db.crops[o.plant] = o.qty; BEFORE = NS.db.coins; REWARD = o.coins")
         self.lua.execute("NS.Orders:Deliver(1)")
         self.assertEqual(self.ev("NS.db.coins - BEFORE"), self.ev("math.floor(REWARD * 1.2)"))
@@ -364,21 +369,21 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("NS.UI.view"), "settings")
 
     def test_the_village_button_does_what_is_wanted_now(self):
-        self.lua.execute("NS.db.tutorial.done = true; NS.db.stats.harvested = 1; NS.db.stats.earned = 1; NS.Farm:PlantAll(2447); NOW = NOW + 60")
+        self.lua.execute("NS.db.level = 60; NS.db.tutorial.done = true; NS.db.stats.harvested = 1; NS.db.stats.earned = 1; NS.Farm:PlantAll(2447); NOW = NOW + 60")
         self.open("village")
         v = "NS.UI.screens.village"
         self.assertEqual(self.ev(v + ".head:GetText()"), "2 plots ready to harvest")
         self.assertEqual(self.ev(v + ".spots.garden.note:GetText()"), "2 ready")
         self.press(v + ".primary")                                     # harvest everything from the map
-        self.assertEqual(self.ev("NS.db.crops[2447]"), 6)
-        self.lua.execute("NS.db.coins = 500; NS.db.crops = {}; NS.UI:Refresh()")
+        self.assertEqual(self.ev("NS.db.crops[2447]"), 2 * self.ev("NS.Data.Yield(NS.Data.Plant(2447), 60)"))
+        self.lua.execute("NS.db.coins = 10000000; NS.db.crops = {}; NS.UI:Refresh()")
         self.assertEqual(self.ev(v + ".mode"), "hall")                 # nothing to harvest: a building can be improved
         self.assertTrue(self.ev(v + ".spots.hall.calls"))
         self.press(v + ".primary")
         self.assertEqual(self.ev("NS.UI.view"), "hall")
 
     def test_the_hall_improves_buildings_with_one_click(self):
-        self.lua.execute("NS.db.coins = 500")
+        self.lua.execute("NS.db.level = 60; NS.db.coins = NS.Balance.COST.hall[2] + NS.Balance.COST.garden[2]")
         self.open("hall")
         rows = "NS.UI.screens.hall.rows"
         self.assertEqual(self.ev(rows + "[1].button.label:GetText()"), "Improve to level 2")
@@ -403,8 +408,8 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("(NS.Farm:HarvestAll())"), 6)
 
     def test_orders_pay_more_than_the_market_and_are_replaced(self):
-        orders = self.ev("NS.db.orders")
-        self.assertEqual(len(orders), 3)
+        self.assertEqual(self.ev("#NS.db.orders"), 4)                # 4 herb orders; item orders wait for the Workshop
+        self.assertIsNone(self.ev("NS.db.orders[5]"))
         self.lua.execute("local o = NS.db.orders[1]; NS.db.crops[o.plant] = o.qty")
         coins = self.ev("NS.db.coins")
         reward = self.ev("NS.db.orders[1].coins")
@@ -615,18 +620,18 @@ class Homestead(unittest.TestCase):
         self.open()
         self.assertEqual(self.ev("#NS.UI.screens.garden.seeds"), 13)
         self.assertEqual(self.garden("seeds[1].note:GetText()"), "45s")
-        self.assertEqual(self.garden("seeds[3].note:GetText()"), "Lv 2")      # locked: its level
+        self.assertEqual(self.garden("seeds[3].note:GetText()"), "Lv 3")      # locked: its level
         self.assertIn("Peacebloom", self.garden("detail:GetText()"))
-        self.assertIn("4 coins · grows in 45s · yields 3", self.garden("detail:GetText()"))
+        self.assertIn(f"{self.ev('NS.Data.Plant(2447).cost')} coins · grows in 45s · yields 3", self.garden("detail:GetText()"))
         self.press("NS.UI.screens.garden.seeds[2]")
         self.assertEqual(self.ev("NS.db.selected"), 765)
         self.assertEqual(self.garden("tiles[1].note:GetText()"), "Plant Silverleaf")
         self.press("NS.UI.screens.garden.seeds[3]")                  # locked: stays, and says why
         self.assertEqual(self.ev("NS.db.selected"), 765)
-        self.assertEqual(self.ev("NS.UI.msg"), "Unlocks at Herbalism 2")
+        self.assertEqual(self.ev("NS.UI.msg"), "Unlocks at Village 3")
         self.lua.execute("local b = NS.UI.screens.garden.seeds[3]; b:GetScript('OnEnter')(b)")
         self.assertIn("Earthroot", self.garden("detail:GetText()"))  # the seed under the mouse explains itself
-        self.assertIn("Unlocks at Herbalism 2", self.garden("detail:GetText()"))
+        self.assertIn("Unlocks at Village 3", self.garden("detail:GetText()"))
         self.lua.execute("local b = NS.UI.screens.garden.seeds[3]; b:GetScript('OnLeave')(b)")
         self.assertIn("Silverleaf", self.garden("detail:GetText()"))
 
@@ -665,7 +670,7 @@ class Homestead(unittest.TestCase):
             NS.UI:Show("barn")
         """)
         barn = "NS.UI.screens.barn"
-        self.assertEqual(self.ev(barn + ".head:GetText()"), "26 herbs in the barn")
+        self.assertEqual(self.ev(barn + ".head:GetText()"), f"{2 * self.ev('#NS.Data.PLANTS')} herbs in the barn")
         self.assertEqual(self.ev(barn + ".rows[2].wanted:GetText()"), "on order")
         self.assertEqual(self.ev(barn + ".rows[1].wanted:GetText()"), "")
         self.assertIn("Sell everything", self.ev(barn + ".action.label:GetText()"))
@@ -676,7 +681,7 @@ class Homestead(unittest.TestCase):
         self.lua.execute("NS.db.coins = 100; NS.db.tutorial.done = true")
         self.open()
         self.assertEqual(self.ev("NS.UI.coinText:GetText()"), "100")
-        self.assertEqual(self.ev("NS.UI.levelBox.label:GetText()"), "Herbalism 1")
+        self.assertEqual(self.ev("NS.UI.levelBox.label:GetText()"), "Village 1")
         self.press("NS.UI.screens.garden.tiles[1]")
         self.lua.execute("NS.Kit.Step(0.2)")
         shown = int(self.ev("NS.UI.coinText:GetText()"))
@@ -686,12 +691,12 @@ class Homestead(unittest.TestCase):
         self.lua.execute("NOW = NOW + 60; NS.UI:Tick()")
         self.press("NS.UI.screens.garden.tiles[1]")
         self.lua.execute("NS.Kit.Step(1)")
-        self.assertAlmostEqual(self.ev("NS.UI.levelBox.bar.value"), 4 / 40)
-        self.lua.execute("NS.Farm:AddXP(36); NS.UI:Refresh(); NS.Kit.Step(5)")
-        self.assertEqual(self.ev("NS.UI.levelBox.label:GetText()"), "Herbalism 2")
-        self.assertEqual(self.ev("NS.UI.msg"), "Herbalism 2! New seed: Earthroot")
+        self.assertAlmostEqual(self.ev("NS.UI.levelBox.bar.value"), self.ev("NS.Data.Plant(2447).xp / NS.Data.XPToNext(1)"))
+        self.lua.execute("NS.Farm:AddXP(NS.Data.XPToNext(1) - NS.db.xp + NS.Data.XPToNext(2)); NS.UI:Refresh(); NS.Kit.Step(5)")
+        self.assertEqual(self.ev("NS.UI.levelBox.label:GetText()"), "Village 3")
+        self.assertEqual(self.ev("NS.UI.msg"), "Village 3! New seed: Earthroot")
         self.assertEqual(self.ev("NS.UI.levelBox.bar.value"), 0)
-        self.assertEqual(self.ev("NS.UI.win.notice:GetText()"), "Herbalism 2! New seed: Earthroot")
+        self.assertEqual(self.ev("NS.UI.win.notice:GetText()"), "Village 3! New seed: Earthroot")
 
     def test_the_map_marks_where_something_waits(self):
         self.lua.execute("NS.db.tutorial.done = true; NS.Farm:Plant(1, 2447); NOW = NOW + 60")
@@ -700,7 +705,8 @@ class Homestead(unittest.TestCase):
         self.assertTrue(self.ev(v + ".garden.calls"))
         self.assertFalse(self.ev(v + ".market.calls"))
         self.lua.execute("""
-            NS.db.orders[1].plant, NS.db.orders[2].plant, NS.db.orders[3].plant = 765, 2447, 2447
+            NS.db.orders[1].plant, NS.db.orders[2].plant, NS.db.orders[3].plant, NS.db.orders[4].plant = 765, 2447, 2447, 2447
+            NS.Daily:Order().plant = 2447
             NS.db.crops[765] = NS.db.orders[1].qty
             NS.UI:Refresh()
         """)
@@ -771,7 +777,8 @@ class Homestead(unittest.TestCase):
         self.assertFalse(self.ev(icon + ".badge:IsShown()"))
         self.lua.execute("""
             NS.Farm:PlantAll(2447); NOW = NOW + 60
-            NS.db.orders[1].plant, NS.db.orders[2].plant, NS.db.orders[3].plant = 765, 3821, 3821
+            NS.db.orders[1].plant, NS.db.orders[2].plant, NS.db.orders[3].plant, NS.db.orders[4].plant = 765, 3821, 3821, 3821
+            NS.Daily:Order().plant = 3821
             NS.db.crops[765] = NS.db.orders[1].qty
             NS.UI:Tick()
         """)
@@ -807,9 +814,9 @@ class Homestead(unittest.TestCase):
         self.assertIn("2 plots", self.ev(g + ".pages.buildings.rows[2].levels:GetText()"))
         self.assertIn("8 plots", self.ev(g + ".pages.buildings.rows[2].levels:GetText()"))
         self.assertEqual(self.ev(g + ".pages.herbs.rows[1].cells[3]:GetText()"), "45s")     # Peacebloom grows in 45s
-        self.assertEqual(self.ev(g + ".pages.herbs.rows[1].cells[6]:GetText()"), "4")
+        self.assertEqual(self.ev(g + ".pages.herbs.rows[1].cells[6]:GetText()"), str(self.ev("NS.Data.Plant(2447).sell")))
         self.lua.execute("NS.db.buildings.market = 6; NS.UI:Refresh()")                      # a bigger market: the guide follows
-        self.assertEqual(self.ev(g + ".pages.herbs.rows[4].cells[6]:GetText()"), "33")
+        self.assertEqual(self.ev(g + ".pages.herbs.rows[4].cells[6]:GetText()"), str(self.ev("math.floor(NS.Data.Plant(785).sell * 1.2)")))
         self.assertEqual(self.ev("NS.UI.here:GetText():match('Guide')"), "Guide")
 
     def test_the_icon_remembers_where_it_was_dragged_and_can_be_hidden(self):

@@ -24,11 +24,11 @@ class SaveOf101(Base):
 
     def test_it_takes_the_current_shape(self):
         self.assertEqual(self.ev("NS.db.schema"), self.ev("NS.SCHEMA"))
-        self.assertEqual(self.ev("NS.SCHEMA"), 2)
+        self.assertEqual(self.ev("NS.SCHEMA"), 3)
 
     def test_nothing_the_player_had_is_lost(self):
         self.assertEqual(self.ev("NS.db.coins"), 16846)
-        self.assertEqual(self.ev("NS.db.level"), 20)
+        self.assertEqual(self.ev("NS.db.level"), 37)             # Herbalism 20 (all 13 herbs) -> Village 37
         self.assertEqual(self.ev("NS.db.nplots"), 6)
         self.assertEqual(self.ev("NS.db.stats.earned"), 44486)
         self.assertEqual(self.ev("NS.db.stats.delivered"), 38)
@@ -37,9 +37,19 @@ class SaveOf101(Base):
             self.assertEqual(self.ev(f"NS.Village:Level('{building}')"), level, building)
         self.assertEqual(self.ev("NS.db.goods.stew"), 1)
         self.assertEqual(self.ev("NS.db.followers[1].mission.kind"), "long")
-        self.assertEqual(self.ev("#NS.db.orders"), 3)
+        self.assertEqual(self.ev("#NS.db.orders"), 8)                # the 3 old ones kept, 1 herb + 4 item orders added
         self.assertTrue(self.ev("NS.db.seen.workshop"))
         self.assertAlmostEqual(self.ev("NS.db.bubble.x"), 2218.67, places=1)
+
+    def test_every_herb_the_player_had_is_still_open(self):
+        for herb in (2447, 765, 2449, 785, 2450, 2453, 3355, 3356, 3357, 3818, 3821, 3358, 3369):
+            self.assertLessEqual(self.ev(f"NS.Data.Plant({herb}).level"), self.ev("NS.db.level"), herb)
+        self.assertEqual(self.ev("NS.db.xp"), 0)
+
+    def test_the_old_orders_keep_their_herbs_and_take_the_new_prices(self):
+        self.assertEqual(self.ev("NS.db.orders[1].plant"), 3818)
+        self.assertEqual(self.ev("NS.db.orders[1].qty"), 10)
+        self.assertEqual(self.ev("NS.db.orders[1].coins"), self.ev("math.floor(10 * NS.Data.Plant(3818).sell * NS.Balance.ORDERS.payMultiplier)"))
 
     def test_every_screen_opens(self):
         for view in VIEWS:
@@ -57,6 +67,15 @@ class NewHomestead(Base):
     def test_a_new_save_starts_in_the_current_shape(self):
         self.assertEqual(self.ev("NS.db.schema"), self.ev("NS.SCHEMA"))
         self.assertEqual(self.ev("NS.db.coins"), 40)
+
+
+class SaveOfHerbalism5(Base):
+    """A small save of 1.0 (Herbalism 5: Peacebloom to Briarthorn open)."""
+    SAVED = "KorumHomesteadDB = {schema = 2, level = 5, xp = 30, coins = 300, nplots = 3, plots = {}, crops = {}, orders = {}}"
+
+    def test_it_lands_where_briarthorn_opens(self):
+        self.assertEqual(self.ev("NS.db.level"), self.ev("NS.Data.Plant(2450).level"))
+        self.assertEqual(self.ev("NS.db.coins"), 300)
 
 
 class SaveFromTheFuture(Base):

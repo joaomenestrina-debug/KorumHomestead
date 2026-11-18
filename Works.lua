@@ -35,6 +35,29 @@ KH.Inn = I
 W.TRADES = {"alchemy", "cooking", "smithing"}
 W.RECIPES = B.RECIPES
 
+-- what one item is worth and the xp of crafting it (Balance.lua B.CRAFT): always more than its raw materials
+local function InputValue(key)
+    if type(key) == "string" then return KH.Village:GoodSell(key) end
+    return D.Plant(key).sell
+end
+local function InputXP(key)
+    if type(key) == "string" then return B.CRAFT.goodXP end
+    local p = D.Plant(key)
+    return p.xp / p.yield
+end
+function W.Value(id)
+    local r = W.Recipe(id)
+    local sum = 0
+    for _, input in ipairs(r.inputs) do sum = sum + InputValue(input[1]) * input[2] end
+    return B.Round(B.CRAFT.markup * sum + B.CRAFT.perMinute * r.time / 60)
+end
+function W.XP(id)
+    local r = W.Recipe(id)
+    local sum = 0
+    for _, input in ipairs(r.inputs) do sum = sum + InputXP(input[1]) * input[2] end
+    return math.max(1, B.Round(B.CRAFT.xpFactor * sum + B.CRAFT.xpPerMinute * r.time / 60))
+end
+
 -- the recipes of one trade, in order
 function W.OfTrade(trade)
     local out = {}
@@ -119,6 +142,7 @@ function W:Update()
         local job = table.remove(db.queue, 1)
         db.goods[job.recipe] = (db.goods[job.recipe] or 0) + 1
         done[#done + 1] = job.recipe
+        KH.Farm:AddXP(W.XP(job.recipe))             -- the Workshop gives xp (more than the herbs it used)
     end
     return done
 end

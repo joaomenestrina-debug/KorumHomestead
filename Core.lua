@@ -18,7 +18,8 @@ KH.version = (Meta and Meta(addonName, "Version")) or "1.0.0"
 KH.defaults = {
     -- Starting coins and plot count are supplied by Balance.lua before ADDON_LOADED.
     xp = 0,
-    level = 1,
+    level = 1,             -- the level of the Village, 1..60 (until 2.0 it was "Herbalism" 1..20: Migrate.lua schema 3)
+    capXP = 0,             -- xp earned at the cap; every B.HERBALISM.lotusXP becomes a Black Lotus
     plots = {},            -- [index] = {plant = itemID, at = time planted}
     selected = 2447,       -- the plant "Plant" uses
     crops = {},            -- [itemID] = harvested and not sold

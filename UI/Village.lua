@@ -155,6 +155,7 @@ local function BuildVillage(win)
                 local ok, why, n = V:CanUpgrade(id)
                 if ok then note, calls = T("canBuild"), not step
                 elseif why == "hall" then note = T("short_hall", n)
+                elseif why == "village" then note = T("short_village", n)
                 else note = T("emptyLot") end
             elseif V.MAKES[id] then
                 local good = V.MAKES[id]
