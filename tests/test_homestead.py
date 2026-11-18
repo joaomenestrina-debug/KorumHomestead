@@ -497,6 +497,7 @@ class Homestead(unittest.TestCase):
         self.assertTrue(self.ev("KorumHomesteadFrame:IsShown()"))
         self.press("NS.UI.screens.village.spots.garden")
         self.press("NS.UI.screens.garden.tiles[1]")                  # plant
+        self.lua.execute("NS.UI.screens.garden:PlantFromMenu(NS.db.selected)")   # the seed menu: the chosen seed
         self.assertEqual(self.ev("(NS.Farm:Status(1))"), "growing")
         self.press("NS.UI.screens.garden.tiles[3]")                  # the next plot: it comes from the Hall
         self.assertEqual(self.ev("NS.UI.view"), "hall")
@@ -555,6 +556,7 @@ class Homestead(unittest.TestCase):
         self.assertTrue(self.garden("tiles[1].hinted"))               # the first empty plot is the one pointed at
         self.assertFalse(self.garden("tiles[2].hinted"))
         self.press("NS.UI.screens.garden.tiles[1]")
+        self.lua.execute("NS.UI.screens.garden:PlantFromMenu(NS.db.selected)")   # the seed menu: the chosen seed
         self.assertEqual(self.ev("NS.UI:Step()"), "wait")
         self.assertEqual(self.garden("head:GetText()"), "It is growing")
         self.assertIn("45s", self.garden("sub:GetText()"))
@@ -601,6 +603,7 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.garden("tiles[3].note:GetText()"), "Improve the Garden")
         self.assertFalse(self.garden("tiles[4]:IsShown()"))          # only the next plot is promised
         self.press("NS.UI.screens.garden.tiles[1]")
+        self.lua.execute("NS.UI.screens.garden:PlantFromMenu(NS.db.selected)")   # the seed menu: the chosen seed
         self.assertEqual(self.garden("tiles[1].title:GetText()"), "Peacebloom")
         self.assertEqual(self.garden("tiles[1].note:GetText()"), "45s left")
         self.assertEqual(self.garden("tiles[1].ring.lit"), 0)
@@ -615,7 +618,28 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.garden("tiles[2].note:GetText()"), "Needs 4 coins")
         self.assertEqual(self.garden("tiles[3].note:GetText()"), "Improve the Garden")
         self.press("NS.UI.screens.garden.tiles[2]")
+        self.lua.execute("NS.UI.screens.garden:PlantFromMenu(NS.db.selected)")   # the seed menu: the chosen seed
         self.assertEqual(self.ev("NS.UI.msg"), "Not enough coins.")
+        self.assertEqual(self.ev("(NS.Farm:Status(2))"), "empty")
+
+    def test_an_empty_plot_opens_the_seed_menu(self):
+        self.lua.execute("NS.db.level = 37; NS.db.coins = 100000; NS.db.tutorial.done = true; NS.db.seen.garden = true")
+        self.open()
+        g = "NS.UI.screens.garden"
+        self.press(g + ".tiles[1]")
+        self.assertTrue(self.ev(g + ".menu:IsShown()"))
+        self.assertEqual(self.ev(f"#{g}.menu.cells"), self.ev("#NS.Data.PLANTS"))        # every herb at once
+        self.assertEqual(self.ev("(NS.Farm:Status(1))"), "empty")                       # nothing planted yet
+        self.press(g + ".menu.cells[27]")                                               # Icecap: Village 58
+        self.assertEqual(self.ev("NS.UI.msg"), self.ev("NS.T('needLevel', 58)"))
+        self.assertTrue(self.ev(g + ".menu:IsShown()"))
+        self.press(g + ".menu.cells[2]")                                                # Silverleaf
+        self.assertFalse(self.ev(g + ".menu:IsShown()"))
+        self.assertEqual(self.ev("NS.db.plots[1].plant"), 765)
+        self.assertEqual(self.ev("NS.db.selected"), 765)                                # and "Plant all" uses it
+        self.press(g + ".tiles[2]")
+        self.press(g + ".menu.card.close")
+        self.assertFalse(self.ev(g + ".menu:IsShown()"))
         self.assertEqual(self.ev("(NS.Farm:Status(2))"), "empty")
 
     def test_the_arrows_reach_every_open_seed(self):
@@ -700,6 +724,7 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("NS.UI.coinText:GetText()"), "100")
         self.assertEqual(self.ev("NS.UI.levelBox.label:GetText()"), "Village 1")
         self.press("NS.UI.screens.garden.tiles[1]")
+        self.lua.execute("NS.UI.screens.garden:PlantFromMenu(NS.db.selected)")   # the seed menu: the chosen seed
         self.lua.execute("NS.Kit.Step(0.2)")
         shown = int(self.ev("NS.UI.coinText:GetText()"))
         self.assertTrue(96 <= shown < 100, shown)                     # on its way down
