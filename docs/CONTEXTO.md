@@ -11,9 +11,9 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 | | |
 |---|---|
-| **Versão publicada** | **1.0.1** no CurseForge (Release) — é a que os jogadores usam |
+| **Versão publicada** | **1.0.1** no CurseForge (Release) — é a que os jogadores usam; **2.0.0-alpha1** como Alpha (17/11) |
 | **Em desenvolvimento** | **2.0** (plano em [plano-2.0.md](plano-2.0.md), cronograma em [cronograma-2.0.md](cronograma-2.0.md)) |
-| **Sprint atual** | S0 concluída em 17/11; **S1 — Voltar todo dia** começa em 23/11 |
+| **Sprint atual** | S0, S1 e F2.0 concluídas em 17/11 (alpha1 publicada); próxima: **S2 — Eventos aleatórios** |
 | **Próximo marco** | **2.0.0-alpha1** em 29/11 (M0 atingido em 17/11) |
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
 
@@ -30,7 +30,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T1.7 Cenas do simulador da F1 | Codex | ✅ PR #10 |
 | T1.8 Revisão, integração e build no jogo | Claude | ✅ 17/11 |
 | T1.9 Teste no jogo da F1 | **Eu** | **agora** (era 28/11) |
-| T1.10–T1.11 Correções e tag `v2.0.0-alpha1` | Claude + Eu | depois do teste: a alpha1 sai **com a economia nova** (decisão de 17/11) |
+| T1.10–T1.11 Correções e tag `v2.0.0-alpha1` | Claude + Eu | ✅ 17/11: testada pelo dono, tag criada (com a economia nova) |
 
 ### F2.0 Economia: andamento (proposta aprovada em `docs/economia.md`)
 
@@ -44,7 +44,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | T2.0e Telas | Claude | quase pronta: Mercado 4 + 4, sementes, Guia e Oficina com janela, "Vila N"; falta revisar no jogo |
 | T2.0f Revisão dos textos | Codex | ✅ revisão EN/ptBR pronta para revisão |
 | T2.0g Teste de simulação | Claude | depois da T2.0d |
-| T2.0h Teste no jogo | **Eu** | **agora**, junto da T1.9 (build único instalado em 17/11) |
+| T2.0h Teste no jogo | Eu | ✅ 17/11 |
 
 ### Sprint 0: concluída
 
@@ -64,9 +64,9 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** **testar o build único** (alpha1 + economia): Novidades, Mercado 4 + 4 e encomenda do dia, cartão "Enquanto você esteve fora", arrancar canteiro, Vila 1–60 e ervas novas, Oficina com receitas novas, custos dos prédios.
-- **Codex:** **só arte e revisão de texto**. **T2.0f concluída**: textos EN/ptBR revisados em `Locales.lua`; PR para revisão. Não escrever código.
-- **Claude:** correções do teste, revisão do Codex, tag `v2.0.0-alpha1`; depois o teste que simula um jogador (T2.0g) e os briefings da S2.
+- **Eu:** conferir no CurseForge que o arquivo `2.0.0-alpha1` saiu como **Alpha** (e a 1.0.1 continua Release). Depois, na S2: aprovar a lista de eventos (T2.2).
+- **Codex:** **só arte e revisão de texto**. Nada agora; na S2: revisão dos textos dos eventos (T2.8) e arte, se faltar (T2.9). Não escrever código.
+- **Claude:** S2 (eventos aleatórios): especificação T2.1 para o dono aprovar; o teste que simula um jogador (T2.0g) fica para a T2.10.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
