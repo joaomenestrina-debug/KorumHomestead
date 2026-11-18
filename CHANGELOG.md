@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2.1.0-alpha2
+The visitors stay a bonus at every level, and their texts were reviewed.
+
 **Visitors**
 - At high levels the urgent orders and the merchants ask for or buy fewer units of late herbs and Workshop items, so each visit stays a bonus next to the Garden; the price is still double.
 - The rare Firefin Snapper of the Pond shows its own name and price (it was taking the ones of the Mud Snapper of the Workshop).
