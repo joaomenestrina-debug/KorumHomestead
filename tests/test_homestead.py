@@ -218,6 +218,16 @@ class Homestead(unittest.TestCase):
         self.lua.eval("NS.Workshop:Update()")
         self.assertEqual(self.ev("NS.Village:SellGood('bar')"), self.ev("NS.Workshop.Value('bar')"))
 
+    def test_the_workshop_recommends_the_craft_worth_the_most(self):
+        self.lua.execute("NS.db.buildings.workshop = 2; NS.db.goods.ore = 50; NS.db.tutorial.done = true; NS.db.seen.workshop = true")
+        self.open("workshop")
+        self.lua.execute("NS.UI.trade = 'smithing'; NS.UI:Refresh()")
+        rows = "NS.UI.screens.workshop.rows"
+        tags = {self.ev(f"{rows}[{i}].id"): self.ev(f"{rows}[{i}].tag:GetText()") for i in (1, 2)}
+        self.assertEqual(tags, {"copper": "", "bar": "Recommended"})           # the Metal Bar is worth more
+        self.assertEqual(self.ev(f"{rows}[2].button.style"), "primary")
+        self.assertEqual(self.ev(f"{rows}[1].button.style"), "quiet")
+
     def test_the_workshop_screen_changes_trade(self):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.goods.fish = 5; NS.db.tutorial.done = true")
         self.open("workshop")
