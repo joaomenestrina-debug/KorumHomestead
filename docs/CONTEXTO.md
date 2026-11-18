@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 17/11/2026, por Korum (A6 enviada para aprovação).*
+*Última atualização: 18/11/2026, por Korum (A6 aprovada e importada).*
 
 ---
 
@@ -16,7 +16,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | **Sprint atual** | S0, S1 e F2.0 concluídas em 17/11 (alpha1 publicada); próxima: **S2 — Eventos aleatórios** |
 | **Próximo marco** | **2.0.0-alpha1** em 29/11 (M0 atingido em 17/11) |
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
-| **Arte A6** | As 34 peças em alta resolução e os quatro arquivos HD da T2.9 enviados para revisão |
+| **Arte A6** | Aprovada e no jogo: 34 peças + carrinho e visitantes da T2.9 em alta (512 px; mapa 1024×512), a partir de `arquivo/arte_v5/*@hd.png` |
 
 ### Sprint 1: andamento (alpha1 em 29/11)
 
@@ -65,8 +65,8 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** revisar e aprovar as artes da T2.9 e da A6 nos PRs.
-- **Codex:** A6 concluída; 34 peças refeitas em alta resolução e carrinho/visitantes da T2.9 incluídos no PR. Aguardar aprovação. Não escrever código.
+- **Eu:** testar no jogo a arte nova (A6) e os eventos.
+- **Codex:** A6 entregue e aprovada. Próximo: T2.8 (revisão dos textos dos eventos). Não escrever código.
 - **Claude:** correções do teste dos eventos, revisão de texto pelo Codex (T2.8), tag `v2.1.0-alpha1`; depois a conferência de economia (T2.10).
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)

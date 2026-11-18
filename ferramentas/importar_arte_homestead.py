@@ -1,6 +1,6 @@
 """Brings the pixel art of Korum Homestead into the addon.
 
-    python ferramentas/importar_arte_homestead.py [pasta]        (default: arquivo/arte_v3)
+    python ferramentas/importar_arte_homestead.py [pasta]        (default: arquivo/arte_v5)
 
 A drawing in high resolution, `nome@hd.png`, wins: it goes into the game as it is (no grid, no cleaning). Otherwise
 the folder has every image twice: `nome.png` on the real pixel grid (128x128 buildings, 32x32 icons, 512x256 map) and
@@ -94,7 +94,7 @@ def unmatte(img):
 
 
 def main():
-    src = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "arquivo" / "arte_v3"
+    src = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "arquivo" / "arte_v5"
     OUT.mkdir(parents=True, exist_ok=True)
     total = 0
     done, missing = 0, []
@@ -105,7 +105,12 @@ def main():
             # game exactly as it was drawn, only made to a size the game can load (powers of two, at most 1024)
             done += 1
             art = Image.open(hd).convert("RGBA")
-            w, h = (min(1024, 1 << (art.width - 1).bit_length()), min(1024, 1 << (art.height - 1).bit_length()))
+            # the width to a power of two (at most 1024), the height to the power of two closest to the drawing's shape
+            # (the 2:1 map stays 2:1)
+            # 512 is the cap of a building, portrait or logo: they show at most ~92 px (~280 px at 150% zoom on a 4K
+            # screen), so 1024 would only make the addon four times bigger; the map is the one 1024 wide
+            w = min(1024 if name == "map" else 512, 1 << (art.width - 1).bit_length())
+            h = 1 << max(0, round(w * art.height / art.width) - 1).bit_length()
             if (w, h) != art.size:
                 art = art.resize((w, h), Image.LANCZOS)
             art.save(LOGO if name == "logo" else OUT / f"{name}.tga", compression=None)
