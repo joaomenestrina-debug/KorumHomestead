@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0-alpha2
+**Visitors**
+- At high levels the urgent orders and the merchants ask for or buy fewer units of late herbs and Workshop items, so each visit stays a bonus next to the Garden; the price is still double.
+
 ## 2.1.0-alpha1
 Visitors come to the village, and all its art was redrawn.
 

@@ -94,6 +94,14 @@ local function DeliverXP(key, n)
     return 0
 end
 
+-- how many units an event may ask or buy, when each one adds `extra` coins over selling it: the most it adds stays under
+-- B.EVENTS.capMinutes of what the Garden makes now (at least one unit)
+local function Capped(n, extra)
+    if extra <= 0 then return n end
+    local cap = B.GardenIncome(KH.db.level, V:Plots()) * B.EVENTS.capMinutes / 60
+    return math.max(1, math.min(n, math.floor(cap / extra)))
+end
+
 -- ----------------------------------------------------------------------------
 -- Making each kind
 -- ----------------------------------------------------------------------------
@@ -110,8 +118,8 @@ function MAKE.urgent()
         o = KH.Orders:Make(1)
         o.key = o.plant
     end
-    local qty = math.max(1, math.floor(o.qty * c.qtyFactor))
     local normal = o.coins / o.qty                                  -- what a normal order pays for one
+    local qty = Capped(math.max(1, math.floor(o.qty * c.qtyFactor)), normal * c.payFactor - Value(o.key))
     return {key = o.key, qty = qty, coins = math.floor(qty * normal * c.payFactor),
         xp = math.floor(o.xp / o.qty * qty * c.xpFactor), npc = o.npc, time = c.time}
 end
@@ -121,7 +129,8 @@ function MAKE.merchant()
     local pool = OpenHerbs()
     for _, id in ipairs(OpenItems()) do pool[#pool + 1] = id end
     local key = pool[Rand(#pool)]
-    return {key = key, price = B.Round(Value(key) * c.priceFactor), left = c.max, time = c.time}
+    local price = B.Round(Value(key) * c.priceFactor)
+    return {key = key, price = price, left = Capped(c.max, price - Value(key)), time = c.time}
 end
 
 function MAKE.caravan()

@@ -66,3 +66,31 @@ de migração).
 O teste de economia mostrou que, no nível 50, os achados valendo ~30 min de Horta levavam os eventos a 24% da Horta.
 Os achados passaram a valer ~12 min de Horta; pedido urgente (2×) e mercador (até 20) ficaram como aprovados. Resultado:
 abaixo de 20% em todos os níveis (teste `tests/test_events.py`).
+
+## 8. Conferência de economia (T2.10, 18/11)
+
+A medição nova joga as respostas de verdade (`Deliver`, `Sell`, `Trade`, `Collect`) em cada nível, com a vila que o
+jogador pode ter ali (cada construção no nível mais alto que o portão abre, e os canteiros que isso dá). Conta o que os
+eventos pagam **além** de vender as mesmas coisas no Mercado, e à parte o valor que as caravanas acrescentam (em bens).
+
+Antes do ajuste, o pedido urgente e o mercador passavam do limite nos níveis altos: as quantidades eram fixas (até 20
+unidades; 1,5× uma encomenda) e uma erva tardia ou um item da Oficina vale horas de um canteiro. No nível 60 os eventos
+davam **42%** da Horta em moedas.
+
+**Ajuste:** cada pedido urgente ou mercador acrescenta no máximo **20 minutos do que a Horta rende agora**
+(`B.EVENTS.capMinutes`); passando disso, pede ou compra menos unidades (no mínimo 1). O preço continua o dobro.
+
+| Nível | Canteiros | Moedas | Moedas + caravana | XP (% de um nível por hora) |
+|---|---|---|---|---|
+| 1 | 2 | 15% | 16% | 72% |
+| 5 | 3 | 11% | 12% | 16% |
+| 10 | 3 | 11% | 12% | 7% |
+| 20 | 5 | 10% | 11% | 6% |
+| 30 | 6 | 9% | 11% | 4% |
+| 42 | 7 | 11% | 12% | 5% |
+| 50 | 7 | 12% | 13% | 5% |
+| 60 | 8 | 12% | 14% | 6% |
+
+(moedas em % do que a Horta rende por hora; 2000 eventos sorteados por nível.) O XP não tinha limite na especificação;
+fica registrado. O nível 1 é alto porque um nível ali custa pouco XP e o primeiro evento só chega depois de 45 min de
+jogo, quando o jogador já passou dele. Testes: `tests/test_events.py` (`Economy`).

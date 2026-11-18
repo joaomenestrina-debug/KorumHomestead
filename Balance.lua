@@ -168,8 +168,11 @@ B.RARE_ORDER = {"lobster", "eel", "snapper", "truesilver", "darkiron", "arcane"}
 --   merchant        buys one thing at priceFactor x its price, up to max units
 --   caravan         trades: the player receives gainMin..gainMax times the value of what they give; never coins
 --   fish, ore       a rare find to collect; findXP = share of the xp of the level
+--   capMinutes      the most an urgent order or a merchant adds over selling the same things at the Market, in minutes of
+--                   what the Garden makes now: late herbs and Workshop items are worth hours of a plot each, so past this
+--                   they ask or buy fewer units (the price stays double)
 B.EVENTS = {
-    gapMin = 2700, gapMax = 7200, maxOpen = 2,
+    gapMin = 2700, gapMax = 7200, maxOpen = 2, capMinutes = 20,
     weights = {urgent = 30, merchant = 25, caravan = 20, fish = 12.5, ore = 12.5},
     urgent = {time = 2700, qtyFactor = 1.5, payFactor = 2, xpFactor = 3},
     merchant = {time = 7200, priceFactor = 2, max = 20},

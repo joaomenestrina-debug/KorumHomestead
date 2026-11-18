@@ -113,23 +113,93 @@ class Kinds(Base):
             self.lua.execute("NS.db.events.open = {}")
 
 
+# What the events earn an hour at a level, played by the real answers (Deliver, Sell, Trade, Collect), with the village a
+# player can have there (each building at the highest level its gate opens). coins = what they pay over selling the same
+# things at the Market; value = coins + the value the caravans add (goods, not coins); xp = what the answers give.
+MEASURE = """function(level, n)
+    local B, V, D = NS.Balance, NS.Village, NS.Data
+    local db = NS.db
+    local function Value(k) return type(k) == 'number' and D.Plant(k).sell or V:GoodSell(k) end
+    local function Stock(k, q)
+        if type(k) == 'number' then db.crops[k] = q else db.goods[k] = q end
+    end
+    db.level = level
+    local lv = 0
+    for i, gate in ipairs(B.BUILD_GATE) do if gate <= level then lv = i end end
+    for id in pairs(B.BUILD_WEIGHT) do db.buildings[id] = lv end
+    db.nplots = V:Plots()
+    local coins, value, xp, kinds = 0, 0, 0, {}
+    for i = 1, n do
+        db.events.open = {}
+        local e = NS.Events:Spawn()
+        kinds[e.kind] = (kinds[e.kind] or 0) + 1
+        local ok, r
+        if e.kind == 'urgent' then
+            Stock(e.key, e.qty)
+            ok, r = NS.Events:Deliver(e.id)
+            coins = coins + r.coins - e.qty * Value(e.key)
+            xp = xp + r.xp
+        elseif e.kind == 'merchant' then
+            Stock(e.key, e.left)
+            local price = e.price
+            ok, r = NS.Events:Sell(e.id)
+            coins = coins + r.coins - r.n * Value(e.key)
+            xp = xp + r.xp
+        elseif e.kind == 'caravan' then
+            for k, t in ipairs(e.trades) do
+                Stock(t.give, t.n)
+                ok, r = NS.Events:Trade(e.id, k)
+                value = value + t.m * Value(t.get) - t.n * Value(t.give)
+            end
+        else
+            ok, r = NS.Events:Collect(e.id)
+            coins = coins + Value(e.key)
+            xp = xp + r.xp
+        end
+        assert(ok, e.kind)
+        db.level = level
+    end
+    local per = 3600 / ((B.EVENTS.gapMin + B.EVENTS.gapMax) / 2) / n      -- events an hour, per event drawn
+    local plots = V:Plots()
+    local garden = B.GardenIncome(level, plots)
+    local gardenXP = plots * D.XPToNext(level) * B.HERB_CURVE.harvestXPShare / B.HERB_CURVE.xpHours
+    return coins * per, (coins + value) * per, xp * per, garden, gardenXP, plots
+end"""
+
+LEVELS = (1, 5, 10, 12, 20, 30, 42, 50, 55, 60)
+
+
+def measure(test, level, n=600):
+    coins, value, xp, garden, garden_xp, plots = test.lua.eval(MEASURE)(level, n)
+    return {"level": level, "plots": plots, "coins": coins, "value": value, "xp": xp,
+            "garden": garden, "garden_xp": garden_xp}
+
+
 class Economy(Base):
+    """T2.10: at every level, with the village a player can have there, the events add less than a fifth of what the
+    Garden makes in an hour, in coins and also counting what the caravans add."""
+
     def test_events_never_earn_more_than_a_fifth_of_the_garden(self):
-        for level in (10, 30, 50):
-            avg = self.lua.eval(f"""function()
-                NS.db.level = {level}
-                local total, n = 0, 400
-                for i = 1, n do
-                    local e = NS.Events:Spawn(); NS.db.events.open = {{}}
-                    local function v(k) return type(k) == 'number' and NS.Data.Plant(k).sell or NS.Village:GoodSell(k) end
-                    if e.kind == 'urgent' then total = total + e.coins - e.qty * v(e.key)          -- over selling them
-                    elseif e.kind == 'merchant' then total = total + e.left * e.price / 2      -- the extra over selling
-                    elseif e.kind == 'fish' or e.kind == 'ore' then total = total + NS.Village:GoodSell(e.key) end
-                end
-                return total / n end""")()
-            per_hour = avg / ((self.ev("NS.Balance.EVENTS.gapMin") + self.ev("NS.Balance.EVENTS.gapMax")) / 2 / HOUR)
-            garden = self.ev(f"NS.Balance.GardenIncome({level}, 6)")
-            self.assertLess(per_hour, 0.2 * garden, level)
+        for level in LEVELS:
+            m = measure(self, level)
+            self.assertLess(m["coins"], 0.2 * m["garden"], m)
+            self.assertLess(m["value"], 0.2 * m["garden"], m)
+
+    def test_a_big_order_or_merchant_stops_at_the_cap(self):
+        # level 60, a full village: late herbs and Workshop items are worth hours of a plot each
+        self.lua.execute("NS.db.level = 60; for id in pairs(NS.Balance.BUILD_WEIGHT) do NS.db.buildings[id] = 7 end")
+        cap = self.ev("NS.Balance.GardenIncome(60, NS.Village:Plots()) * NS.Balance.EVENTS.capMinutes / 60")
+        for _ in range(200):
+            self.lua.execute("NS.db.events.open = {}")
+            e = self.lua.eval("NS.Events:Spawn()")
+            value = self.lua.eval("function(k) return type(k) == 'number' and NS.Data.Plant(k).sell or NS.Village:GoodSell(k) end")
+            if e.kind == "urgent":
+                extra = e.coins - e.qty * value(e.key)
+                self.assertTrue(e.qty == 1 or extra <= cap, (e.qty, extra, cap))
+            elif e.kind == "merchant":
+                extra = e.left * (e.price - value(e.key))
+                self.assertTrue(e.left == 1 or extra <= cap, (e.left, extra, cap))
+                self.assertLessEqual(e.left, 20)
 
 
 if __name__ == "__main__":
