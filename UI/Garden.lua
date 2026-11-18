@@ -92,6 +92,16 @@ local function BuildGarden(win)
     local seedsY = -66 - 2 * TILE_H - TILE_GAP - 18
     s.seedsLabel = Kit.Text(s.frame, 11, C.textMuted)
     s.seedsLabel:SetPoint("TOPLEFT", 0, seedsY)
+    -- the arrows walk the strip to the herbs before and after it (the Workshop needs the early ones too)
+    local function Shift(step)
+        local last = #D.PLANTS - STRIP + 1
+        UI.seedFirst = math.max(1, math.min(last, (UI.seedFirst or SeedWindow(KH.db.level)) + step))
+        UI:Refresh()
+    end
+    s.seedNext = Kit.Button(s.frame, 26, 20, "›", function() Shift(STRIP - 3) end)
+    s.seedNext:SetPoint("TOPRIGHT", 0, seedsY + 3)
+    s.seedPrev = Kit.Button(s.frame, 26, 20, "‹", function() Shift(-(STRIP - 3)) end)
+    s.seedPrev:SetPoint("RIGHT", s.seedNext, "LEFT", -6, 0)
     s.seeds = {}
     local slotW = math.floor(W / STRIP)
     for i = 1, STRIP do
@@ -201,7 +211,9 @@ local function BuildGarden(win)
 
     function s:RefreshSeeds()
         local db = KH.db
-        local first = SeedWindow(db.level)
+        local first = UI.seedFirst or SeedWindow(db.level)
+        self.seedPrev:SetEnabledState(first > 1)
+        self.seedNext:SetEnabledState(first < #D.PLANTS - STRIP + 1)
         for i, b in ipairs(self.seeds) do
             b.id = D.PLANTS[first + i - 1][1]
             local p = D.Plant(b.id)
