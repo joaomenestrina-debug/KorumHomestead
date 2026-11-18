@@ -2,7 +2,8 @@
 
     python ferramentas/importar_arte_homestead.py [pasta]        (default: arquivo/arte_v3)
 
-The folder has every image twice: `nome.png` on the real pixel grid (128x128 buildings, 32x32 icons, 512x256 map) and
+A drawing in high resolution, `nome@hd.png`, wins: it goes into the game as it is (no grid, no cleaning). Otherwise
+the folder has every image twice: `nome.png` on the real pixel grid (128x128 buildings, 32x32 icons, 512x256 map) and
 `nome@2x.png` (the same, doubled). This script takes the real grid, cleans the stray pixels that the drawing left at the edges
 of the images, doubles it again with no smoothing (so what is in the game is exactly what was drawn) and writes the 32-bit
 TGA files the game reads into Media/Village (the logo into Media/logo.tga).
@@ -98,6 +99,17 @@ def main():
     total = 0
     done, missing = 0, []
     for name in NAMES:
+        hd = src / f"{name}@hd.png"
+        if hd.exists():
+            # the high-resolution drawing (512 x 512 buildings, 1024 x 512 map, 256 x 256 portraits): it goes into the
+            # game exactly as it was drawn, only made to a size the game can load (powers of two, at most 1024)
+            done += 1
+            art = Image.open(hd).convert("RGBA")
+            w, h = (min(1024, 1 << (art.width - 1).bit_length()), min(1024, 1 << (art.height - 1).bit_length()))
+            if (w, h) != art.size:
+                art = art.resize((w, h), Image.LANCZOS)
+            art.save(LOGO if name == "logo" else OUT / f"{name}.tga", compression=None)
+            continue
         if not (src / f"{name}.png").exists():          # a round of art may bring only some of the images
             missing.append(name)
             continue

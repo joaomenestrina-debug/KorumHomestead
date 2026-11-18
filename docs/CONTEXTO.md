@@ -81,6 +81,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). |
 | 17/11 | Nada castiga quem fica fora; progresso nunca se perde. Saves antigos sempre abrem. |
 | 17/11 | **Cuidar do excesso de moedas.** A encomenda do dia paga 2,5× uma encomenda normal (o dobro de ervas × 1,25 por erva); os prêmios da sequência são XP e Lótus Negra, **nunca moedas**. Nenhuma recompensa nova dá moedas sem passar pela conta da economia (T2.0). |
+| 17/11 | **Arte em alta resolução** (pedido do dono): nada de reduzir à grade antiga. Entrega como `nome@hd.png` (construções 512x512, mapa 1024x512, retratos 256x256); o importador põe no jogo como está. |
 | 17/11 | **Eventos** aprovados (`docs/eventos.md`): só com o jogo aberto, 1 a cada 45–120 min, no máximo 2; 5 tipos; carrinho no mapa + tela Visitantes. |
 | 17/11 | **Eventos aleatórios** entram na S2 no lugar dos Serviços (a Disposição fica suspensa). Evento não atendido: perde a oportunidade e o XP, nada além disso. |
 | 17/11 | A alpha1 e a economia (F2.0) saem **juntas** num build só (`main` desde e77d8d5). |
