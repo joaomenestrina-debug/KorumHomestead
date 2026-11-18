@@ -171,7 +171,33 @@ local function Rand(n)
     return (KH.Rand or math.random)(n)
 end
 
-function Orders:Make()
+-- what a herb order pays and the xp it gives, from Balance.lua every time
+function Orders.HerbPay(plant, qty)
+    return math.floor(qty * plant.sell * B.ORDERS.payMultiplier)
+end
+function Orders.HerbXP(plant, qty)
+    return math.floor(qty * plant.xp / plant.yield * B.ORDERS.xpFactor)
+end
+
+-- the slots of each kind: 1..herbSlots ask herbs, the rest ask Workshop items
+function Orders.IsGoods(slot) return slot > B.ORDERS.herbSlots end
+
+-- an item order: one of the recipes the Workshop has open, or nil when none is
+function Orders:MakeGoods()
+    local db, W = KH.db, KH.Workshop
+    local open = {}
+    for _, r in ipairs(W.RECIPES) do
+        if W:Unlocked(r.id) then open[#open + 1] = r.id end
+    end
+    if #open == 0 then return nil end
+    local id = open[Rand(#open)]
+    local qty = B.ORDERS.goodsBase + Rand(B.ORDERS.goodsRandom) - 1 + math.floor(db.level / B.ORDERS.goodsLevels)
+    return {good = id, qty = qty, coins = math.floor(qty * W.Value(id) * B.ORDERS.goodsPayMultiplier),
+        xp = math.floor(qty * W.XP(id) * B.ORDERS.goodsXpFactor), npc = Rand(D.NPC_COUNT)}
+end
+
+function Orders:Make(slot)
+    if slot and Orders.IsGoods(slot) then return self:MakeGoods() end
     local db = KH.db
     local options = {}
     for _, p in ipairs(D.PLANTS) do
@@ -180,35 +206,44 @@ function Orders:Make()
     if #options == 0 then options[1] = D.PLANTS[1][1] end
     local plant = D.Plant(options[Rand(#options)])
     local qty = B.ORDERS.quantityBase + Rand(B.ORDERS.quantityRandom) + math.floor(db.level / B.ORDERS.quantityLevels)
-    return {plant = plant.id, qty = qty, coins = math.floor(qty * plant.sell * B.ORDERS.payMultiplier), xp = math.floor(qty * plant.xp / B.ORDERS.xpDivisor),
-        npc = Rand(D.NPC_COUNT)}
+    return {plant = plant.id, qty = qty, coins = Orders.HerbPay(plant, qty), xp = Orders.HerbXP(plant, qty), npc = Rand(D.NPC_COUNT)}
 end
 
 function Orders:Ensure()
     local db = KH.db
     for i = 1, D.ORDER_SLOTS do
-        if not db.orders[i] then db.orders[i] = self:Make() end
+        if not db.orders[i] then db.orders[i] = self:Make(i) end
     end
+end
+
+-- how many of what an order asks the homestead has
+function Orders.Have(o)
+    if o.good then return KH.Village:Good(o.good) end
+    return KH.db.crops[o.plant] or 0
 end
 
 function Orders:CanDeliver(slot)
     local o = KH.db.orders[slot]
-    return o ~= nil and (KH.db.crops[o.plant] or 0) >= o.qty
+    return o ~= nil and Orders.Have(o) >= o.qty
 end
 
 function Orders:Deliver(slot)
     local db = KH.db
     local o = db.orders[slot]
     if not o then return false, "noOrder" end
-    if (db.crops[o.plant] or 0) < o.qty then return false, "missing" end
-    db.crops[o.plant] = db.crops[o.plant] - o.qty
-    if db.crops[o.plant] <= 0 then db.crops[o.plant] = nil end
+    if Orders.Have(o) < o.qty then return false, "missing" end
+    if o.good then
+        db.goods[o.good] = KH.Village:Good(o.good) - o.qty
+    else
+        db.crops[o.plant] = db.crops[o.plant] - o.qty
+        if db.crops[o.plant] <= 0 then db.crops[o.plant] = nil end
+    end
     local pay = math.floor(o.coins * KH.Village:PayBonus())
     o.paid = pay
     db.coins = db.coins + pay
     db.stats.earned = db.stats.earned + pay
     db.stats.delivered = db.stats.delivered + 1
-    db.orders[slot] = self:Make()
+    db.orders[slot] = self:Make(slot)
     F:AddXP(o.xp)
     return true, o
 end

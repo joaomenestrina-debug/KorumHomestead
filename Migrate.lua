@@ -39,8 +39,7 @@ KH.MIGRATIONS = {
         for _, o in pairs(db.orders or {}) do
             local plant = o.plant and KH.Data.Plant(o.plant)
             if plant and o.qty then
-                o.coins = math.floor(o.qty * plant.sell * B.ORDERS.payMultiplier)
-                o.xp = math.floor(o.qty * plant.xp / B.ORDERS.xpDivisor)
+                o.coins, o.xp = KH.Orders.HerbPay(plant, o.qty), KH.Orders.HerbXP(plant, o.qty)
             end
         end
     end,

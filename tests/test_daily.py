@@ -33,7 +33,7 @@ class DailyOrders(unittest.TestCase):
 
     def test_daily_order_uses_the_normal_order_herb_and_scaled_pay(self):
         order = self.ev("NS.Daily:Order()")
-        expected = self.ev("function() local o = NS.db.daily.order; local p = NS.Data.Plant(o.plant); local q = o.qty; return q, math.floor(q * p.sell * NS.Balance.ORDERS.payMultiplier * NS.Balance.DAILY.payMultiplier), math.floor(q * p.xp / NS.Balance.ORDERS.xpDivisor * NS.Balance.DAILY.xpMultiplier) end")()
+        expected = self.ev("function() local o = NS.db.daily.order; local p = NS.Data.Plant(o.plant); local q = o.qty; return q, math.floor(NS.Orders.HerbPay(p, q) * NS.Balance.DAILY.payMultiplier), math.floor(NS.Orders.HerbXP(p, q) * NS.Balance.DAILY.xpMultiplier) end")()
         self.assertEqual((order.qty, order.coins, order.xp), expected)
 
     def test_an_order_drawn_before_a_change_of_the_numbers_takes_the_new_pay(self):

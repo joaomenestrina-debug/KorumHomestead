@@ -152,6 +152,12 @@ function V:Produce()
     end
 end
 
+-- the sell price of a good: ore and fish have theirs; a Workshop item is worth its recipe (Workshop.Value)
+function V:GoodSell(good)
+    if KH.Workshop and KH.Workshop.Recipe(good) then return KH.Workshop.Value(good) end
+    return V.GOODS[good] and V.GOODS[good].sell or 0
+end
+
 function V:SellGood(good, n)
     local db = KH.db
     local info = V.GOODS[good]
@@ -159,7 +165,7 @@ function V:SellGood(good, n)
     n = math.min(n or have, have)
     if not info or n <= 0 then return 0 end
     db.goods[good] = have - n
-    local coins = math.floor(n * info.sell * self:PayBonus())
+    local coins = math.floor(n * self:GoodSell(good) * self:PayBonus())
     db.coins = db.coins + coins
     db.stats.earned = db.stats.earned + coins
     return coins

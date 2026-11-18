@@ -71,15 +71,20 @@ for i, herb in ipairs(B.HERBS) do
 end
 
 -- Order slots, NPC count, quantity formula, level range, reward multipliers and XP divisor.
+-- The Market: 4 herb orders and 4 Workshop item orders (docs/economia.md, rule 4).
+--   xpFactor            a herb order gives this many times the harvest xp of the herbs it takes
+--   goods*              item orders: amount (base + random + one more every goodsLevels), pay and xp over the item's value
 B.ORDERS = {
-    slots = 3,
+    herbSlots = 4, goodsSlots = 4, slots = 8,
+    xpFactor = 3,
+    goodsBase = 1, goodsRandom = 2, goodsLevels = 20,
+    goodsPayMultiplier = 1.6, goodsXpFactor = 2,
     npcCount = 6,
     quantityBase = 2,
     quantityRandom = 5,
     quantityLevels = 15,
     plantLevelRange = 15,
     payMultiplier = 1.6,
-    xpDivisor = 2,
 }
 
 -- Daily order size, pay, and streak prizes.
@@ -140,6 +145,12 @@ B.SECONDS_PER_HOUR = 3600
 -- Barn capacity per level and market pay bonus per level above the first.
 B.BARN_PER_LEVEL = 40
 B.MARKET_BONUS_PER_LEVEL = 0.04
+
+-- The Workshop always pays more than its raw materials, in coins and in xp (docs/economia.md, rule 5):
+--   value  = markup * (sell price of the inputs) + perMinute * minutes of crafting
+--   xp     = xpFactor * (harvest xp of the herb inputs, per herb) + xpPerMinute * minutes
+--   ore and fish count goodXP each as an input
+B.CRAFT = {markup = 1.5, perMinute = 2, xpFactor = 4, xpPerMinute = 1, goodXP = 0.5}
 
 -- Workshop recipes: recipe id, trade, required level, craft seconds, and input item ids or goods.
 B.RECIPES = {

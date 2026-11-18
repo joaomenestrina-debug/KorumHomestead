@@ -85,7 +85,7 @@ local function BuildWorkshop(win)
             row.id = r.id
             row.icon:SetTexture(GoodTex(r.id))
             local unlocked = level >= r.level
-            row.name:SetText(T("good_" .. r.id) .. "   |cff757a87" .. KH.Duration(r.time) .. "  ·  " .. T("worth", KH.Number(V.GOODS[r.id].sell)) .. "|r")
+            row.name:SetText(T("good_" .. r.id) .. "   |cff757a87" .. KH.Duration(r.time) .. "  ·  " .. T("worth", KH.Number(V:GoodSell(r.id))) .. "|r")
             local parts = {}
             for _, input in ipairs(r.inputs) do
                 local have = Wk.Stock(input[1])

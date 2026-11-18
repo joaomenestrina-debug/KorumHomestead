@@ -121,7 +121,7 @@ class DailyInTheMarket(Base):
     def test_the_icon_counts_the_order_of_the_day_when_it_can_be_delivered(self):
         self.fill()          # (the same herbs may fill a normal order too: those count on their own)
         self.lua.execute("NS.UI:UpdateBadge()")
-        normal = self.ev("(function() local n = 0; for i = 1, 3 do if NS.Orders:CanDeliver(i) then n = n + 1 end end; return n end)()")
+        normal = self.ev("(function() local n = 0; for i = 1, NS.Data.ORDER_SLOTS do if NS.Orders:CanDeliver(i) then n = n + 1 end end; return n end)()")
         self.assertEqual(int(self.ev("NS.UI.bubble.badge.text:GetText()")), normal + 1)
 
     def test_every_new_text_exists_in_both_languages(self):

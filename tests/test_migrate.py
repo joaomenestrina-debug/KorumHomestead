@@ -37,7 +37,7 @@ class SaveOf101(Base):
             self.assertEqual(self.ev(f"NS.Village:Level('{building}')"), level, building)
         self.assertEqual(self.ev("NS.db.goods.stew"), 1)
         self.assertEqual(self.ev("NS.db.followers[1].mission.kind"), "long")
-        self.assertEqual(self.ev("#NS.db.orders"), 3)
+        self.assertEqual(self.ev("#NS.db.orders"), 8)                # the 3 old ones kept, 1 herb + 4 item orders added
         self.assertTrue(self.ev("NS.db.seen.workshop"))
         self.assertAlmostEqual(self.ev("NS.db.bubble.x"), 2218.67, places=1)
 

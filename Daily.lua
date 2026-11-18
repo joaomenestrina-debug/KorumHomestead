@@ -15,8 +15,8 @@ local DONE = "done"
 function Daily:Price(order)
     local plant = D.Plant(order.plant)
     if not plant then return order end
-    order.coins = math.floor(order.qty * plant.sell * B.ORDERS.payMultiplier * B.DAILY.payMultiplier)
-    order.xp = math.floor(order.qty * plant.xp / B.ORDERS.xpDivisor * B.DAILY.xpMultiplier)
+    order.coins = math.floor(KH.Orders.HerbPay(plant, order.qty) * B.DAILY.payMultiplier)
+    order.xp = math.floor(KH.Orders.HerbXP(plant, order.qty) * B.DAILY.xpMultiplier)
     return order
 end
 

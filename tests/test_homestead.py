@@ -178,7 +178,7 @@ class Homestead(unittest.TestCase):
         self.lua.execute("NOW = NOW + 300")                                     # the second started when the first ended
         self.assertEqual(self.lua.eval("NS.Workshop:Update()")[1], "mana")
         self.assertEqual(self.ev("#NS.db.queue"), 0)
-        self.assertEqual(self.ev("NS.Village:SellGood('mana')"), 150)
+        self.assertEqual(self.ev("NS.Village:SellGood('mana')"), self.ev("NS.Workshop.Value('mana')"))
 
     def test_every_place_opens_with_its_drawing_and_explains_itself_once(self):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.tutorial.done = true; NS.db.seen = {}")
@@ -213,7 +213,7 @@ class Homestead(unittest.TestCase):
         self.assertEqual(tuple(self.lua.eval("function() return NS.Workshop:CanCraft('blade') end")())[:2], (False, "recipeLevel"))
         self.lua.execute("NOW = NOW + 200")
         self.lua.eval("NS.Workshop:Update()")
-        self.assertEqual(self.ev("NS.Village:SellGood('bar')"), 60)
+        self.assertEqual(self.ev("NS.Village:SellGood('bar')"), self.ev("NS.Workshop.Value('bar')"))
 
     def test_the_workshop_screen_changes_trade(self):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.goods.fish = 5; NS.db.tutorial.done = true")
@@ -407,8 +407,8 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("(NS.Farm:HarvestAll())"), 6)
 
     def test_orders_pay_more_than_the_market_and_are_replaced(self):
-        orders = self.ev("NS.db.orders")
-        self.assertEqual(len(orders), 3)
+        self.assertEqual(self.ev("#NS.db.orders"), 4)                # 4 herb orders; item orders wait for the Workshop
+        self.assertIsNone(self.ev("NS.db.orders[5]"))
         self.lua.execute("local o = NS.db.orders[1]; NS.db.crops[o.plant] = o.qty")
         coins = self.ev("NS.db.coins")
         reward = self.ev("NS.db.orders[1].coins")
@@ -704,7 +704,8 @@ class Homestead(unittest.TestCase):
         self.assertTrue(self.ev(v + ".garden.calls"))
         self.assertFalse(self.ev(v + ".market.calls"))
         self.lua.execute("""
-            NS.db.orders[1].plant, NS.db.orders[2].plant, NS.db.orders[3].plant = 765, 2447, 2447
+            NS.db.orders[1].plant, NS.db.orders[2].plant, NS.db.orders[3].plant, NS.db.orders[4].plant = 765, 2447, 2447, 2447
+            NS.Daily:Order().plant = 2447
             NS.db.crops[765] = NS.db.orders[1].qty
             NS.UI:Refresh()
         """)
@@ -775,7 +776,8 @@ class Homestead(unittest.TestCase):
         self.assertFalse(self.ev(icon + ".badge:IsShown()"))
         self.lua.execute("""
             NS.Farm:PlantAll(2447); NOW = NOW + 60
-            NS.db.orders[1].plant, NS.db.orders[2].plant, NS.db.orders[3].plant = 765, 3821, 3821
+            NS.db.orders[1].plant, NS.db.orders[2].plant, NS.db.orders[3].plant, NS.db.orders[4].plant = 765, 3821, 3821, 3821
+            NS.Daily:Order().plant = 3821
             NS.db.crops[765] = NS.db.orders[1].qty
             NS.UI:Tick()
         """)
