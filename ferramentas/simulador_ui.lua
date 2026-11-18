@@ -303,6 +303,11 @@ function SIM.Dump()
                 item.text, item.size, item.flags = r.text or "", r.size or 12, r.flags or ""
                 item.tr, item.tg, item.tb, item.ta = r.tr or 1, r.tg or 1, r.tb or 1, r.ta or 1
                 item.justify, item.wrap, item.fixed = r.justify or "CENTER", r.wrap ~= false, (r.w ~= nil) or false
+                -- for ferramentas/conferir_textos.py: a text placed beside another text follows its real width in the game
+                item.id = r._ord
+                for _, pt in pairs(r.points) do
+                    if pt.rel and pt.rel.kind and pt.rel.kind ~= "texture" and pt.rel.kind ~= "frame" then item.rel = pt.rel._ord end
+                end
             end
             out[#out + 1] = item
         end
