@@ -25,6 +25,8 @@ NAMES = (["map", "works", "lot", "logo"]
          # the random events (arte_v4): the visitors' cart on the map and the three visitors
          + ["cart", "visitor_merchant", "visitor_caravan", "visitor_messenger"])
 KEEP_WHOLE = {"map", "works"}
+# the logo shows at 24-44 px: the 32 px pixel drawing reads there, the detailed high-resolution one turns to mush
+OLD_GRID = {"logo": "arte_v3"}
 # the width each high-resolution drawing goes into the game at (the rest: 256)
 SIZE = {"map": 1024, "logo": 64, "visitor_merchant": 128, "visitor_caravan": 128, "visitor_messenger": 128,
         **{f"follower{i}": 128 for i in range(1, 7)}}           # one piece by nature: nothing is a stray pixel there
@@ -104,6 +106,8 @@ def main():
     done, missing = 0, []
     for name in NAMES:
         hd = src / f"{name}@hd.png"
+        if name in OLD_GRID:                                # drawn on purpose for its small size: the old one stays
+            hd = ROOT / "arquivo" / OLD_GRID[name] / "none"
         if hd.exists():
             # the high-resolution drawing: no grid and no cleaning, only made to the size it shows at in the game
             done += 1
@@ -119,11 +123,12 @@ def main():
                 art = art.resize((w, h), Image.LANCZOS)
             art.save(LOGO if name == "logo" else OUT / f"{name}.tga", compression=None)
             continue
-        if not (src / f"{name}.png").exists():          # a round of art may bring only some of the images
+        here = ROOT / "arquivo" / OLD_GRID[name] if name in OLD_GRID else src
+        if not (here / f"{name}.png").exists():          # a round of art may bring only some of the images
             missing.append(name)
             continue
         done += 1
-        native = Image.open(src / f"{name}.png").convert("RGBA")
+        native = Image.open(here / f"{name}.png").convert("RGBA")
         if name == "map":
             total += unmatte(native)
         if name not in KEEP_WHOLE:
