@@ -30,7 +30,13 @@ def game_box(t):
 
 
 def check(game, frame_name):
+    # the icon on the screen and its alert are not the window: out of the way while the window is checked
+    shown = game.lua.eval("KorumHomesteadIcon ~= nil and KorumHomesteadIcon:IsShown()")
+    if shown:
+        game.lua.execute("KorumHomesteadIcon:Hide()")
     items = [dict(i.items()) for i in game.lua.eval("SIM.Dump()").values()]
+    if shown:
+        game.lua.execute("KorumHomesteadIcon:Show()")
     fx, fy, fw, fh = game.lua.eval(f"function() local r = SIM.Rect({frame_name}) return r[1], r[2], r[3], r[4] end")()
     texts = []
     for t in items:
