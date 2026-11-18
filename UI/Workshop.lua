@@ -22,6 +22,8 @@ local function BuildWorkshop(win)
     s.trades:SetPoint("TOPLEFT", 0, -58)
     s.tradeHint = Kit.Text(s.frame, 11, C.textSoft)
     s.tradeHint:SetPoint("LEFT", s.trades, "RIGHT", 16, 0)
+    s.tradeHint:SetWidth(s.width - 360 - 16)          -- what is left beside the tabs; a long hint takes two lines
+    s.tradeHint:SetWordWrap(true)
     for i = 1, 3 do
         local row = CreateFrame("Frame", nil, s.frame)
         row:SetSize(W, RECIPE_H)

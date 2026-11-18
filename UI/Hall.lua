@@ -14,7 +14,7 @@ local function Effect(id, level)
     if id == "workshop" then return level == 0 and T("emptyLot") or T("fx_workshop", KH.Workshop.QueueAt(level)) end
     if id == "inn" then return level == 0 and T("emptyLot") or T("fx_" .. id, level) end
     if id == "garden" then return T("fx_garden", math.min(D.MAX_PLOTS, 1 + level)) end
-    if id == "barn" then return T("fx_barn", V:BarnCap(level)) end
+    if id == "barn" then return T("fx_barn", V:BarnCap(level)) end      -- herbs in all, and as much of each good
     if id == "market" then return T("fx_market", math.floor((V:PayBonus(level) - 1) * 100 + 0.5)) end
     return T("fx_hall", level)
 end
@@ -75,6 +75,8 @@ local function BuildHall(win)
             UI:Refresh()
         end)
         row.button:SetPoint("RIGHT", -16, 0)
+        row.tag = Kit.Text(row, 10, C.accent)                -- "Recommended": the best upgrade now
+        row.tag:SetPoint("LEFT", row.name, "RIGHT", 10, 0)
         s.rows[i] = row
     end
 
@@ -88,6 +90,8 @@ local function BuildHall(win)
             self.head:SetText(T("hallH"))
             self.sub:SetText(T("hallS"))
         end
+        local best, reason = V:Recommend()
+        if best and not work then self.sub:SetText(T("recommendS", BuildingName(best), T("rec_" .. reason))) end
         local offered = false
         for _, row in ipairs(self.rows) do
             local id = row.id
@@ -98,7 +102,10 @@ local function BuildHall(win)
             row.name:SetText(level == 0 and T("notBuilt", BuildingName(id)) or T("nameLevelLong", BuildingName(id), level))
             row.bar:SetShown(working)
             row.cost:SetShown(not working)
-            row.outline:SetColor(working and C.accent[1] or 1, working and C.accent[2] or 1, working and C.accent[3] or 1, working and 0.55 or 0.06)
+            local recommended = id == best
+            row.tag:SetText(recommended and T("recommended") or "")
+            local lit = working or recommended
+            row.outline:SetColor(lit and C.accent[1] or 1, lit and C.accent[2] or 1, lit and C.accent[3] or 1, working and 0.55 or (recommended and 0.4 or 0.06))
             if not nxt then
                 row.now:SetText(Effect(id, level))
                 row.cost:SetText(T("why_maxLevel"))
@@ -125,7 +132,7 @@ local function BuildHall(win)
                     local ok, why, n = V:CanUpgrade(id)
                     if ok then
                         row.button:SetLabel(level == 0 and T("build") or T("upgradeTo", nxt.level))
-                        row.button:SetStyle(offered and "quiet" or "primary")
+                        row.button:SetStyle(((best and recommended) or (not best and not offered)) and "primary" or "quiet")
                         offered = true
                         row.button:SetEnabledState(true)
                     else

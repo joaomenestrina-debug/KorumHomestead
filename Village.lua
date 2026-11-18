@@ -206,6 +206,25 @@ function V:Stored()
     return n
 end
 
+-- The upgrade the Hall recommends: the one that helps the most now, among those the player can reach (only coins, ore
+-- or the work going on stand in the way). A Barn about to fill comes first, then the Hall when it holds the Garden back,
+-- then the Garden (income), the Workshop, the Market, the Mine, the Pond, the Inn, the Barn, the Hall.
+V.RECOMMEND_ORDER = {"garden", "workshop", "market", "mine", "pond", "inn", "barn", "hall"}
+function V:Recommend()
+    local function Reachable(id)
+        if not self:Next(id) then return false end
+        local ok, why = self:CanUpgrade(id)
+        return ok or why == "coins" or why == "ore" or why == "busy"
+    end
+    if Reachable("barn") and self:Stored() >= 0.8 * self:BarnCap() then return "barn", "barn" end
+    local _, gardenWhy = self:CanUpgrade("garden")
+    if gardenWhy == "hall" and Reachable("hall") then return "hall", "hall" end
+    for _, id in ipairs(V.RECOMMEND_ORDER) do
+        if Reachable(id) then return id, id end
+    end
+    return nil
+end
+
 -- what sales and orders are multiplied by
 function V:PayBonus(level)
     return 1 + B.MARKET_BONUS_PER_LEVEL * ((level or self:Level("market")) - 1)
