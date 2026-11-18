@@ -70,20 +70,27 @@ local function BuildVillage(win)
         s.spots[id] = b
     end
 
-    -- the visitors' cart: on the road between the two rows while someone came (Events.lua); a click opens Visitors
+    -- the visitors' cart: on the grass by the Hall, under the trees, while someone came (Events.lua); a click opens
+    -- Visitors. It glows, sends out a ring and hops, so it is seen at once
     local CART = 90
     local cart = CreateFrame("Button", nil, map)
     cart:SetSize(CART, CART)
-    cart:SetPoint("TOPLEFT", map, "TOPLEFT", 330 * scale - CART / 2, -(222 * scale - CART * 0.844))
+    cart:SetPoint("TOPLEFT", map, "TOPLEFT", 228 * scale - CART / 2, -(78 * scale - CART * 0.844))
     cart:SetFrameLevel(map:GetFrameLevel() + 20)
     cart.glow = cart:CreateTexture(nil, "BACKGROUND")
     cart.glow:SetTexture(Kit.Icon("glow"))
-    cart.glow:SetSize(CART * 1.4, CART * 1.4)
+    cart.glow:SetSize(CART * 1.6, CART * 1.6)
     cart.glow:SetPoint("CENTER", 0, -CART * 0.15)
     cart.glow:SetVertexColor(C.gold[1], C.gold[2], C.gold[3])
     if cart.glow.SetBlendMode then cart.glow:SetBlendMode("ADD") end
+    cart.ring = cart:CreateTexture(nil, "BACKGROUND")
+    cart.ring:SetTexture(Kit.Icon("glow"))
+    cart.ring:SetPoint("CENTER", 0, -CART * 0.15)
+    cart.ring:SetVertexColor(C.gold[1], C.gold[2], C.gold[3])
+    if cart.ring.SetBlendMode then cart.ring:SetBlendMode("ADD") end
     cart.art = cart:CreateTexture(nil, "ARTWORK")
-    cart.art:SetAllPoints()
+    cart.art:SetSize(CART, CART)
+    cart.art:SetPoint("TOPLEFT", 0, 0)
     cart.art:SetTexture(VDIR .. "cart")
     cart.badge = Kit.Text(cart, 11, C.onAccent, "CENTER")
     cart.disc = cart:CreateTexture(nil, "OVERLAY")
@@ -115,7 +122,13 @@ local function BuildVillage(win)
     s.frame:SetScript("OnUpdate", function(_, elapsed)
         s.clock = s.clock + (tonumber(elapsed) or 0)
         local wave = 0.5 + 0.5 * math.sin(s.clock * 3)
-        s.cart.glow:SetAlpha(s.cart.hover and 0.5 or (0.15 + 0.25 * wave))
+        local cart = s.cart
+        cart.glow:SetAlpha(cart.hover and 0.9 or (0.45 + 0.4 * wave))
+        local ring = (s.clock * 0.7) % 1                                -- a ring that grows and fades, over and over
+        cart.ring:SetSize(CART * (1 + 1.2 * ring), CART * (1 + 1.2 * ring))
+        cart.ring:SetAlpha(cart.hover and 0 or 0.7 * (1 - ring))
+        local hop = math.abs(math.sin(s.clock * 2.6))                   -- a small hop of the cart
+        cart.art:SetPoint("TOPLEFT", 0, cart.hover and 0 or math.floor(hop * 4 + 0.5))
         for _, b in pairs(s.spots) do
             if b.hover then
                 b.glow:SetAlpha(0.42)
