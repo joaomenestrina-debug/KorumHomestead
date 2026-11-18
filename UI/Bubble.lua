@@ -9,6 +9,7 @@ local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingNa
 
 local bubble
 local TOAST_HOLD = 5
+local ALERT_EACH = 6         -- seconds each waiting thing stays on the alert
 
 local function Waiting()
     local ready = KH.Farm:ReadyCount()
@@ -31,6 +32,17 @@ local function PlaceBubble()
 end
 
 -- the line comes out on the side of the icon that has room
+local function PlaceSide(frame)
+    local x = bubble.GetCenter and bubble:GetCenter()
+    local screen = UIParent.GetWidth and UIParent:GetWidth()
+    frame:ClearAllPoints()
+    if type(x) == "number" and type(screen) == "number" and x > screen * 0.6 then
+        frame:SetPoint("RIGHT", bubble, "LEFT", -8, 0)
+    else
+        frame:SetPoint("LEFT", bubble, "RIGHT", 8, 0)
+    end
+end
+
 local function PlaceToast()
     local toast = bubble.toast
     local x = bubble.GetCenter and bubble:GetCenter()
@@ -48,9 +60,11 @@ local function NextToast()
     local text = table.remove(bubble.queue, 1)
     if not text then
         bubble.showing = nil
+        UI:UpdateAlert()                          -- the alert comes back when the notifications are over
         return
     end
     bubble.showing = true
+    if bubble.alert then bubble.alert:Hide() end
     toast.text:SetText(text)
     toast:SetWidth(Kit.TextWidth(toast.text, text) + 28)
     PlaceToast()
@@ -121,6 +135,17 @@ function UI:CreateBubble()
     toast.text:SetPoint("CENTER", 0, 0)
     toast:Hide()
     b.toast = toast
+    -- the alert: what waits now, in words, growing out of the icon; a click opens the place where it is
+    local alert = CreateFrame("Button", nil, b)
+    alert:SetSize(28, 28)
+    alert.pill = Kit.PillIn(alert, 28, "BACKGROUND")
+    alert.pill:SetColor(C.accent[1], C.accent[2], C.accent[3], 0.92)
+    alert.text = Kit.Text(alert, 12, C.onAccent, "CENTER")
+    alert.text:SetPoint("CENTER", 0, 0)
+    alert:SetScript("OnClick", function(self) Kit.ClickSound(); UI:Show(self.view or "village") end)
+    alert:Hide()
+    b.alert = alert
+    b.cycle, b.cycleClock = 1, 0
 
     b:SetScript("OnDragStart", function(self)
         self.dragged = true
@@ -157,6 +182,12 @@ function UI:CreateBubble()
     b.clock = 0
     b:SetScript("OnUpdate", function(self, elapsed)
         self.clock = self.clock + (tonumber(elapsed) or 0)
+        self.cycleClock = self.cycleClock + (tonumber(elapsed) or 0)
+        if self.cycleClock >= ALERT_EACH then              -- more than one thing waits: the alert takes turns
+            self.cycleClock = 0
+            self.cycle = self.cycle + 1
+            UI:UpdateAlert()
+        end
         if self.hover then
             self.glow:SetAlpha(0.45)
         elseif self.waiting then
@@ -170,6 +201,38 @@ function UI:CreateBubble()
     PlaceBubble()
     self:ApplyBubble()
     self:UpdateBadge()
+end
+
+-- what waits, most useful first: {text, the screen it is on}
+function UI:AlertLines()
+    local out = {}
+    if KH.Daily:CanDeliver() then out[#out + 1] = {T("alertDaily"), "orders"} end
+    local orders = 0
+    for i = 1, D.ORDER_SLOTS do if KH.Orders:CanDeliver(i) then orders = orders + 1 end end
+    if orders > 0 then out[#out + 1] = {T(orders == 1 and "vilDeliverOneH" or "vilDeliverH", orders), "orders"} end
+    local ready = KH.Farm:ReadyCount()
+    if ready > 0 then out[#out + 1] = {T(ready == 1 and "headReadyOne" or "headReadyMany", ready), "garden"} end
+    local back = KH.Inn:BackCount()
+    if back > 0 then out[#out + 1] = {T(back == 1 and "awayBackOne" or "awayBackMany", back), "inn"} end
+    return out
+end
+
+function UI:UpdateAlert()
+    local b = bubble
+    if not b or not b.alert then return end
+    local alert = b.alert
+    local lines = (KH.db.bubble.label ~= false and not b.showing) and self:AlertLines() or {}
+    if #lines == 0 then alert:Hide(); alert.current = nil; return end
+    local line = lines[((b.cycle - 1) % #lines) + 1]
+    if alert:IsShown() and alert.current == line[1] then return end
+    alert.current, alert.view = line[1], line[2]
+    alert.text:SetText(line[1])
+    local width = Kit.TextWidth(alert.text, line[1]) + 28
+    PlaceSide(alert)
+    alert:Show()
+    -- it grows out of the icon
+    local from = alert:GetWidth() or 28
+    Kit.Animate(0.25, function(p) alert:SetWidth(from + (width - from) * p) end, function() alert:SetWidth(width) end)
 end
 
 -- ----------------------------------------------------------------------------

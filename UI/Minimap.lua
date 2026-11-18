@@ -25,6 +25,7 @@ function UI:UpdateBadge()
         bubble.waiting = n > 0
         bubble.badge:SetShown(n > 0)
         bubble.badge.text:SetText(tostring(n))
+        UI:UpdateAlert()
     end
 end
 
