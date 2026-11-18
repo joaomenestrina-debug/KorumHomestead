@@ -64,9 +64,9 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** conferir no CurseForge o arquivo `2.0.0-alpha1` (Alpha). Revisar e aprovar a arte da T2.9 no PR.
+- **Eu:** **testar os eventos** (build instalado): `/kh debug` e depois `/kh evento` chamam um visitante na hora; ver o carrinho no mapa, a tela Visitantes, o alerta no ícone, e um evento expirando no "Enquanto você esteve fora".
 - **Codex:** **A6: refazer as 34 artes em alta qualidade** (`docs/tarefas/A6.md`), no nível dos originais da T2.9; pode entregar em partes. Não escrever código.
-- **Claude:** **T2.3–T2.7**: motor de eventos e os 5 tipos (`docs/eventos.md`, aprovado), depois as telas.
+- **Claude:** correções do teste dos eventos, revisão de texto pelo Codex (T2.8), tag `v2.1.0-alpha1`; depois a conferência de economia (T2.10).
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 

@@ -8,7 +8,7 @@ local GoodTex, SetIcon = P.GoodTex, P.SetIcon
 local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingName, P.Tip
 
 local BUILDERS = P.builders
-local CRUMB = {workshop = "b_workshop", inn = "b_inn", guide = "guide", hall = "b_hall", garden = "b_garden", barn = "b_barn", mine = "b_mine", pond = "b_pond", orders = "b_market", settings = "tabSettings", news = "newsH"}
+local CRUMB = {workshop = "b_workshop", inn = "b_inn", guide = "guide", hall = "b_hall", garden = "b_garden", barn = "b_barn", mine = "b_mine", pond = "b_pond", orders = "b_market", settings = "tabSettings", news = "newsH", visitors = "visitorsTab"}
 function UI:Create()
     if self.win then return end
     local win = Kit.Window({
@@ -362,6 +362,9 @@ end)
 
 function UI:Tick()
     KH.Daily:Ensure()
+    -- the random events: they only come with the game open (this clock), and go away when their time is over
+    local new = KH.Events:Update()
+    if new then KH:Notify(T("ev_new_" .. new.kind)) end
     for _, recipe in ipairs(KH.Workshop:Update()) do
         if KH.db.alerts then KH:Notify(T("craftDone", T("good_" .. recipe))) end
     end

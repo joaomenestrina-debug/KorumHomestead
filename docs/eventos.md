@@ -23,8 +23,8 @@ ervas paga no nível do jogador. Nenhum evento dá mais moedas por hora do que ~
 | **Pedido urgente** | Um NPC pede uma erva ou um item da Oficina do nível do jogador, em quantidade 1,5× uma encomenda normal | 45 min | 2× as moedas de uma encomenda normal desse tamanho e **3× o XP** |
 | **Mercador generoso** | Compra **uma** erva ou item específico pelo **dobro** do preço, até 20 unidades | 2 h | as moedas da venda (o dobro do normal) e XP de entrega |
 | **Caravana de troca** | Oferece 3 trocas: dê X de uma coisa, receba Y de outra (ervas, minério, peixe, itens da Oficina) | 3 h | o que recebe vale até 30% mais que o que dá; **nunca moedas** |
-| **Peixe raro na Lagoa** | Um peixe diferente para recolher (item do jogo: ex. Lagosta-garra-negra, Enguia-pedra-escamosa) | 4 h | o peixe vai para o Celeiro (vale bem na venda) + XP |
-| **Veio raro na Mina** | Um minério raro para recolher (item do jogo: ex. Minério de Prata-real, Minério de Ferro Negro, Cristal Arcano) | 4 h | o minério vai para o Celeiro (vale bem na venda) + XP |
+| **Peixe raro na Lagoa** | Um peixe diferente para recolher (item do jogo: ex. Lagosta-garra-negra, Enguia-pedra-escamosa) | 4 h | o peixe vai para o Celeiro (vale ~12 min de Horta na venda) + XP |
+| **Veio raro na Mina** | Um minério raro para recolher (item do jogo: ex. Minério de Prata-real, Minério de Ferro Negro, Cristal Arcano) | 4 h | o minério vai para o Celeiro (vale ~12 min de Horta na venda) + XP |
 
 **Pesos do sorteio:** pedido urgente 30%, mercador 25%, caravana 20%, peixe raro 12,5%, veio raro 12,5%. Peixe raro só
 com Lagoa; veio raro só com Mina; pedido de item só com Oficina.
@@ -60,3 +60,9 @@ de migração).
 - Cada tipo: a ação funciona e paga o que diz; a caravana nunca cria moedas; o mercador respeita o limite de 20.
 - Economia: o ganho médio dos eventos por hora fica abaixo de 20% da Horta, em todos os níveis.
 - Telas: `conferir_textos.py` limpo em português e em inglês.
+
+## 7. Ajuste na implementação (17/11)
+
+O teste de economia mostrou que, no nível 50, os achados valendo ~30 min de Horta levavam os eventos a 24% da Horta.
+Os achados passaram a valer ~12 min de Horta; pedido urgente (2×) e mercador (até 20) ficaram como aprovados. Resultado:
+abaixo de 20% em todos os níveis (teste `tests/test_events.py`).

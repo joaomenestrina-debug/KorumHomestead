@@ -37,10 +37,12 @@ V.MAKES = {mine = "ore", pond = "fish"}
 V.GOODS = B.GOODS
 -- ore, fish, then every Workshop item in the order of the recipes
 V.GOOD_ORDER = {"ore", "fish"}
+for _, id in ipairs(B.RARE_ORDER) do V.GOOD_ORDER[#V.GOOD_ORDER + 1] = id end
 for _, r in ipairs(B.RECIPES) do V.GOOD_ORDER[#V.GOOD_ORDER + 1] = r.id end
 -- every good is shown with the icon of an item of the game, as the herbs are
 -- Item ids used for the game's icons.
-V.ITEM = {ore = B.GOODS.ore.item, fish = B.GOODS.fish.item}
+V.ITEM = {}
+for id, good in pairs(B.GOODS) do V.ITEM[id] = good.item end
 for _, r in ipairs(B.RECIPES) do V.ITEM[r.id] = r.item end
 -- [target level]
 V.COST = B.COST

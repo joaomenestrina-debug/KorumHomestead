@@ -37,6 +37,7 @@ KH.defaults = {
     made = {},             -- mine, pond -> the time up to which their production was counted
     work = nil,            -- the building being built: {id, at, time}
     bubble = {show = true, label = true},   -- the icon on the screen (label: the alert in words beside it); x, y where it was dragged
+    events = {open = {}, nextAt = 0, serial = 0, missed = {}, done = 0},   -- the random events (Events.lua)
     scale = 1,             -- the zoom of the window (0.6 to 1.5), the - % + in its header
     lastSeen = 0,          -- when the window was last seen (Away.lua); 0 = never stamped
     snapshot = nil,        -- the counters at lastSeen: {goods = {...}, buildings = {...}}
@@ -155,6 +156,13 @@ SlashCmdList["KORUMHOMESTEAD"] = function(msg)
     if msg == "harvest" or msg == "colher" then
         local n = KH.Farm:HarvestAll()
         KH:Print(KH.T("harvestedN", n))
+        if KH.UI then KH.UI:Refresh() end
+    elseif msg == "debug" then                         -- testing: turns the commands below on and off
+        KH.db.debug = not KH.db.debug
+        KH:Print("debug " .. (KH.db.debug and "on" or "off"))
+    elseif (msg == "evento" or msg == "event") and KH.db.debug then
+        local e = KH.Events:Spawn()                    -- a visitor now, without waiting (only with debug on)
+        KH:Notify(KH.T("ev_new_" .. e.kind))
         if KH.UI then KH.UI:Refresh() end
     elseif msg == "help" or msg == "ajuda" then
         KH:Print(KH.T("help"))

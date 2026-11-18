@@ -2,6 +2,7 @@ local addonName, KH = ...
 local UI = KH.UI
 local P = UI.P
 local Kit, C, T = P.Kit, P.C, P.T
+local VDIR = P.VDIR
 local Notice, Reason, GoodTex = P.Notice, P.Reason, P.GoodTex
 local BuildingArt, BuildingName = P.BuildingArt, P.BuildingName
 
@@ -63,6 +64,12 @@ end
 local function Lines(s)
     local out = {}
     if s.ready > 0 then out[#out + 1] = {icon = BuildingArt("garden"), text = T(s.ready == 1 and "awayReadyOne" or "awayReadyMany", s.ready)} end
+    if (s.visitors or 0) > 0 then
+        out[#out + 1] = {icon = VDIR .. "cart", text = T(s.visitors == 1 and "awayVisitorOne" or "awayVisitorMany", s.visitors)}
+    end
+    for _, kind in ipairs(s.missed or {}) do                -- the ones that went away: their chance went with them
+        out[#out + 1] = {icon = VDIR .. "cart", text = T("awayMissed_" .. kind), faded = true}
+    end
     if s.back > 0 then out[#out + 1] = {icon = BuildingArt("inn"), text = T(s.back == 1 and "awayBackOne" or "awayBackMany", s.back)} end
     for _, b in ipairs(s.built) do
         out[#out + 1] = {icon = BuildingArt(b.id, b.level), text = T("awayBuilt", BuildingName(b.id), b.level)}
@@ -105,7 +112,9 @@ function UI:ShowAway(s)
             line.text:ClearAllPoints()
             line.text:SetPoint("LEFT", line.icon, "RIGHT", 12, 0)
             line.icon:SetTexture(spec.icon)
+            line.icon:SetAlpha(spec.faded and 0.45 or 1)
             line.text:SetText(spec.text)
+            Kit.Paint(line.text, spec.faded and C.textMuted or C.text)
         end
     end
     local can = s.ready > 0 or s.back > 0

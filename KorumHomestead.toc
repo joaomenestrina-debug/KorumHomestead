@@ -20,6 +20,7 @@ Farm.lua
 Daily.lua
 Village.lua
 Works.lua
+Events.lua
 Advice.lua
 Away.lua
 UI/Common.lua
@@ -32,6 +33,7 @@ UI/Hall.lua
 UI/Guide.lua
 UI/News.lua
 UI/Away.lua
+UI/Visitors.lua
 UI/Workshop.lua
 UI/Inn.lua
 UI/Window.lua

@@ -150,6 +150,32 @@ B.ORE = {[3] = 10, [4] = 25, [5] = 50, [6] = 90, [7] = 150}
 -- units an hour per level of the Mine or the Pond. Workshop items have no fixed price: Workshop.Value.
 B.GOODS = {
     ore = {sell = 6, perHour = 6, item = 2770}, fish = {sell = 5, perHour = 5, item = 6303},
+    -- the rare finds of the events (docs/eventos.md): a fish of the Pond, an ore of the Mine; game items, worth about
+    -- twelve minutes of the Garden when found (their price grows with the Village like the herbs)
+    lobster = {sell = 600, item = 13888, rare = "fish"},     -- Darkclaw Lobster
+    eel = {sell = 720, item = 13422, rare = "fish"},         -- Stonescale Eel
+    snapper = {sell = 480, item = 6359, rare = "fish"},      -- Firefin Snapper
+    truesilver = {sell = 600, item = 7911, rare = "ore"},    -- Truesilver Ore
+    darkiron = {sell = 720, item = 11370, rare = "ore"},     -- Dark Iron Ore
+    arcane = {sell = 960, item = 12363, rare = "ore"},       -- Arcane Crystal
+}
+B.RARE_ORDER = {"lobster", "eel", "snapper", "truesilver", "darkiron", "arcane"}
+
+-- Random events (docs/eventos.md, approved on 17/11). Only with the game open; at most maxOpen at once; the deadline runs
+-- by the clock. Missing one loses its chance and its xp, nothing else.
+--   gapMin/gapMax   seconds of play between two events      weights  how often each kind comes (out of their sum)
+--   urgent          an order of qtyFactor x a normal one, paying payFactor x its coins and xpFactor x its xp
+--   merchant        buys one thing at priceFactor x its price, up to max units
+--   caravan         trades: the player receives gainMin..gainMax times the value of what they give; never coins
+--   fish, ore       a rare find to collect; findXP = share of the xp of the level
+B.EVENTS = {
+    gapMin = 2700, gapMax = 7200, maxOpen = 2,
+    weights = {urgent = 30, merchant = 25, caravan = 20, fish = 12.5, ore = 12.5},
+    urgent = {time = 2700, qtyFactor = 1.5, payFactor = 2, xpFactor = 3},
+    merchant = {time = 7200, priceFactor = 2, max = 20},
+    caravan = {time = 10800, trades = 3, gainMin = 1.1, gainMax = 1.3},
+    fish = {time = 14400, findXP = 0.1},
+    ore = {time = 14400, findXP = 0.1},
 }
 
 -- Seconds in one hour, used to convert a per-hour production rate into elapsed seconds.

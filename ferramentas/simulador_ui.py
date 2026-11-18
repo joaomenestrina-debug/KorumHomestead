@@ -370,6 +370,13 @@ def homestead(out):
     scene("10b-oficina-culinaria", "ptBR", mid, "workshop", after="NS.UI.trade = 'cooking'; NS.Workshop:Craft('stew'); NS.UI:Refresh()")
     scene("11-estalagem", "ptBR", mid, "inn", after="NS.Inn:Start(1, 'short'); NS.Inn:Start(2, 'medium'); NS.db.followers[3] = {done = 4, mission = {kind = 'short', at = NS.Now() - 2000, time = 1800}}; NS.UI:Refresh()")
     scene("16-ajustes", "ptBR", mid, "settings")
+    visitors = ("NS.db.level = 30; NS.db.buildings.workshop = 3; NS.Orders:Ensure(); NS.Events:Spawn('urgent'); "
+                "local e = NS.Events:Spawn('caravan'); local t = e.trades[1]; "
+                "if type(t.give) == 'number' then NS.db.crops[t.give] = t.n else NS.db.goods[t.give] = t.n end")
+    scene("17-visitantes", "ptBR", mid, "visitors", before_view=visitors)
+    scene("17b-visitors-english", "enUS", mid, "visitors", before_view=visitors)
+    scene("17c-mercador-e-achado", "ptBR", mid, "visitors", before_view="NS.Events:Spawn('merchant'); NS.Events:Spawn('ore')")
+    scene("17d-vila-com-carrinho", "ptBR", mid, "village", before_view="NS.Events:Spawn('fish')")
     scene("12-novidades", "ptBR", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
     scene("12b-whats-new-english", "enUS", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
     scene("13-fora-8h", "ptBR", away, "village", settle=5)
