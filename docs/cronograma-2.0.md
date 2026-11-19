@@ -89,7 +89,7 @@ gantt
 | T3.0a | Comando de depuração que registra os eventos do jogo (chefe, zona, fila, calendário) | Claude | até 22/11 | comando na cópia do repositório |
 | T3.0b | Fazer uma masmorra, entrar numa fila e trocar de zona com o comando ligado | **Eu** | até 29/11 | registro dos eventos |
 | T3.0c | Ajustar a §12 de `masmorras.md` ao que o Forever oferece | Claude | depois do T3.0b | especificação atualizada |
-| T3.0d | Conferir no jogo os fatos de `historia-forever.md`: quem está em cada masmorra nova, o conflito de cada zona, os nomes ptBR | **Eu** | até 06/12 | fatos marcados ✅ |
+| T3.0d | ~~Conferir no jogo os fatos de `historia-forever.md`~~ — dispensado em 19/11: o que o Wowhead do Forever não tem ainda não existe; Claude busca lá quando precisar | — | — | — |
 | A.1 | Briefing da decoração do **Véu de Inverno** (kit, medidas, posições no mapa) | Claude | até 06/12 | `docs/tarefas/A7.md` |
 | A.2 | Briefing dos **12 retratos novos** (no estilo dos seis de hoje, alta resolução) | Claude | até 06/12 | `docs/tarefas/A8.md` |
 

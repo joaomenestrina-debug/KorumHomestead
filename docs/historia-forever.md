@@ -79,7 +79,10 @@ Os furbolgs Bocanera usam a facção **Domínio dos Presamatos** (Timbermaw Hold
 
 ## O que falta saber
 
-- Quem está em Dalaran, no Terraço do Moldador, nas três masmorras novas sem criaturas e nas raides (quando o Wowhead
-  tiver, ou o dono vir no jogo).
+**Regra do dono (19/11): se o Wowhead do Forever não tem, ainda não existe no jogo.** Não há nada para conferir no jogo:
+o que falta aqui entra quando aparecer no Wowhead.
+
+- Ainda não lançados: Dalaran, o Terraço do Moldador, as três masmorras novas sem criaturas e as raides Monte Hyjal e
+  Barrow Deeps.
 - Onde fica a Fortaleza de Krol'Dok.
 - O conflito de cada zona nova (Sendas do Rio, Monte Hyjal, Guilnéas): quem pede ajuda e contra quem, para os chamados.

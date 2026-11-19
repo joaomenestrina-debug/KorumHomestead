@@ -182,7 +182,7 @@ seguidores ela pede (pode ir com menos, com chance menor).
 | 6 | Shadowfang Keep | Silverpine | 6 | 2 | 1 h 30 | Mortos-vivos, Magia hostil | fortaleza |
 | 7 | ★ Sítio de Escavação: Pantanal | Pantanal | 7 | 2 | 2 h | Horda, Magia hostil, Armadilhas | ruínas |
 | 8 | Blackfathom Deeps | Ashenvale | 8 | 2 | 2 h | Horda, Veneno | ruínas |
-| 9 | ★ Dalaran | Alterac | 9 | 2 | 2 h | *a conferir* | fortaleza |
+| 9 | ★ Dalaran | Alterac | 9 | 2 | 2 h | *ainda não lançada* | fortaleza |
 | 10 | Gnomeregan | Dun Morogh | 10 | 2 | 2 h 30 | Armadilhas, Blindados, Horda | fortaleza |
 | 11 | Scarlet Monastery | Tirisfal | 12 | 3 | 2 h 30 | Horda, Magia hostil, Chefe brutal | fortaleza |
 | 12 | ★ A Cidade Afogada | Selva do Espinhaço | 13 | 3 | 3 h | Mortos-vivos, Magia hostil, Horda | ruínas |
@@ -194,20 +194,21 @@ seguidores ela pede (pode ir com menos, com chance menor).
 | 18 | Sunken Temple | Swamp of Sorrows | 24 | 3 | 4 h 30 | Magia hostil, Veneno, Medo, Horda | ruínas |
 | 19 | Blackrock Depths | Blackrock | 26 | 3 | 5 h | Blindados, Magia hostil, Horda, Chefe brutal | fortaleza |
 | 20 | ★ Gruta Bocanera (Blackmaw Hold) | Azshara | 28 | 3 | 5 h | Horda, Magia hostil, Medo | caverna |
-| 21 | ★ O Terraço do Moldador | Un'Goro | 29 | 3 | 5 h 30 | *a conferir* | ruínas |
+| 21 | ★ O Terraço do Moldador | Un'Goro | 29 | 3 | 5 h 30 | *ainda não lançada* | ruínas |
 | 22 | Scholomance | Western Plaguelands | 30 | 3 | 6 h | Mortos-vivos, Magia hostil, Medo, Veneno | cripta |
 | 23 | Stratholme | Eastern Plaguelands | 30 | 3 | 6 h | Mortos-vivos, Horda, Chefe brutal, Medo | cripta |
-| R1 | ★ Barrow Deeps | *a conferir* | 30 | 4 | 12 h | *a conferir* | cripta |
-| R2 | ★ Monte Hyjal (Hyjal Summit) | Monte Hyjal | 30 | 5 | 18 h | *a conferir* | natural |
+| R1 | ★ Barrow Deeps | — | 30 | 4 | 12 h | *ainda não lançada* | cripta |
+| R2 | ★ Monte Hyjal (Hyjal Summit) | Monte Hyjal | 30 | 5 | 18 h | *ainda não lançada* | natural |
 | R3 | Onyxia's Lair | Dustwallow | 30 | 6 | 24 h | Chefe brutal, Magia hostil, Medo, Horda, Blindados | caverna |
 
 - **19/11:** as ameaças das masmorras novas que já têm criaturas no Wowhead do Forever foram preenchidas a partir de quem
-  está lá dentro (`docs/historia-forever.md`). Dalaran, o Terraço do Moldador e as raides novas seguem *a conferir*. O
-  Wowhead mostra ainda três masmorras novas fora desta lista (Casarão dos Brumanto, Sítio de Escavação - Bael Modan,
-  Contraforte de Eira dos Montes): entram quando tiverem criaturas e nível.
-- **As ameaças e o ambiente das masmorras novas do Forever saem do jogo, não de suposição:** o dono, que joga o Forever,
-  confirma quem está lá dentro (ou um guia oficial), e só então elas ganham ameaças. Até lá, ficam fora da lista do jogo.
-  O mesmo vale para a masmorra de Krol'dok e a raide Barrow Deeps, cujo lugar ainda não foi confirmado.
+  está lá dentro (`docs/historia-forever.md`).
+- **Regra do dono (19/11): o que o Wowhead do Forever não tem ainda não existe no jogo.** Dalaran, o Terraço do
+  Moldador, as raides Barrow Deeps e Monte Hyjal e as três masmorras novas sem criaturas (Casarão dos Brumanto, Sítio de
+  Escavação - Bael Modan, Contraforte de Eira dos Montes) **ficam fora da lista do addon** até aparecerem no Wowhead com
+  criaturas; então entram numa atualização, com as ameaças tiradas de lá. Ninguém precisa conferir no jogo.
+- **As ameaças e o ambiente das masmorras novas do Forever saem do Wowhead do Forever, não de suposição.** A Fortaleza
+  de Krol'Dok tem criaturas mas ainda não tem lugar no Wowhead: entra com o lugar em branco.
 - Masmorras e raides que o Forever ainda vai lançar (as de primavera e verão de 2027) entram aqui quando saírem, como
   atualização do addon.
 - As raides pedem 4, 5 e 6 seguidores: a Covil de Onyxia, a maior, leva a Estalagem inteira.
