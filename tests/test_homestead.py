@@ -795,6 +795,40 @@ class Homestead(unittest.TestCase):
         self.open("orders")
         self.assertEqual(self.ev("NS.UI.screens.orders.head:GetText()"), "1 order ready to deliver")
 
+    def test_the_village_dresses_for_winter_veil_only_in_its_days(self):
+        F = "NS.Festivals"
+        def on(month, day, year=2026):
+            return self.ev(f"{F}:Current(os.time({{year = {year}, month = {month}, day = {day}, hour = 12}}))")
+        self.assertIsNone(on(12, 14))
+        self.assertEqual(on(12, 15), "winter")
+        self.assertEqual(on(12, 31), "winter")
+        self.assertEqual(on(1, 2, 2027), "winter")
+        self.assertIsNone(on(1, 3, 2027))
+        self.assertIsNone(on(7, 1))
+        # the map: the textures the screen asks for are written down
+        self.lua.execute("""
+            local Frame = getmetatable(UIParent)
+            function Frame:SetTexture(t) self._tex = t end
+            function Frame:SetShown(v) self._shown = v and true or false end
+            NS.db.tutorial.done = true
+            NOW = os.time({year = 2026, month = 11, day = 19, hour = 12})
+        """)
+        self.open("village")
+        s = "NS.UI.screens.village"
+        self.assertTrue(self.ev(s + ".map.art._tex").endswith(chr(92) + "map"))
+        self.assertFalse(any(self.ev(f"{s}.decor[{i}].tex:IsShown()") for i in (1, 2, 3)))
+        self.lua.execute("NOW = os.time({year = 2026, month = 12, day = 20, hour = 12}); NS.UI:Refresh()")
+        self.assertTrue(self.ev(s + ".map.art._tex").endswith(chr(92) + "map_winter"))
+        names = [self.ev(f"{s}.decor[{i}].name") for i in (1, 2, 3)]
+        self.assertEqual(names, ["winter_tree", "snowman", "gifts"])
+        self.assertTrue(all(self.ev(f"{s}.decor[{i}].tex:IsShown()") for i in (1, 2, 3)))
+        self.lua.execute("NOW = os.time({year = 2027, month = 1, day = 3, hour = 12}); NS.UI:Refresh()")
+        self.assertTrue(self.ev(s + ".map.art._tex").endswith(chr(92) + "map"))
+        self.assertFalse(any(self.ev(f"{s}.decor[{i}].tex:IsShown()") for i in (1, 2, 3)))
+        # every drawing the screen asks for is in the addon
+        for name in ("map_winter", "winter_tree", "snowman", "gifts"):
+            self.assertTrue((HOME / "Media" / "Village" / f"{name}.tga").exists(), name)
+
     def test_the_animations_end_and_survive_an_error(self):
         self.lua.execute("""
             LOG = {}

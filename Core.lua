@@ -169,6 +169,13 @@ SlashCmdList["KORUMHOMESTEAD"] = function(msg)
         if KH.UI then KH.UI:Refresh() end
     elseif (msg:match("^eventos") or msg:match("^events")) and KH.db.debug and KH.Probe then
         KH.Probe:Toggle(msg:match("%s+(%S+)$"))       -- the probe of the game's events (Probe.lua, T3.0)
+    elseif (msg == "festa" or msg == "festival") and KH.db.debug then
+        -- the Winter Veil dress outside its dates, until the next /reload: winter, then no festival, then the calendar
+        if KH.festivalForce == nil then KH.festivalForce = "winter"
+        elseif KH.festivalForce == "winter" then KH.festivalForce = false
+        else KH.festivalForce = nil end
+        KH:Print("festa: " .. (KH.festivalForce == nil and "calendario" or tostring(KH.festivalForce or "nenhuma")))
+        if KH.UI then KH.UI:Refresh() end
     --@end-debug@
     elseif msg == "help" or msg == "ajuda" then
         KH:Print(KH.T("help"))

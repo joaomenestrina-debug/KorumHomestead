@@ -23,12 +23,14 @@ BUILDINGS = ["hall", "garden", "barn", "market", "mine", "pond", "workshop", "in
 NAMES = (["map", "works", "lot", "logo"]
          + [f"{b}{t}" for b in BUILDINGS for t in (1, 2, 3)] + [f"follower{i}" for i in range(1, 7)]
          # the random events (arte_v4): the visitors' cart on the map and the three visitors
-         + ["cart", "visitor_merchant", "visitor_caravan", "visitor_messenger"])
-KEEP_WHOLE = {"map", "works"}
+         + ["cart", "visitor_merchant", "visitor_caravan", "visitor_messenger"]
+         # the Feast of Winter Veil (arte_v6, A7): the snowy map and three decorations
+         + ["map_winter", "winter_tree", "snowman", "gifts"])
+KEEP_WHOLE = {"map", "map_winter", "works"}
 # the logo shows at 24-44 px: the 32 px pixel drawing reads there, the detailed high-resolution one turns to mush
 OLD_GRID = {"logo": "arte_v3"}
 # the width each high-resolution drawing goes into the game at (the rest: 256)
-SIZE = {"map": 1024, "logo": 64, "visitor_merchant": 128, "visitor_caravan": 128, "visitor_messenger": 128,
+SIZE = {"map": 1024, "map_winter": 1024, "logo": 64, "visitor_merchant": 128, "visitor_caravan": 128, "visitor_messenger": 128,
         **{f"follower{i}": 128 for i in range(1, 7)}}           # one piece by nature: nothing is a stray pixel there
 
 

@@ -30,6 +30,20 @@ local function BuildVillage(win)
     s.map = map
     local scale = W / 664
 
+    -- the decorations of a festival (Festivals.lua): standing on the grass like the buildings (the feet on the ground
+    -- line, 432 of the 512 of the drawing), under the buildings and the cart. Shown only while their festival runs
+    s.decor = {}
+    for _, d in ipairs({{"winter", "winter_tree", 330, 150, 84}, {"winter", "snowman", 332, 262, 72},
+        {"winter", "gifts", 300, 78, 72}}) do
+        local festival, name, x, y, size = d[1], d[2], d[3], d[4], d[5]
+        local tex = map:CreateTexture(nil, "ARTWORK")
+        tex:SetTexture(VDIR .. name)
+        tex:SetSize(size, size)
+        tex:SetPoint("TOPLEFT", map, "TOPLEFT", x * scale - size / 2, -(y * scale - size * 0.844))
+        tex:Hide()
+        s.decor[#s.decor + 1] = {festival = festival, name = name, tex = tex}
+    end
+
     s.spots = {}
     for _, id in ipairs(V.BUILDINGS) do
         local b = CreateFrame("Button", nil, map)
@@ -169,6 +183,13 @@ local function BuildVillage(win)
 
     function s:Refresh()
         local db = KH.db
+        -- the village dresses for the festival of the game that is running (the snowy map in Winter Veil)
+        local festival = KH.Festivals:Current()
+        if festival ~= self.festival or not self.dressed then
+            self.festival, self.dressed = festival, true
+            self.map.art:SetTexture(VDIR .. (festival == "winter" and "map_winter" or "map"))
+            for _, d in ipairs(self.decor) do d.tex:SetShown(d.festival == festival) end
+        end
         local visitors = #KH.Events:Open()
         self.cart:SetShown(visitors > 0)
         self.cart.badge:SetText(tostring(visitors))

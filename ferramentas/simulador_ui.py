@@ -377,6 +377,9 @@ def homestead(out):
     scene("17b-visitors-english", "enUS", mid, "visitors", before_view=visitors)
     scene("17c-mercador-e-achado", "ptBR", mid, "visitors", before_view="NS.Events:Spawn('merchant'); NS.Events:Spawn('ore')")
     scene("17d-vila-com-carrinho", "ptBR", mid, "village", before_view="NS.Events:Spawn('fish')")
+    # the Feast of Winter Veil (Festivals.lua): the snowy map and the three decorations, with the cart
+    winter = 1797768000                                                  # 20/12/2026, 12h
+    scene("18-vila-veu-de-inverno", "ptBR", mid, "village", clock_at=winter, before_view="NS.Events:Spawn('fish')")
     scene("12-novidades", "ptBR", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
     scene("12b-whats-new-english", "enUS", mid.replace("newsSeen = 1000", "newsSeen = 0"), "village", settle=5)
     scene("13-fora-8h", "ptBR", away, "village", settle=5)

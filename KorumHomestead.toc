@@ -18,6 +18,7 @@ Balance.lua
 Data.lua
 Farm.lua
 Daily.lua
+Festivals.lua
 Village.lua
 Works.lua
 Events.lua

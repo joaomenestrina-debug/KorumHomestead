@@ -17,6 +17,7 @@ KH.NEWS = {
     {id = 2, version = "2.1.0-alpha1"},
     {id = 3, version = "2.1.0-alpha2"},
     {id = 4, version = "2.1.0-alpha4"},
+    {id = 5, version = "2.1.0-alpha5"},
 }
 
 function KH.LatestNews()

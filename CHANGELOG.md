@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.0-alpha5
+- During the Feast of Winter Veil (15 December to 2 January) the village is covered in snow, with a decorated pine, a snowman and a sled full of presents.
+
 ## 2.1.0-alpha4
 - The minimap button shows the village logo, the same as the icon on the screen.
 - The minimap button counts and lists the same as the icon on the screen: visitors and the time they stay, plots ready, orders you can deliver and followers back.
