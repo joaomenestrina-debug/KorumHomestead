@@ -136,17 +136,19 @@ Cada seguidor escolhe um de dois, na lista abaixo (a combinação de cada um fic
 | Raro | Paladino Renegado | Ruínas de Lordaeron | Luz Profana (Mortos-vivos) / Aura de Devoção (Blindados) |
 | Raro | Escavador | Sítio de Escavação: Pantanal | Mestre das Ruínas (Armadilhas) / Saber Antigo (Magia hostil) |
 | Raro | Caçador Darkspear | chamados de Darkspear Island | Vodu (Medo) / Lança Farpada (Horda) |
-| Épico | Mago do Kirin Tor | Dalaran | Contrafeitiço Maior (Magia hostil) / Teleporte (masmorra 20% mais curta) |
+| Épico | Mago do Kirin Tor | Dalaran (até sair: resgate na Prisão de Alcaz) | Contrafeitiço Maior (Magia hostil) / Teleporte (masmorra 20% mais curta) |
 | Épico | Guardião de Hyjal (druida) | chamados de Mount Hyjal | Rejuvenescer (Veneno) / Forma de Urso (Chefe brutal) |
 | Épico | Fugitivo de Alcaz (ladino) | Prisão de Alcaz (resgate) | Furtividade (Armadilhas) / Golpe Baixo (Chefe brutal) |
 | Épico | Caçadora furbolg Bocanera | Gruta Bocanera (resgate) | Armadilha Congelante (Horda) / Tiro Sereno (Medo) |
-| Lendário | Anciã Moldavento Skyborne | Monte Hyjal (raide) | **Tempestade de Zephras:** anula Horda e Magia hostil |
-| Lendário | Thane de Ironforge | Barrow Deeps | **Bastião:** anula Chefe brutal e Blindados |
-| Lendário | Vigia de Hyjal | Monte Hyjal (raide) | **Luz Ancestral:** anula Mortos-vivos e Medo |
+| Lendário | Anciã Moldavento Skyborne | Monte Hyjal (raide) (até sair: raide Onyxia) | **Tempestade de Zephras:** anula Horda e Magia hostil |
+| Lendário | Thane de Ironforge | Barrow Deeps (até sair: drop raro no Salão dos Thanes) | **Bastião:** anula Chefe brutal e Blindados |
+| Lendário | Vigia de Hyjal | Monte Hyjal (raide) (até sair: chamados da zona Monte Hyjal, chance bem baixa) | **Luz Ancestral:** anula Mortos-vivos e Medo |
 
 - Os arquétipos vêm do que o Forever confirmou: a raça nova Skyborne de Zephras Isle, os paladinos Renegados e os xamãs
   anões, Dalaran, Hyjal depois de Archimonde, Darkspear Island e as masmorras novas (seção 11). Quem são de fato, com
   nome e história, sai do que o jogo conta.
+- **Origens provisórias (aprovadas em 19/11):** quem vem de conteúdo ainda não lançado sai, por enquanto, do lugar entre
+  parênteses; quando o conteúdo aparecer no Wowhead do Forever, a origem volta para ele numa atualização.
 - Os novos também trazem combos novos com os seis de hoje (definidos junto com as habilidades finais).
 
 ## 4. Equipamento
