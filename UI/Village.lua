@@ -127,9 +127,9 @@ local function BuildVillage(win)
     s.primary:SetPoint("BOTTOMRIGHT", 0, 0)
     s.primary:SetStyle("primary")
     s.detail = Kit.Text(s.frame, 11, C.textSoft)
-    s.detail:SetPoint("BOTTOMLEFT", 0, 12)
+    s.detail:SetPoint("LEFT", s.frame, "BOTTOMLEFT", 0, 18)
     s.detail:SetWidth(W - 240)
-    s.detail:SetWordWrap(false)
+    s.detail:SetWordWrap(true)
 
     -- what waits for the player breathes softly; the building under the mouse lights up
     s.clock = 0
@@ -238,7 +238,7 @@ local function BuildVillage(win)
                 local back, away = KH.Inn:BackCount(), KH.Inn:AwayCount()
                 if back > 0 then note, calls = T(back == 1 and "backOne" or "backMany", back), true
                 elseif away > 0 then note = T("awayMany", away)
-                else note = T("followersIdle", KH.Inn:Count()) end
+                else note = T(KH.Inn:Count() == 1 and "followersIdle1" or "followersIdle", KH.Inn:Count()) end
             elseif id == "garden" then
                 if ready > 0 then note, calls = T(ready == 1 and "readyOne" or "readyMany", ready), true
                 elseif empty > 0 then note, calls = T(empty == 1 and "emptyOne" or "emptyMany", empty), step == "plant"

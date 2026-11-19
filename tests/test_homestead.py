@@ -270,7 +270,7 @@ class Homestead(unittest.TestCase):
         self.open("village")
         v = "NS.UI.screens.village.spots"
         self.assertEqual(self.ev(v + ".workshop.note:GetText()"), "idle")
-        self.assertEqual(self.ev(v + ".inn.note:GetText()"), "1 followers")
+        self.assertEqual(self.ev(v + ".inn.note:GetText()"), "1 follower")
         self.press(v + ".workshop")
         self.assertEqual(self.ev("NS.UI.view"), "workshop")
         self.press("NS.UI.screens.workshop.rows[1].button")

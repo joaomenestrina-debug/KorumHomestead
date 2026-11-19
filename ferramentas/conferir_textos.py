@@ -2,7 +2,8 @@
 text is measured FACTOR times wider. It reports a text that leaves the window, and two texts that run into each other.
 A text with a fixed width and no wrap is cut by the game ("..."), so it can not leave its place and is not checked.
 
-    python ferramentas/conferir_textos.py          (the same scenes as simulador_ui.py, in ptBR and English)
+    python ferramentas/conferir_textos.py          (the scenes of simulador_ui.py and the extra ones, in ptBR and English)
+    python ferramentas/conferir_textos.py PASTA    (the same, keeping the pictures of the extra scenes in PASTA)
 """
 import pathlib
 import sys
@@ -17,9 +18,36 @@ problems = []
 scene_name = ["?"]
 
 
+def natural(t):
+    return S.measure(t["text"], t["size"], t["flags"], 0, False)[0] * FACTOR
+
+
 def game_box(t):
-    natural = S.measure(t["text"], t["size"], t["flags"], 0, False)[0]
-    wide = natural * FACTOR
+    """Where the text sits in the game: (left, right, bottom, top)."""
+    if t["fixed"]:
+        height = t["h"]
+        if t["wrap"]:                                    # the game's wider letters break the lines sooner
+            wide, tall = S.measure(t["text"], t["size"], t["flags"], t["w"] / FACTOR, True)
+            wide = min(t["w"], wide * FACTOR)
+            if not t["fixedh"]:
+                height = tall
+        else:
+            wide = min(t["w"], natural(t))               # cut with "..." at the box
+        if t["justify"] == "RIGHT":
+            left = t["x"] + t["w"] - wide
+        elif t["justify"] == "CENTER":
+            left = t["x"] + (t["w"] - wide) / 2
+        else:
+            left = t["x"]
+        right = left + wide
+        if t["vanchor"] == "TOP":
+            top = t["y"] + t["h"]
+            return left, right, top - height, top
+        if t["vanchor"] == "BOTTOM":
+            return left, right, t["y"], t["y"] + height
+        mid = t["y"] + t["h"] / 2
+        return left, right, mid - height / 2, mid + height / 2
+    wide = natural(t)
     if t["justify"] == "RIGHT":
         left = t["x"] + t["w"] - wide
     elif t["justify"] == "CENTER":
@@ -39,21 +67,50 @@ def check(game, frame_name):
         game.lua.execute("KorumHomesteadIcon:Show()")
     fx, fy, fw, fh = game.lua.eval(f"function() local r = SIM.Rect({frame_name}) return r[1], r[2], r[3], r[4] end")()
     texts = []
-    for t in items:
+
+    def say(what, t):
+        problems.append(f"{scene_name[0]}: {what}: {S.plain(t['text'])[:110]!r}")
+
+    # a panel drawn later over a text (a menu, a lesson, the "while you were away" card) hides it: not a clash
+    panels = [(n, i) for n, i in enumerate(items)
+              if i["kind"] == "texture" and not i.get("skip") and i["w"] >= 150 and i["h"] >= 60
+              and i["alpha"] * (i.get("sa") or 1) * (i.get("va") or 1) >= 0.7 and (i.get("sr") is not None or i.get("texture"))]
+
+    def covered(n, box):
+        return any(m > n and i["x"] <= box[0] + 2 and i["x"] + i["w"] >= box[1] - 2
+                   and i["y"] <= box[2] + 2 and i["y"] + i["h"] >= box[3] - 2 for m, i in panels)
+
+    for n, t in enumerate(items):
         if t["kind"] == "texture" or t.get("skip") or not t["text"].strip() or t["alpha"] < 0.3:
             continue
+        t["n"] = n
         if not (fx <= t["x"] + t["w"] / 2 <= fx + fw and fy <= t["y"] <= fy + fh):
             continue                         # not in the window (the icon on the screen and its badge)
-        if t["fixed"]:                       # a fixed width: cut ("...") or wrapped by the game; only its box must fit
-            if t["x"] < fx + MARGIN or t["x"] + t["w"] > fx + fw - MARGIN:
-                problems.append(f"{scene_name[0]}: caixa fora da janela: {S.plain(t['text'])[:70]!r}")
-            elif not t["wrap"] and S.measure(t["text"], t["size"], t["flags"], 0, False)[0] * FACTOR > t["w"] + 1:
-                problems.append(f"{scene_name[0]}: cortado com '...': {S.plain(t['text'])[:70]!r}")
-            continue
         box = game_box(t)
+        if covered(n, (t["x"], t["x"] + t["w"], t["y"], t["y"] + t["h"])):
+            continue
         texts.append((t, box))
         if box[0] < fx + MARGIN or box[1] > fx + fw - MARGIN:
-            problems.append(f"{scene_name[0]}: sai da janela: {S.plain(t['text'])[:70]!r}")
+            say("sai da janela", t)
+        elif box[2] < fy + MARGIN or box[3] > fy + fh - MARGIN:
+            say("sai da janela (altura)", t)
+        if t["fixed"]:
+            if not t["wrap"] and natural(t) > t["w"] + 1:
+                say(f"cortado com '...' ({natural(t):.0f} > {t['w']:.0f})", t)
+            elif t["wrap"] and t["fixedh"] and                     S.measure(t["text"], t["size"], t["flags"], t["w"] / FACTOR, True)[1] > t["h"] + 1:
+                say("não cabe na altura", t)
+            elif t["wrap"] and max(natural(dict(t, text=w)) for w in S.plain(t["text"]).split()) > t["w"] + 1:
+                say("palavra maior que a caixa", t)
+        # a text inside a button or a row never leaves it
+        small = t["pw"] > 0 and t["ph"] > 0 and (t["pw"] < fw - 2 or t["ph"] < fh - 2)
+        cx, cy = (box[0] + box[1]) / 2, (box[2] + box[3]) / 2
+        if small and t["px"] <= cx <= t["px"] + t["pw"] and t["py"] <= cy <= t["py"] + t["ph"]:
+            if abs(t["pw"] - natural(t) / FACTOR) <= 8:
+                pass                         # the frame was sized from this text: it follows its real width in the game
+            elif box[0] < t["px"] - 1 or box[1] > t["px"] + t["pw"] + 1:
+                say("sai do seu quadro (largura)", t)
+            elif t["ptype"] == "Button" and (box[2] < t["py"] - 1 or box[3] > t["py"] + t["ph"] + 1):
+                say("sai do seu botão (altura)", t)
     for i, (a, ba) in enumerate(texts):
         for b, bb in texts[i + 1:]:
             if a.get("rel") == b.get("id") or b.get("rel") == a.get("id"):
@@ -61,6 +118,11 @@ def check(game, frame_name):
             ox = min(ba[1], bb[1]) - max(ba[0], bb[0])
             oy = min(ba[3], bb[3]) - max(ba[2], bb[2])
             if ox > 2 and oy > 3 and abs(a["alpha"] - b["alpha"]) < 0.2:
+                lo, hi = (a, b) if a["n"] < b["n"] else (b, a)
+                inter = (max(ba[0], bb[0]), min(ba[1], bb[1]), max(ba[2], bb[2]), min(ba[3], bb[3]))
+                if any(lo["n"] < m < hi["n"] and i["x"] <= inter[0] + 2 and i["x"] + i["w"] >= inter[1] - 2
+                       and i["y"] <= inter[2] + 2 and i["y"] + i["h"] >= inter[3] - 2 for m, i in panels):
+                    continue
                 problems.append(f"{scene_name[0]}: sobreposto: {S.plain(a['text'])[:40]!r} x {S.plain(b['text'])[:40]!r}")
 
 
@@ -76,10 +138,114 @@ def shot(self, path, frame_name=None, **kw):
 
 S.Game.shot = shot
 
+# every scene in both languages: a text that fits in one may not fit in the other
+one_window = S.window
+
+
+real_game = S.Game.__init__
+
+
+def game(self, *a, **kw):
+    real_game(self, *a, **kw)
+    self.lua.execute(f"SIM.FACTOR = {FACTOR}")       # what the addon measures comes as wide as in the game
+
+
+S.Game.__init__ = game
+
+
+def both(path, locale, setup, view, **kw):
+    other = "enUS" if locale == "ptBR" else "ptBR"
+    one_window(path.with_name(path.stem + "~" + other + path.suffix), other, setup, view, **kw)
+    return one_window(path, locale, setup, view, **kw)
+
+
+S.window = both
+
+FOLLOWERS = ("mira", "tobin", "elda", "garrick", "sela", "bram")
+BUILDINGS = ("hall", "garden", "barn", "market", "mine", "pond", "workshop", "inn")
+ALL = "{'mira', 'tobin', 'elda', 'garrick', 'sela', 'bram'}"
+
+
+def extras(out):
+    """The states the pictures of simulador_ui.py do not show: a village at the top with huge numbers, the mouse over
+    each building, every trade, every follower's sheet at each choice, every dungeon with its group, every visitor,
+    every lesson."""
+    seen = "{" + ", ".join(f"{b} = true" for b in BUILDINGS) + "}"
+    top = "{" + ", ".join(f"{b} = 7" for b in BUILDINGS) + "}"
+    rich = ("{coins = 98765432, xp = 0, level = 60, nplots = 8, selected = 3358, tutorial = {done = true}, newsSeen = 1000,"
+            f" seen = {seen}, buildings = {top}, stats = {{harvested = 987654, earned = 98765432, delivered = 9876}}}}")
+    full = ("for _, p in ipairs(NS.Data.PLANTS) do NS.db.crops[p[1]] = 9999 end; "
+            "for id in pairs(NS.Balance.GOODS) do NS.db.goods[id] = 999 end; "
+            "for _, r in ipairs(NS.Workshop.RECIPES) do NS.db.goods[r.id] = 99 end; NS.Orders:Ensure()")
+
+    def scene(name, view, before="", setup=rich, **kw):
+        S.window(out / f"x-{name}.png", "ptBR", setup, view, before_view=full + "; " + before, **kw)
+
+    for view in ("village", "hall", "garden", "barn", "orders", "mine", "pond", "workshop", "inn", "settings", "guide"):
+        scene("topo-" + view, view)
+    scene("horta-menu", "garden", after="NS.UI.screens.garden:OpenMenu(1)")
+    for b in BUILDINGS:
+        scene("vila-sobre-" + b, "village", after=f"local s = NS.UI.screens.village; s.hover = '{b}'; s:Paint()")
+        scene("licao-" + b, "orders" if b == "market" else b, setup=rich.replace(seen, "{}"))
+    for trade in ("alchemy", "cooking", "smithing", "gear"):
+        first = f"local id; for _, r in ipairs(NS.Workshop.RECIPES) do if r.trade == '{trade}' then id = id or r.id end end; "
+        scene("oficina-" + trade, "workshop",
+              after=f"NS.UI.trade = '{trade}'; {first} for i = 1, 6 do NS.Workshop:Craft(id) end; NS.UI:Refresh()")
+    for kind in ("urgent", "merchant", "caravan", "fish", "ore"):
+        scene("visita-" + kind, "visitors", f"NS.Events:Spawn('{kind}'); NS.Events:Spawn('caravan')")
+    scene("visita-nenhuma", "visitors")
+
+    # the Inn: the followers at each choice, then every dungeon
+    def levels(lv):
+        return (f"for _, fid in ipairs({ALL}) do local f = NS.Inn:Get(fid); f.level = {lv}; f.xp = 0 end; "
+                "NS.db.dungeons.merit = 99; NS.db.dungeons.epic = 99; ")
+
+    gear = f"for _, fid in ipairs({ALL}) do NS.Inn:Equip(fid, 'gw7'); NS.Inn:Equip(fid, 'ga7') end; "
+    for k, fid in enumerate(FOLLOWERS):
+        pick = k % 2 + 1
+        others = [f for f in FOLLOWERS if f != fid]
+        scene(f"ficha-{fid}-1", "inn", levels(1) + f"NS.UI.innFollower = '{fid}'")
+        scene(f"ficha-{fid}-raro", "inn", levels(10) + f"NS.UI.innFollower = '{fid}'")
+        scene(f"ficha-{fid}-epico", "inn", levels(20) + gear + f"NS.Inn:Promote('{fid}', {pick}); NS.UI.innFollower = '{fid}'")
+        scene(f"ficha-{fid}-maestria", "inn", levels(30) + gear + f"NS.Inn:Promote('{fid}', {pick}); "
+              f"NS.Inn:Promote('{fid}', {3 - pick}); NS.UI.innFollower = '{fid}'")
+        scene(f"ficha-{fid}-mestre", "inn", levels(30) + gear + f"NS.Inn:Promote('{fid}', {3 - pick}); "
+              f"NS.Inn:Promote('{fid}', {pick}); NS.Inn:Master('{fid}', '{('veteran', 'mentor')[k % 2]}'); "
+              f"NS.Rand = function() return 0.9999 end; assert(NS.Dungeons:Send('stratholme', {{'{fid}', '{others[0]}', '{others[1]}'}})); NS.Rand = nil; "
+              f"NS.db.trips[1].at = NS.Now() - 999999; NS.Dungeons:CollectAll(); NS.UI.innFollower = '{fid}'")
+    masters = levels(30) + gear + (f"for i, fid in ipairs({ALL}) do "
+                                   "NS.Inn:Promote(fid, 1); NS.Inn:Promote(fid, 2); NS.Inn:Master(fid, i % 2 == 0 and 'veteran' or 'mentor') end; "
+                                   "NS.db.dungeons.combos = {}; for _, c in ipairs(NS.Balance.COMBOS) do NS.db.dungeons.combos[c.id] = true end; "
+                                   "NS.db.dungeons.trophies = {}; for id in pairs(NS.Balance.TROPHIES) do NS.db.dungeons.trophies[id] = 9 end; ")
+    old = "for _, trip in ipairs(NS.db.trips) do trip.at = NS.Now() - 999999 end; NS.Rand = nil"
+    two = "NS.Dungeons:Send('stratholme', {'mira', 'tobin', 'elda'}); NS.Dungeons:Send('scholomance', {'garrick', 'sela', 'bram'}); "
+    scene("estalagem-mestres", "inn", masters)
+    scene("estalagem-fora", "inn", masters + two)
+    scene("estalagem-voltaram", "inn", masters + "NS.Rand = function() return 0.0001 end; " + two + old)
+    scene("estalagem-feridos", "inn", masters + "NS.Rand = function() return 0.9999 end; " + two + old + "; NS.Dungeons:CollectAll()")
+    scene("livro-cheio", "inn", masters + "NS.UI.innTab = 'book'")
+    scene("livro-vazio", "inn", levels(1) + "NS.UI.innTab = 'book'")
+    for page in range(1, 5):
+        scene(f"masmorras-{page}", "inn", masters + f"NS.UI.innTab = 'dungeons'; NS.UI.innPage = {page}; "
+              "NS.db.adventure = NS.db.adventure or {}; NS.db.adventure.visited = {}; "
+              "for _, d in ipairs(NS.Balance.DUNGEONS) do NS.db.adventure.visited[d.id] = true end")
+    g = S.Game("ptBR")
+    g.run("KorumHomesteadDB = {}")
+    g.load("KorumHomestead", S.HOMESTEAD)
+    dungeons = g.lua.eval("(function() local o = {}; for _, d in ipairs(NS.Balance.DUNGEONS) do o[#o + 1] = d.id end; "
+                          "return table.concat(o, ',') end)()").split(",")
+    for d in dungeons:
+        scene(f"grupo-{d}", "inn", masters + f"NS.UI.innDungeon = '{d}'; NS.UI.innOpts = {{potion = 'heal', food = 'stew', boss = true}}; "
+              f"NS.UI.innParty = NS.Dungeons:Suggest('{d}', NS.UI.innOpts); NS.db.adventure = NS.db.adventure or {{}}; "
+              f"NS.db.adventure.inspired = {{{d} = 3}}")
+        scene(f"grupo-{d}-fraco", "inn", levels(1) + f"NS.UI.innDungeon = '{d}'; NS.UI.innParty = {{'bram'}}")
+
+
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     with tempfile.TemporaryDirectory() as out:
         S.homestead(pathlib.Path(out))
+        extras(pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(out))
     for p in sorted(set(problems)):
         print(p)
     print(f"{len(set(problems))} problema(s)")

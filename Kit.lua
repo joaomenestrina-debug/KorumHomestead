@@ -67,6 +67,31 @@ function Kit.TextWidth(fs, text)
     return math.ceil(w)
 end
 
+-- A text in a place of a known width: when it does not fit, the letter gets smaller (down to `min`) instead of the text
+-- being cut or leaving its place. The width is measured on a ruler without a width, which every client answers.
+local ruler
+function Kit.Fit(fs, text, width, min)
+    width = width or fs.fit
+    local size = fs.size or 11
+    if width and text and text ~= "" then
+        if not ruler then
+            ruler = UIParent:CreateFontString(nil, "BACKGROUND")
+            ruler:Hide()
+        end
+        while size > (min or 8) do
+            ruler:SetFont(Kit.Font(), size, "")
+            ruler:SetText(text)
+            if Kit.TextWidth(ruler, text) <= width then break end
+            size = size - 1
+        end
+    end
+    if fs.shown ~= size then
+        fs:SetFont(Kit.Font(), size, "")
+        fs.shown = size
+    end
+    fs:SetText(text or "")
+end
+
 local function ClickSound()
     if PlaySound and SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON then
         pcall(PlaySound, SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
@@ -252,7 +277,7 @@ function Kit.Button(parent, width, height, text, onClick)
             Kit.Paint(btn.label, C.text)
         end
     end
-    function btn:SetLabel(t) self.label:SetText(t) end
+    function btn:SetLabel(t) Kit.Fit(self.label, t, width - 14) end        -- a label never leaves its button
     function btn:SetStyle(style) self.style = style; Paint() end
     function btn:SetEnabledState(on)
         self.enabledState = on and true or false
@@ -271,7 +296,7 @@ function Kit.Button(parent, width, height, text, onClick)
 end
 
 -- A switch with its sentence and a quieter line of explanation
-function Kit.Toggle(parent, y, width, getValue, setValue)
+function Kit.Toggle(parent, y, width, getValue, setValue, pitch)
     local row = CreateFrame("Button", nil, parent)
     row:SetSize(width, 44)
     row:SetPoint("TOPLEFT", 0, y)
@@ -321,7 +346,7 @@ function Kit.Toggle(parent, y, width, getValue, setValue)
         ClickSound()
     end)
     row:Sync()
-    return row, y - 56
+    return row, y - (pitch or 56)
 end
 
 -- A choice among a few, side by side in one track

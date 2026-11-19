@@ -49,14 +49,14 @@ local function BuildGuide(win)
         row.text = Kit.Text(row, 11, C.textSoft)
         row.text:SetPoint("TOPLEFT", 50, -30)
         row.text:SetWidth(W - 56)
-        row.text:SetWordWrap(false)
+        row.text:SetWordWrap(true)
         p.steps[i] = row
     end
     p.note = Kit.Text(p, 11, C.textMuted)
     p.note:SetPoint("TOPLEFT", 0, -4 * 62 - 14)
     p.note:SetWidth(W)
     p.note2 = Kit.Text(p, 11, C.textMuted)
-    p.note2:SetPoint("TOPLEFT", 0, -4 * 62 - 36)
+    p.note2:SetPoint("TOPLEFT", p.note, "BOTTOMLEFT", 0, -8)
     p.note2:SetWidth(W)
 
     -- 2. the buildings: what each one is for, and what a level changes

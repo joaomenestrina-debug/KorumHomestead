@@ -243,7 +243,7 @@ local function BuildInn(win)
         run.threats[k] = b
     end
     run.slots = {}
-    for k = 1, 3 do
+    for k = 1, 6 do
         local slot = CreateFrame("Button", nil, run)
         slot:SetSize(150, 44)
         slot:SetPoint("TOPLEFT", (k - 1) * 158, -100)
@@ -311,7 +311,7 @@ local function BuildInn(win)
     run.combo = Kit.Text(run, 10, C.accent)
     run.combo:SetPoint("TOPLEFT", 400, -292)
     run.combo:SetWidth(W - 400)
-    run.combo:SetWordWrap(false)
+    run.combo:SetWordWrap(true)
     run.opts = {}
     local function Cycle(kind)
         local goods = {false}
@@ -438,12 +438,12 @@ local function BuildInn(win)
     end
     sheet.respec = {}
     for k, what in ipairs({"ability", "trait"}) do
-        local b = Kit.Button(sheet, 150, 24, "", function()
+        local b = Kit.Button(sheet, 163, 24, "", function()
             local ok, why = In:Respec(UI.innFollower, what)
             if not ok then Notice(Reason(why)) end
             UI:Refresh()
         end)
-        b:SetPoint("TOPLEFT", (k - 1) * 158, -432)
+        b:SetPoint("TOPLEFT", (k - 1) * 169, -432)
         sheet.respec[k] = b
     end
     sheet.journalHead = Kit.Text(sheet, 11, C.textMuted)
@@ -506,7 +506,7 @@ local function BuildInn(win)
             if d then
                 local open = Dg:Open(d.id)
                 row.name:SetText(T("dg_" .. d.id) .. (d.new and ("  |cff40d9c4" .. T("dgNew") .. "|r") or ""))
-                row.meta:SetText(T("dgMeta", d.level, d.size, KH.Duration(d.hours * 3600)))
+                row.meta:SetText(T(d.size == 1 and "dgMeta1" or "dgMeta", d.level, d.size, KH.Duration(d.hours * 3600)))
                 for k, b in ipairs(row.threats) do
                     if d.threats[k] then ShowThreat(b, d.threats[k], false) else b:Hide() end
                 end
@@ -539,8 +539,8 @@ local function BuildInn(win)
         local party = UI.innParty or {}
         for i = #party, 1, -1 do if not Dg:Free(party[i]) then table.remove(party, i) end end
         UI.innParty = party
-        s.head:SetText(T("dg_" .. id)); s.sub:SetText(T("runS", d.size))
-        run.meta:SetText(T("dgMeta", d.level, d.size, KH.Duration(Dg:Duration(id, party))) .. "  ·  " .. T("env_" .. d.env)
+        s.head:SetText(T("dg_" .. id)); s.sub:SetText(T(d.size == 1 and "runS1" or "runS", d.size))
+        run.meta:SetText(T(d.size == 1 and "dgMeta1" or "dgMeta", d.level, d.size, KH.Duration(Dg:Duration(id, party))) .. "  ·  " .. T("env_" .. d.env)
             .. (Dg:Daily() == id and ("  ·  |cff40d9c4" .. T("dgDaily") .. "|r") or ""))
         local opts = UI.innOpts or {}
         if d.raid then opts.boss = nil end
@@ -562,16 +562,25 @@ local function BuildInn(win)
                 b:Hide()
             end
         end
+        local narrow = d.size > 3                    -- a raid: six places of 104 instead of three of 150
         for k, slot in ipairs(run.slots) do
             slot:SetShown(k <= d.size)
+            slot:SetSize(narrow and 104 or 150, 44)
+            slot:ClearAllPoints()
+            slot:SetPoint("TOPLEFT", (k - 1) * (narrow and 112 or 158), -100)
+            slot.disc:SetSize(narrow and 30 or 36, narrow and 30 or 36)
+            slot.name:ClearAllPoints()
+            slot.name:SetPoint("LEFT", narrow and 38 or 46, 0)
+            slot.name:SetWidth(narrow and 62 or 100)
             local fid = party[k]
             slot.fid = fid
             if fid then
                 slot.disc:SetTexture(Portrait(fid)); slot.disc:Show()
-                slot.name:SetText(QName(In:Get(fid).quality, FName(fid)) .. " |cffa8adb8" .. In:Get(fid).level .. "|r")
+                local name = QName(In:Get(fid).quality, FName(fid))
+                Kit.Fit(slot.name, narrow and name or (name .. " |cffa8adb8" .. In:Get(fid).level .. "|r"), narrow and 62 or 100)
             else
                 slot.disc:Hide()
-                slot.name:SetText("|cff757a87" .. T("runEmpty") .. "|r")
+                Kit.Fit(slot.name, "|cff757a87" .. T("runEmpty") .. "|r", narrow and 62 or 100)
             end
         end
         run.freeHead:SetText(T("runFree"))

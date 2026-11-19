@@ -40,15 +40,15 @@ function UI:Create()
     coinHit:SetPoint("TOPLEFT", self.coinDot, "TOPLEFT", -6, 12)
     coinHit:SetPoint("BOTTOMRIGHT", self.coinText, "BOTTOMRIGHT", 4, -10)
     coinHit:EnableMouse(true)
-    coinHit:SetScript("OnEnter", function(frame) Tip(frame, T("coinsTip"), {T("coinsHow")}) end)
+    coinHit:SetScript("OnEnter", function(frame) Tip(frame, T("coinsTip"), {T("coins", KH.Number(KH.db.coins)), T("coinsHow")}) end)
     coinHit:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 
     local lv = CreateFrame("Frame", nil, h)
-    lv:SetSize(132, 30)
-    lv:SetPoint("RIGHT", self.coinDot, "LEFT", -24, 0)
+    lv:SetSize(96, 30)                          -- narrow: the title, the zoom and up to 999,999 coins share this line
+    lv:SetPoint("RIGHT", self.coinDot, "LEFT", -16, 0)
     lv.label = Kit.Text(lv, 11, C.textSoft, "RIGHT")
     lv.label:SetPoint("TOPRIGHT", 0, -3)
-    lv.bar = Kit.Bar(lv, 132, 3)
+    lv.bar = Kit.Bar(lv, 96, 3)
     lv.bar:SetPoint("BOTTOMRIGHT", 0, 6)
     lv:EnableMouse(true)
     lv:SetScript("OnEnter", function(frame)
@@ -62,7 +62,7 @@ function UI:Create()
     -- the gear: the settings are a screen like the others
     local gear = CreateFrame("Button", nil, h)
     gear:SetSize(26, 26)
-    gear:SetPoint("RIGHT", lv, "LEFT", -14, -4)
+    gear:SetPoint("RIGHT", lv, "LEFT", -10, -4)
     gear.bg = gear:CreateTexture(nil, "BACKGROUND")
     gear.bg:SetAllPoints()
     gear.bg:SetTexture(Kit.Icon("dot"))
@@ -187,6 +187,14 @@ function UI:PaintPath()
     end
 end
 
+-- the coins of the header: whole up to 999,999; then short (1.24M, 98.76M, 1.20B), the whole number in the tooltip
+local function Short(n)
+    if n < 1000000 then return KH.Number(n) end
+    if n < 1000000000 then return string.format("%.2fM", math.floor(n / 10000) / 100) end
+    return string.format("%.2fB", math.floor(n / 10000000) / 100)
+end
+UI.ShortCoins = Short
+
 -- the coins count up or down to the new number, and the difference floats away under them
 function UI:ShowCoins()
     local coins = KH.db.coins
@@ -196,14 +204,14 @@ function UI:ShowCoins()
         if self.coinAnim then self.coinAnim.cancelled = true end
         self.coinAnim = Kit.Animate(0.45, function(p)
             self.coinsShown = math.floor(from + (coins - from) * p + 0.5)
-            self.coinText:SetText(KH.Number(self.coinsShown))
+            self.coinText:SetText(Short(self.coinsShown))
         end, function()
             self.coinAnim, self.coinsShown = nil, coins
-            self.coinText:SetText(KH.Number(coins))
+            self.coinText:SetText(Short(coins))
         end)
     elseif not self.coinAnim then
         self.coinsShown = coins
-        self.coinText:SetText(KH.Number(coins))
+        self.coinText:SetText(Short(coins))
     end
     self.coinsSeen = coins
 end
@@ -289,7 +297,7 @@ function UI:Coach(s, force)
         dim.fill:SetAllPoints(dim)
         dim.fill:SetColorTexture(0, 0, 0, 0.62)
         local card = CreateFrame("Frame", nil, dim)
-        card:SetSize(500, 300)
+        card:SetSize(500, 318)                 -- room under the third line: the game breaks the lines sooner
         card:SetPoint("CENTER", 0, 10)
         card.surface, card.outline = Kit.Rounded(card, 18, 0.07, 0.085, 0.095, 0.99, 0.14)
         card.art = card:CreateTexture(nil, "ARTWORK")

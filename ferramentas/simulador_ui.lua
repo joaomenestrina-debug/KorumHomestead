@@ -177,11 +177,11 @@ function M:SetJustifyV(j) self.justifyV = j end
 function M:SetWordWrap(on) self.wrap = on and true or false end
 function M:GetStringWidth()
     local w = PY_MEASURE(self.text or "", self.size or 12, self.flags or "", 0, false)
-    return w
+    return w * (SIM.FACTOR or 1)             -- conferir_textos.py: the game's letters are wider than the simulator's
 end
 function M:GetStringHeight()
-    local _, h = PY_MEASURE(self.text or "", self.size or 12, self.flags or "", self.w or 0, self.wrap ~= false)
-    return h
+    local _, h = PY_MEASURE(self.text or "", self.size or 12, self.flags or "", (self.w or 0) / (SIM.FACTOR or 1), self.wrap ~= false)
+    return h                                 -- with SIM.FACTOR the lines break as soon as in the game
 end
 function M:GetNumLines() return 1 end
 function M:AddLine() end                      -- the tooltip
@@ -305,6 +305,13 @@ function SIM.Dump()
                 item.justify, item.wrap, item.fixed = r.justify or "CENTER", r.wrap ~= false, (r.w ~= nil) or false
                 -- for ferramentas/conferir_textos.py: a text placed beside another text follows its real width in the game
                 item.id = r._ord
+                item.fixedh = r.h ~= nil
+                item.vanchor = "CENTER"
+                for point in pairs(r.points) do
+                    if point:find("TOP") then item.vanchor = "TOP" elseif point:find("BOTTOM") then item.vanchor = "BOTTOM" end
+                end
+                local pr = Resolve(f)
+                item.px, item.py, item.pw, item.ph, item.ptype = pr[1], pr[2], pr[3], pr[4], f.frameType or ""
                 for _, pt in pairs(r.points) do
                     if pt.rel and pt.rel.kind and pt.rel.kind ~= "texture" and pt.rel.kind ~= "frame" then item.rel = pt.rel._ord end
                 end

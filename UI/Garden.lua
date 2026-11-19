@@ -73,6 +73,7 @@ local function BuildGarden(win)
         t.note:SetPoint("TOP", 0, -108)
         t.note:SetWidth(tileW - 12)
         t.note:SetWordWrap(false)
+        t.note.fit = tileW - 12
         t:SetScript("OnEnter", function(self) self.hover = true; PaintTile(self) end)
         t:SetScript("OnLeave", function(self) self.hover = false; PaintTile(self) end)
         t:SetScript("OnClick", function() Kit.ClickSound(); s:Click(i) end)
@@ -473,7 +474,7 @@ local function BuildGarden(win)
                 t.lock:SetVertexColor(1, 1, 1, 0.55)
                 t.title:SetText(T("newPlot"))
                 Kit.Paint(t.title, C.text)
-                t.note:SetText(T("plotFromGarden"))
+                Kit.Fit(t.note, T("plotFromGarden"))
                 Kit.Paint(t.note, C.textMuted)
             elseif status == "empty" then
                 empty = empty + 1
@@ -485,10 +486,10 @@ local function BuildGarden(win)
                 t.title:SetText(T("plotEmpty"))
                 Kit.Paint(t.title, C.textSoft)
                 if canPlant or not selected then
-                    t.note:SetText(T("plantSeed", D.Name(db.selected)))
+                    Kit.Fit(t.note, T("plantSeed", D.Name(db.selected)))
                     Kit.Paint(t.note, C.accent)
                 else
-                    t.note:SetText(T("needCoins", KH.Number(selected.cost)))
+                    Kit.Fit(t.note, T("needCoins", KH.Number(selected.cost)))
                     Kit.Paint(t.note, C.textMuted)
                 end
                 if step == "plant" and not hinted then
@@ -502,12 +503,12 @@ local function BuildGarden(win)
                     ready = ready + 1
                     t.live = true
                     t.ring:Set(1, C.accentBright)
-                    t.note:SetText(T("harvest"))
+                    Kit.Fit(t.note, T("harvest"))
                     Kit.Paint(t.note, C.accent)
                 else
                     if not soonest or left < soonest then soonest = left end
                     t.ring:Set(progress, C.accent)
-                    t.note:SetText(T("timeLeft", KH.Duration(left)))
+                    Kit.Fit(t.note, T("timeLeft", KH.Duration(left)))
                     Kit.Paint(t.note, C.textSoft)
                 end
             end

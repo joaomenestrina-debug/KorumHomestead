@@ -59,6 +59,7 @@ local function SmallRow(parent, x, y, w, onDeliver)
     row.wants:SetPoint("TOPLEFT", 54, -20)
     row.wants:SetWidth(textW)
     row.wants:SetWordWrap(false)
+    row.wants.fit = textW
     row.coins = Kit.Text(row, 10, C.gold)
     row.coins:SetPoint("TOPLEFT", 54, -37)
     row.xp = Kit.Text(row, 10, C.textMuted)
@@ -81,10 +82,10 @@ local function PaintOrder(row, o, extraXP)
     local can = have >= o.qty
     if o.good then
         row.icon:SetTexture(GoodTex(o.good))
-        row.wants:SetText(T("orderWants", o.qty, T("good_" .. o.good)))
+        Kit.Fit(row.wants, T("orderWants", o.qty, T("good_" .. o.good)))
     else
         SetIcon(row.icon, o.plant)
-        row.wants:SetText(T("orderWants", o.qty, D.Name(o.plant)))
+        Kit.Fit(row.wants, T("orderWants", o.qty, D.Name(o.plant)))
     end
     row.bar:Glide(have / o.qty, can and C.accentBright or C.accent)
     row.have:SetText(T(row.short and "orderHaveShort" or "orderHave", math.min(have, o.qty), o.qty))
