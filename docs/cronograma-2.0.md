@@ -1,55 +1,63 @@
-# Korum Homestead 2.0: cronograma de implementação
+# Korum Homestead: cronograma
 
-Complementa o [plano de desenvolvimento](plano-2.0.md), que diz **o que** a 2.0 tem. Este documento diz **quem faz o
-quê e quando**.
+*Reescrito em 18/11/2026, por Korum, depois da aprovação de [`masmorras.md`](masmorras.md). O plano antigo (S3
+Personagem, S4 Coleção, S5 Temporadas, S6 Social) está no histórico do git; o que dele continua vale está na seção 6.*
 
-- **Início:** terça, 17/11/2026
-- **2.0.0 publicada:** terça, 05/01/2027
-- **2.1 (social):** segunda, 25/01/2027
-> **Mudança de 18/11.** A 2.0.0 saiu em 17/11 e a 2.1 (visitantes) em alpha em 18/11. Da S3 em diante vale
-> [`masmorras.md`](masmorras.md) §17: S3 e S4 (masmorras, níveis, equipamento, combos, raides) → **2.2**; S5
-> (raridade, seguidores novos, chamados) → **2.3**. As tabelas da S3 em diante abaixo são o plano antigo.
+Este documento diz **quem faz o quê e quando**. As regras de cada parte estão nas especificações:
+[`economia.md`](economia.md), [`eventos.md`](eventos.md), [`masmorras.md`](masmorras.md) e
+[`historia-forever.md`](historia-forever.md).
 
-- **Ritmo:** sprints de uma semana (segunda a domingo), um alpha no CurseForge no fim de cada sprint de fase.
-
-
-> **Tipo de arquivo no CurseForge.** Toda versão de trabalho da 2.0 sai como **Alpha**, para não tomar o lugar da 1.0.1
-> de quem usa a versão estável. O CurseForge decide o tipo pela tag: com `alpha` no nome vira Alpha, com `beta` vira
-> Beta, e **sem nenhum dos dois vira Release**. Por isso as tags são `v2.0.0-alpha1`, `v2.0.0-alpha2`... e só a
-> `v2.0.0` não tem sufixo. Nunca usar `-rc1` ou outro sufixo sem `alpha`: o CurseForge publicaria como Release.
+> **Tipo de arquivo no CurseForge.** O CurseForge decide o tipo pela tag: com `alpha` no nome vira **Alpha**, com
+> `beta` vira Beta, **sem nenhum dos dois vira Release**. Versões de trabalho saem como `vX.Y.0-alphaN`; só a versão
+> pronta sai sem sufixo. Nunca usar `-rc1` ou outro sufixo sem `alpha`: o CurseForge publicaria como Release.
 
 ---
 
-## 1. Papéis
+## 1. Visão geral
+
+| Versão | Conteúdo | Estado |
+|---|---|---|
+| **2.0.0** | Fundação, retorno diário (resumo ao voltar, encomenda do dia, sequência), economia nova (Vila 1–60, 27 ervas, Mercado 4 + 4, Oficina com 21 receitas) | ✅ **Release** em 17/11 |
+| **2.1.0** | Visitantes (pedido urgente, mercador, caravana, peixe e veio raros), arte nova, teto da economia | Alpha (`alpha3`, 18/11); **Release quando o dono decidir** |
+| **2.2.0** | Masmorras do Forever, níveis, talentos, Diário, equipamento, combos, raides, Aventura parte 1, Véu de Inverno | S3 + S4 (07/12 a 20/12); Release proposta no começo de janeiro |
+| **2.3.0** | Raridade, 12 seguidores novos, drops raros, chamados, visitantes com origem no Forever, Aventura parte 2 | S5 (21/12 a 03/01); Release proposta em meados de janeiro |
+| depois | Coleção, decorações, social, atributos, temporadas, conteúdo novo do Forever | seção 6 |
+
+```mermaid
+gantt
+    title Korum Homestead
+    dateFormat YYYY-MM-DD
+    axisFormat %d/%m
+    section Feito
+    2.0.0 Release                     :done, 2026-11-17, 1d
+    2.1 alpha (visitantes)            :done, 2026-11-18, 1d
+    section Até a S3
+    Folga: alpha, T3.0, briefings     :f0, 2026-11-19, 18d
+    section 2.2
+    S3 masmorras e níveis             :s3, 2026-12-07, 7d
+    S4 equipamento, combos, raides    :s4, 2026-12-14, 7d
+    section 2.3
+    S5 raridade, seguidores, chamados :s5, 2026-12-21, 14d
+    section Arte (paralelo)
+    Véu de Inverno (decoração)        :a1, 2026-12-07, 5d
+    12 retratos novos                 :a2, 2026-12-07, 12d
+```
+
+## 2. Papéis
 
 | Quem | Papel | Responsável por |
 |---|---|---|
-| **Eu** | Dono do produto e testador no jogo | Decisões de produto, prioridades e equilíbrio; **todo teste dentro do jogo** (só você roda o WoW); aprovar a arte; capturas de tela reais; aprovar e publicar no CurseForge; tokens e acessos |
-| **Claude** | Arquiteto, líder técnico, gestor e **todo o código** | Desde 17/11: arquitetura, dados, migrações, toda a lógica, telas, testes, simulador, textos (escreve EN e ptBR junto com cada tarefa); pedidos de arte e de revisão para o Codex; integrar; versões, tags e changelog; manter este cronograma |
-| **Codex** | Arte e revisão de texto | Desde 17/11, **só**: pixel art (lugares, decorações, retratos, ícones próprios) a partir do kit de arte, e revisão dos textos EN/ptBR que Claude escreve (tom, clareza, erros, se cabe na tela). Não escreve código |
+| **Eu** | Dono do produto e testador no jogo | Decisões de produto, prioridades e equilíbrio; **todo teste dentro do jogo** (só você roda o WoW); confirmar no jogo os fatos do Forever; aprovar a arte; capturas de tela reais; tokens e acessos |
+| **Claude** | Arquiteto, líder técnico, gestor e **todo o código** | Arquitetura, dados, migrações, lógica, telas, testes, simulador, textos EN e ptBR; briefings de arte e de revisão para o Codex; integrar; versões, tags e changelog; manter este cronograma |
+| **Codex** | Arte e revisão de texto | **Só** arte (lugares, decorações, retratos) a partir do kit de arte, aprovada pelo dono, e revisão dos textos EN/ptBR que Claude escreve. Não escreve código |
 
-**Regra de divisão (desde 17/11, decisão do dono):** todo o código é de Claude; o Codex faz só arte e revisão de texto;
-o que exige o jogo aberto ou uma decisão de produto fica com você. As tarefas de código já feitas pelo Codex antes disso
-continuam marcadas com ele no histórico.
-
-## 2. Como trabalhamos
+## 3. Como trabalhamos
 
 ### Repositório
-- **O Homestead é desenvolvido neste repositório** (`C:\AI\Code\KorumHomestead`, no GitHub), com o addon na raiz. O
-  repositório dos outros addons Korum não tem mais cópia dele; o instalador de lá lê daqui e leva ao jogo só o que é do
-  addon (a mesma lista do `.pkgmeta`). O Codex trabalha aqui por pull requests, e o CurseForge empacota daqui.
-- Branch `main` sempre jogável. Cada tarefa num branch: `claude/T1.2-resumo`, `codex/T1.4-encomenda-do-dia`.
-- **GitHub Actions** roda os testes em todo pull request (T0.2). Nada entra na `main` com teste falhando.
-
-### Fluxo de uma tarefa do Codex
-1. Claude escreve o **briefing** em `docs/tarefas/T-x.y.md`: objetivo, arquivos, regras, dados, critério de aceite,
-   testes que precisam passar, o que não mexer.
-2. Codex implementa no branch `codex/T-x.y-...` e abre um pull request.
-3. Claude revisa (correção, estilo do projeto, independência, EN/ptBR, telas no simulador) e pede ajustes ou integra.
-4. Você confere no jogo no teste de sábado.
-
-### Fluxo de uma tarefa de Claude
-Branch próprio, testes junto, captura do simulador no pull request, integração depois dos testes verdes.
+- O Homestead é desenvolvido neste repositório, com o addon na raiz; o CurseForge empacota daqui.
+- Branch `main` sempre jogável. O Codex trabalha por pull request (`codex/...`).
+- **GitHub Actions** roda os testes em todo push e pull request. Nada entra na `main` com teste falhando.
+- O que é só para desenvolvimento (como o `/kh debug`) fica entre `--@debug@` e `--@end-debug@`.
 
 ### Rotina semanal
 | Quando | O quê | Quem |
@@ -61,250 +69,142 @@ Branch próprio, testes junto, captura do simulador no pull request, integraçã
 | Domingo | Correções, tag do alpha, publicação | Claude (tag) e Eu (conferir CurseForge) |
 
 ### Definição de pronto (vale para toda tarefa)
-- Testes automáticos novos e antigos passando (GitHub Actions verde).
-- Textos em inglês e português, sem chave faltando.
+- Testes automáticos novos e antigos passando.
+- Textos em inglês e português, sem chave faltando; linhas na tela **Novidades**.
 - Toda função com controle na tela e cartão "como funciona" quando a tela é nova.
 - Captura do simulador revisada.
-- Save da 1.0 e dos alphas anteriores abre sem erro (teste de migração).
-- Sem dependência de outro addon.
+- Saves antigos abrem sem erro e sem perder nada (teste de migração).
+- Sem dependência de outro addon; nada que mude o personagem, a bolsa ou o ouro.
+- Texto de evento só com fatos de `historia-forever.md`.
 
 ---
 
-## 3. Marcos
+## 4. Até a S3 (19/11 a 06/12)
 
-| Marco | Data | Conteúdo | Tag |
+| ID | Tarefa | Quem | Data | Entrega / aceite |
+|---|---|---|---|---|
+| F.1 | Jogar a 2.1 alpha e relatar o que aparecer | **Eu** | contínuo | relato |
+| F.2 | Correções da alpha | Claude | contínuo | alpha nova se preciso |
+| F.3 | Decidir a **2.1.0 Release** | **Eu** | quando estiver estável | tag `v2.1.0` |
+| T3.0a | Comando de depuração que registra os eventos do jogo (chefe, zona, fila, calendário) | Claude | até 22/11 | comando na cópia do repositório |
+| T3.0b | Fazer uma masmorra, entrar numa fila e trocar de zona com o comando ligado | **Eu** | até 29/11 | registro dos eventos |
+| T3.0c | Ajustar a §12 de `masmorras.md` ao que o Forever oferece | Claude | depois do T3.0b | especificação atualizada |
+| T3.0d | Conferir no jogo os fatos de `historia-forever.md`: quem está em cada masmorra nova, o conflito de cada zona, os nomes ptBR | **Eu** | até 06/12 | fatos marcados ✅ |
+| A.1 | Briefing da decoração do **Véu de Inverno** (kit, medidas, posições no mapa) | Claude | até 06/12 | `docs/tarefas/A7.md` |
+| A.2 | Briefing dos **12 retratos novos** (no estilo dos seis de hoje, alta resolução) | Claude | até 06/12 | `docs/tarefas/A8.md` |
+
+## 5. Sprints
+
+### S3: masmorras, níveis e talentos (seg 07/12 a dom 13/12) → `v2.2.0-alpha1`
+
+| ID | Tarefa | Quem | Data | Entrega / aceite |
+|---|---|---|---|---|
+| T3.1 | Especificação | **Eu** | — | ✅ aprovada em 18/11 |
+| T3.2 | Dados em `Balance.lua` (seguidores, ameaças, habilidades, traços, masmorras); migração schema 4 | Claude | 07/12 | teste com os saves antigos |
+| T3.3 | Motor: chance, envio, volta, recompensa, ferimento, nível e XP, qualidade e insígnias, talentos, Masmorra do dia | Claude | 08–09/12 | testes com sorteio fixo |
+| T3.4 | Chance na hora, Recomendados e Grupo sugerido | Claude | 09/12 | testes: o sugerido é o melhor |
+| T3.5 | Telas: abas Seguidores e Masmorras, ficha do seguidor, "Enquanto você esteve fora" | Claude | 10–11/12 | capturas |
+| T3.6 | **Diário** dos seguidores (frases-modelo, ficha, "Contar no chat") | Claude | 10/12 | toda combinação gera linha nos dois idiomas |
+| T3.7 | Testes de economia e de ritmo dos níveis | Claude | 11/12 | abaixo do teto; metas da §3.1 |
+| T3.8 | Revisão dos textos EN/ptBR e nomes ptBR das masmorras | **Codex** | 11/12 | só valores do `Locales.lua` |
+| T3.9 | Teste no jogo | **Eu** | 12/12 | relato |
+| T3.10 | Correções, Novidades, changelog e tag | Claude | 13/12 | alpha publicada |
+
+### S4: equipamento, combos, raides e Aventura (seg 14/12 a dom 20/12) → `v2.2.0-alpha2`
+
+| ID | Tarefa | Quem | Data | Entrega / aceite |
+|---|---|---|---|---|
+| T4.1 | Equipamento: aba Equipamento na Oficina, equipar e trocar, nível na chance | Claude | 14–15/12 | toda peça vale mais que suas barras |
+| T4.2 | Consumíveis (poção e comida) | Claude | 15/12 | testes |
+| T4.3 | Combos, Livro de Combos e troféus | Claude | 16/12 | cada combo com seu efeito |
+| T4.4 | Raides semanais, Núcleo, Maestria e Título | Claude | 16–17/12 | testes com o relógio adiantado |
+| T4.5 | **Aventura**, parte 1: fila abre a vila, chefe inspira, masmorra feita confirma as ameaças | Claude | 17/12 | testes com o cliente simulado |
+| T4.6 | **Véu de Inverno** na vila (calendário do jogo e decoração) | Claude | 18/12 | no ar enquanto a festa durar (até 02/01) |
+| T4.7 | Revisão dos textos EN/ptBR | **Codex** | 18/12 | chaves completas |
+| T4.8 | Teste no jogo | **Eu** | 19/12 | relato |
+| T4.9 | Correções, Novidades, changelog e tag | Claude | 20/12 | alpha publicada |
+
+### S5: raridade, seguidores novos e chamados (seg 21/12 a dom 03/01, com festas) → `v2.3.0-alpha1`
+
+| ID | Tarefa | Quem | Data | Entrega / aceite |
+|---|---|---|---|---|
+| T5.1 | Aprovar os 12 seguidores novos (nomes, classes, habilidades) e as ameaças das masmorras novas | **Eu** | 21/12 | decisão |
+| T5.2 | Rol de 20, quartos e Alojamento, raridade, Poder, Ranking; drops raros e garantia | Claude | 22–23/12 | testes de drop e de garantia |
+| T5.3 | Seguidores novos com os retratos do Codex | Claude | 23/12 | capturas |
+| T5.4 | **Chamados** (defesa, ataque, escolta, resgate, reconhecimento) no motor dos eventos | Claude | 28–29/12 | testes; visitantes e chamados abaixo do teto |
+| T5.5 | Visitantes de hoje com origem no Forever (só texto) | Claude | 29/12 | todo texto aponta para um fato confirmado |
+| T5.6 | **Aventura**, parte 2: zona visitada abre os chamados do lugar; raide feita dá insígnia | Claude | 30/12 | testes |
+| T5.7 | Revisão dos textos EN/ptBR | **Codex** | 30/12 | chaves completas |
+| T5.8 | Teste no jogo | **Eu** | 02/01 | relato |
+| T5.9 | Correções, Novidades, changelog e tag | Claude | 03/01 | alpha publicada |
+
+### Arte (em paralelo)
+
+| ID | Tarefa | Quem | Data | Entrega / aceite |
+|---|---|---|---|---|
+| A7 | Decoração do Véu de Inverno no mapa | **Codex** (você aprova) | 07–11/12 | PNG em alta resolução; importada até 16/12 |
+| A8 | 12 retratos dos seguidores novos | **Codex** (você aprova) | 07–18/12 | PNG em alta resolução; importados até 22/12 |
+
+### Versões Release (propostas)
+
+| Versão | Quando | Condição |
+|---|---|---|
+| 2.1.0 | quando você decidir | visitantes estáveis no seu jogo |
+| 2.2.0 | começo de janeiro | S4 testada sem falha aberta |
+| 2.3.0 | meados de janeiro | S5 testada sem falha aberta |
+
+O Véu de Inverno só chega a todos os jogadores se uma Release com ele sair antes de 02/01; decidir no teste da S4.
+
+## 6. Depois da 2.3 (sem datas ainda)
+
+| Ordem sugerida | Conteúdo | Observação |
+|---|---|---|
+| 1 | **Coleção:** herbário, troféus das masmorras, conquistas | os troféus já existem desde a S4 |
+| 2 | **Decorações** no mapa da vila | arte do Codex |
+| 3 | **Social:** amigos e guilda vendo a vila uns dos outros; "Lendário encontrado!" para a guilda | antes, testar no jogo se o Forever aceita mensagens de addon (ponto de decisão) |
+| 4 | Atributos do personagem, temporadas, mais festas, polimento (som, animação) | do plano antigo |
+| sempre | Conteúdo novo do Forever (atualizações de primavera e verão de 2027): masmorras, chamados, seguidores | acompanha o jogo |
+
+## 7. Carga por pessoa (estimada)
+
+| Período | Eu | Claude | Codex |
 |---|---|---|---|
-| M0 | dom 22/11 | Fundação técnica pronta, nada mudou para o jogador | ✅ atingido em 17/11 |
-| M1 | dom 29/11 | **Alpha 1:** resumo ao voltar, encomenda do dia, sequência | `v2.0.0-alpha1` |
-| M2 | dom 06/12 | **Alpha 2:** Disposição e Serviços | `v2.0.0-alpha2` |
-| M3 | dom 13/12 | **Alpha 3:** atributos, seguidores com especialidade, risco e achados | `v2.0.0-alpha3` |
-| M4 | dom 20/12 | **Alpha 4:** herbário, conquistas, decorações no mapa | `v2.0.0-alpha4` |
-| M5 | dom 03/01 | **Candidato final:** temporadas, som, animação, equilíbrio | `v2.0.0-alpha5` |
-| **M6** | **ter 05/01** | **Korum Homestead 2.0.0** | `v2.0.0` |
-| M7 | seg 25/01 | 2.1: social com amigos | `v2.1.0` |
+| Até a S3 | ~4 h (jogar, T3.0, fatos do Forever) | ~6 h | — |
+| S3 | ~2 h | ~20 h | ~1,5 h |
+| S4 | ~2 h | ~18 h | ~1,5 h |
+| S5 | ~3 h | ~20 h | ~1,5 h |
+| Arte | ~1 h (aprovar) | ~2 h (briefings, importar) | ~12 h |
+| **Total** | **~12 h** | **~66 h** | **~16 h** |
 
-Folga: a semana de 22/12 a 03/01 tem festas; o sprint 5 tem duas semanas por isso.
-
-```mermaid
-gantt
-    title Korum Homestead 2.0
-    dateFormat YYYY-MM-DD
-    axisFormat %d/%m
-    section Fundação
-    S0 F0 fundação técnica          :s0, 2026-11-17, 6d
-    section Fases
-    S1 F1 retorno diário            :s1, 2026-11-23, 7d
-    S2 F2 Disposição e Serviços     :s2, 2026-11-30, 7d
-    S3 F3 personagem e seguidores   :s3, 2026-12-07, 7d
-    S4 F4 coleção e decorações      :s4, 2026-12-14, 7d
-    S5 F5 temporadas + F6 polimento :s5, 2026-12-21, 14d
-    Lançamento 2.0.0                :milestone, 2027-01-05, 0d
-    S6 F7 social (2.1)              :s6, 2027-01-11, 15d
-    section Arte (paralelo)
-    Kit das decorações              :a1, 2026-12-07, 2d
-    Produção no ChatGPT             :a2, 2026-12-09, 6d
-    Revisão e importação            :a3, 2026-12-15, 2d
-```
-
----
-
-## 4. Cronograma detalhado
-
-Legenda: **h** = estimativa em horas de trabalho; **Dep.** = depende de.
-
-### Sprint 0: Fundação técnica (ter 17/11 a dom 22/11)
-
-| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
-|---|---|---|---|---|---|---|
-| T0.1 | Aprovar a mudança do desenvolvimento para o repositório próprio do GitHub | **Eu** | — | 17/11 | 0,5 | ✅ feito em 17/11 |
-| T0.2 | GitHub Actions: rodar os testes em todo push e pull request | Claude | T0.1 | 18/11 | 1 | ✅ feito em 17/11 (`.github/workflows/tests.yml`) |
-| T0.3 | Instalador lendo o Homestead do repositório próprio; tirar a cópia do monorepo | Claude | T0.1 | 18/11 | 1 | ✅ feito em 17/11 |
-| T0.4 | Guardar uma amostra do save real: copiar `WTF\Account\...\SavedVariables\KorumHomestead.lua` para Claude | **Eu** | — | 18/11 | 0,2 | ✅ feito em 17/11 |
-| T0.5 | Briefings das tarefas T0.6, T0.8 e T0.9 | Claude | T0.1 | 18/11 | 1,5 | ✅ feito em 17/11 |
-| T0.6 | Dividir `UI.lua` em `UI.lua` + `Screens/*.lua` (um arquivo por tela), sem mudar comportamento | **Codex** | T0.5 | 19–20/11 | 5 | ✅ feito em 17/11 (PR #1: 53 testes, 17 capturas idênticas) |
-| T0.7 | `db.schema` e `Migrate.lua` (uma função por versão), com a amostra real como teste | Claude | T0.4 | 19/11 | 2 | ✅ feito em 17/11 (PR #2) |
-| T0.8 | `Balance.lua`: levar todos os números de equilíbrio para um arquivo | **Codex** | T0.6 | 20/11 | 2 | ✅ feito em 17/11 |
-| T0.9 | `KH.Day()` (dia local virando à meia-noite) e um relógio controlável nos testes | **Codex** | T0.5 | 20/11 | 1 | ✅ feito em 17/11 |
-| T0.10 | Revisar e integrar T0.6, T0.8, T0.9 | Claude | T0.6–T0.9 | 21/11 | 2 | ✅ feito em 17/11 |
-| T0.11 | Teste de regressão no jogo: tudo continua igual | **Eu** | T0.10 | 21–22/11 | 1 | ✅ ok em 17/11 (save migrado para schema 2, nada perdido) |
-
-### Sprint 1: Retorno diário (seg 23/11 a dom 29/11) → Alpha 1
-
-| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
-|---|---|---|---|---|---|---|
-| T1.1 | Especificação da F1 e briefings T1.4, T1.6, T1.7 | Claude | M0 | 23/11 | 2 | ✅ feito em 17/11 (`docs/tarefas/T1.4.md`, `T1.6.md`, `T1.7.md`) |
-| T1.2 | Aprovar as recompensas da sequência (dias 3, 7, 14, 30) e o item raro do 7º dia | **Eu** | T1.1 | 23/11 | 0,3 | ✅ 17/11: proposta do `T1.4.md` aprovada |
-| T1.3 | Resumo ao voltar: `db.lastSeen`, fotografia dos contadores, cálculo do que mudou | Claude | M0 | 24/11 | 3 | ✅ feito em 17/11 (`Away.lua`, `tests/test_away.py`) |
-| T1.4 | Encomenda do dia e sequência: sorteio por dia, entrega, contagem, zerar, recorde | **Codex** | T1.1 | 24–25/11 | 4 | ✅ feito em 17/11 (PR #7) |
-| T1.5 | Cartão "Enquanto você esteve fora" com "Coletar tudo"; encomenda do dia no Mercado; ponto no ícone flutuante | Claude | T1.3, T1.4 | 26/11 | 4 | ✅ feito em 17/11 |
-| T1.6 | Textos EN/ptBR da F1 e cartão "como funciona" atualizado do Mercado | **Codex** | T1.5 | 26/11 | 1,5 | ✅ feito em 17/11 (PR #9) |
-| T1.7 | Cenas do simulador da F1 (resumo, encomenda do dia, sequência no 7º dia) | **Codex** | T1.5 | 27/11 | 1 | ✅ feito em 17/11 (PR #10) |
-| T1.8 | Revisão, integração e build de teste instalado no Forever | Claude | T1.4–T1.7 | 27/11 | 2 | ✅ feito em 17/11 |
-| T1.9 | Teste no jogo da F1 | **Eu** | T1.8 | 28/11 | 1,5 | relato |
-| T1.10 | Correções do teste | Claude | T1.9 | 29/11 | 1–3 | — |
-| T1.11 | Changelog, tag `v2.0.0-alpha1`, conferir o arquivo no CurseForge (como **Alpha**) | Claude + **Eu** | T1.10 | 29/11 | 0,5 | alpha publicado |
-
-### F2.0: Economia (18/11 a 29/11, em paralelo ao fim da S1) → entra na Alpha 2
-
-Pedida pelo dono em 17/11 (excesso de moedas, nível como o do jogo, Mercado com itens). Proposta aprovada:
-[`docs/economia.md`](economia.md).
-
-| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
-|---|---|---|---|---|---|---|
-| T2.0 | Medição e proposta da economia | Claude | — | 17/11 | 3 | ✅ `docs/economia.md` |
-| T2.0b | Aprovar a proposta | Eu | T2.0 | 17/11 | 0,3 | ✅ aprovada em 17/11 |
-| T2.0a | Nível da Vila 1–60, as 27 ervas (perícia ÷ 5), curva de XP, colher dá pouco XP, nível 60 dá Lótus Negra | Claude | T2.0b | 18–20/11 | 5 | testes; `B.PLANTS` gerada por fórmula |
-| T2.0b2 | Migração `schema 3` (Herbalismo → Vila; save real → Vila 37) | Claude | T2.0a | 20/11 | 2 | teste com `save-1.0.1.lua` |
-| T2.0c | Mercado com 4 + 4 encomendas (ervas e itens) e a Oficina pagando mais (moedas e XP) | Claude | T2.0b | 18–21/11 | 5 | `docs/tarefas/T2.0c.md`; teste para todas as receitas |
-| T2.0d | Prédios com nível mínimo da vila e custos pela renda | Claude | T2.0a | 21/11 | 2 | testes |
-| T2.0e | Telas: cabeçalho "Vila N", Mercado com 8 encomendas, Guia, cartões | Claude | T2.0a, T2.0c | 23–24/11 | 4 | capturas |
-| T2.0f | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) e Novidades da economia | **Codex** | T2.0e | 25/11 | 1,5 | chaves completas |
-| T2.0g | Teste que simula um jogador: vila inteira ≥ ~200 h de Horta; nenhuma atividade rende mais que a Horta | Claude | T2.0a–d | 25/11 | 2 | teste verde |
-| T2.0h | Teste no jogo da economia | **Eu** | T2.0e–g | 28/11 | 1,5 | relato |
-
-### Sprint 2: Eventos aleatórios (seg 30/11 a dom 06/12) → Alpha 2
-
-Decisão do dono em 17/11: os **eventos aleatórios** (F-Eventos do `plano-2.0.md`) entram no lugar dos Serviços. A
-Disposição, que só existia para os Serviços, fica suspensa.
-
-| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
-|---|---|---|---|---|---|---|
-| T2.1 | Especificação dos eventos: tipos, frequência, prazos, recompensas (pela conta da economia) | Claude | alpha1 | 30/11 | 2 | ✅ 17/11: `docs/eventos.md` |
-| T2.2 | Aprovar a lista de eventos e recompensas | **Eu** | T2.1 | 30/11 | 0,3 | ✅ 17/11: aprovado como proposto |
-| T2.3 | Motor de eventos: sorteio com semente (`KH.Rand`), prazo, expiração (perde a oportunidade e o XP), dados salvos | Claude | T2.2 | 01/12 | 3 | testes com o relógio adiantado |
-| T2.4 | Pedido urgente e mercador generoso | Claude | T2.3 | 01–02/12 | 3 | testes |
-| T2.5 | Caravana de troca | Claude | T2.3 | 02/12 | 2 | testes: troca nunca cria moedas do nada |
-| T2.6 | Achados raros: peixe na Lagoa, mineral na Mina, erva rara (itens do jogo) | Claude | T2.3 | 03/12 | 2 | testes; ícones do jogo |
-| T2.7 | Telas: alerta no ícone, cartão do evento, linha no "Enquanto você esteve fora" | Claude | T2.4–T2.6 | 03–04/12 | 4 | capturas; `conferir_textos.py` limpo |
-| T2.8 | Revisão dos textos EN/ptBR dos eventos | **Codex** | T2.7 | 04/12 | 1,5 | só valores do `Locales.lua` |
-| T2.9 | Arte, se faltar (retrato do mercador, da caravana) | **Codex** (você aprova) | T2.1 | 01–04/12 | 2 | PNG no `arquivo/` |
-| T2.10 | Conferência de economia: eventos não passam da Horta por hora | Claude | T2.4–T2.6 | 04/12 | 1 | teste |
-| T2.11 | Teste no jogo dos eventos | **Eu** | T2.7–T2.10 | 05/12 | 1,5 | relato |
-| T2.12 | Correções e tag `v2.0.0-alpha2` | Claude + **Eu** | T2.11 | 06/12 | 1–3 | alpha publicado |
-
-### Sprint 3: Personagem e seguidores (seg 07/12 a dom 13/12) → Alpha 3
-
-| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
-|---|---|---|---|---|---|---|
-| T3.1 | Especificação da F3 e briefings T3.4, T3.5, T3.7, T3.8 | Claude | M2 | 07/12 | 2 | briefings |
-| T3.2 | Aprovar os quatro atributos, os valores por ponto e as especialidades dos seis seguidores | **Eu** | T3.1 | 07/12 | 0,3 | decisão |
-| T3.3 | Atributos: pontos por nível, migração (pontos dos níveis que o save já tem), redistribuir com custo | Claude | M2 | 08/12 | 3 | teste de migração dá os pontos certos |
-| T3.4 | Aplicar os bônus dos atributos em Horta, Mercado, Oficina, Estalagem e Serviços | Claude | T3.3 | 08–09/12 | 4 | testes por bônus; números na tela já com o bônus |
-| T3.5 | Seguidores: especialidade em casa, risco de ferimento, descanso, achados raros | Claude | T3.1 | 09–10/12 | 4 | testes com sorteio fixo |
-| T3.6 | Tela do personagem (atributos e "de onde vem cada bônus"); Estalagem com especialidade, ferido e achado | Claude | T3.3–T3.5 | 10–11/12 | 5 | capturas |
-| T3.7 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) da F3 | **Codex** | T3.6 | 11/12 | 1,5 | chaves completas |
-| T3.8 | Cenas do simulador da F3 | Claude | T3.6 | 11/12 | 1 | imagens |
-| T3.9 | Revisão, integração, build de teste | Claude | T3.4–T3.8 | 11/12 | 2 | lista do que conferir |
-| T3.10 | Teste no jogo da F3 | **Eu** | T3.9 | 12/12 | 1,5 | relato |
-| T3.11 | Correções e tag `v2.0.0-alpha3` | Claude + **Eu** | T3.10 | 13/12 | 1–3 | alpha publicado |
-
-### Arte das decorações (em paralelo, 07/12 a 16/12)
-
-| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
-|---|---|---|---|---|---|---|
-| A1 | Definir as 10 decorações e as posições livres no mapa | Claude | — | 07/12 | 1,5 | mapa marcado com os pontos |
-| A2 | Kit de arte para o Codex: LEIA-ME com medidas, referências aprovadas, mapa com os pontos | Claude | A1 | 08/12 | 1,5 | `kit_decoracoes.zip` |
-| A3 | Produzir as decorações (pixel art) | **Codex** (você aprova) | A2 | 09–14/12 | 3–5 | 10 imagens (grade real + @2x) |
-| A4 | Revisar a arte (estilo, medidas, pixels soltos) e pedir ajustes | Claude | A3 | 15/12 | 1 | aprovado ou lista de ajustes |
-| A5 | Importar para o addon (estender o importador) | Claude | A4 | 16/12 | 1 | TGAs em `Media/Village/` |
-
-### Sprint 4: Coleção, conquistas e decorações (seg 14/12 a dom 20/12) → Alpha 4
-
-| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
-|---|---|---|---|---|---|---|
-| T4.1 | Especificação da F4 e briefings T4.3, T4.4, T4.6, T4.7 | Claude | M3 | 14/12 | 2 | briefings |
-| T4.2 | Motor de conquistas: registro de eventos, progresso, pontos de vila, prêmios dados uma vez | Claude | M3 | 14–15/12 | 3 | testes; o que já foi feito no save conta |
-| T4.3 | Herbário: catálogo (ervas, receitas, produtos, raros), visto ou não, contagem desde o save antigo | Claude | T4.1 | 15/12 | 3 | testes de contagem |
-| T4.4 | Lista das ~40 conquistas e dos ~12 itens raros (com IDs de itens do jogo conferidos) | Claude | T4.1 | 15/12 | 2 | tabela no pull request |
-| T4.5 | Aprovar conquistas, raros e quais marcos liberam cada decoração | **Eu** | T4.4 | 16/12 | 0,5 | decisão |
-| T4.6 | Telas: Herbário (álbum com silhuetas) e Conquistas (grupos, progresso) | Claude | T4.2, T4.3 | 16–17/12 | 5 | capturas |
-| T4.7 | Decorações no mapa: posições, ligar e desligar, tela de decorações | Claude | A5, T4.2 | 17/12 | 3 | capturas com e sem decorações |
-| T4.8 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) da F4 (conquistas, raros, telas) | **Codex** | T4.5 | 17/12 | 2 | chaves completas |
-| T4.9 | Cenas do simulador da F4 | Claude | T4.6, T4.7 | 18/12 | 1 | imagens |
-| T4.10 | Revisão, integração, build de teste | Claude | T4.3–T4.9 | 18/12 | 2 | lista do que conferir |
-| T4.11 | Teste no jogo da F4 | **Eu** | T4.10 | 19/12 | 2 | relato |
-| T4.12 | Correções e tag `v2.0.0-alpha4` | Claude + **Eu** | T4.11 | 20/12 | 1–3 | alpha publicado |
-
-### Sprint 5: Temporadas, polimento e lançamento (seg 21/12 a ter 05/01, com festas)
-
-| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
-|---|---|---|---|---|---|---|
-| T5.1 | Especificação da F5 e F6 e briefings T5.4, T5.5, T5.7, T5.10 | Claude | M4 | 21/12 | 2 | briefings |
-| T5.2 | Aprovar duração das temporadas, faixas de prêmio e o selo de cada temporada | **Eu** | T5.1 | 21/12 | 0,3 | decisão |
-| T5.3 | Calendário de temporadas (fixo, sem servidor), pontos, histórico, virada | Claude | M4 | 22/12 | 3 | testes de virada com o relógio adiantado |
-| T5.4 | Banco de metas semanais (~30) e sorteio de 3 por semana pelo número da temporada | Claude | T5.1 | 22–23/12 | 3 | testes: mesma temporada sorteia as mesmas metas |
-| T5.5 | Prêmios por faixa e decoração exclusiva por temporada (dados uma vez só) | Claude | T5.3 | 23/12 | 2 | testes |
-| T5.6 | Tela da temporada e indicador no cabeçalho ("Temporada 3 · faltam 9 dias") | Claude | T5.3–T5.5 | 28/12 | 4 | capturas |
-| T5.7 | Sons do jogo nos eventos (colher, vender, obra, nível, serviço) com opção de desligar | Claude | T5.1 | 28/12 | 2 | lista de sons; opção nas configurações |
-| T5.8 | Conferir no jogo se os sons tocam e escolher os que ficam | **Eu** | T5.7 | 29/12 | 0,5 | lista aprovada |
-| T5.9 | Animações: moedas voando, brilho da obra terminada, comemoração de nível | Claude | M4 | 29/12 | 3 | capturas em sequência |
-| T5.10 | Script de equilíbrio: moedas e XP por hora de cada atividade, por nível | Claude | T5.1 | 29/12 | 2 | tabela gerada |
-| T5.11 | Análise do equilíbrio e proposta de ajustes em `Balance.lua` | Claude | T5.10 | 30/12 | 2 | proposta |
-| T5.12 | Aprovar os ajustes de equilíbrio | **Eu** | T5.11 | 30/12 | 0,5 | decisão |
-| T5.13 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) da F5 e F6, guia do jogo atualizado com tudo da 2.0 | **Codex** | T5.6 | 30/12 | 2 | chaves completas; guia com as novidades |
-| T5.14 | Revisão final, build e tag `v2.0.0-alpha5` (candidato final) | Claude | T5.3–T5.13 | 02/01 | 3 | candidato publicado como Alpha |
-| T5.15 | Teste completo no jogo (começar do zero e com save antigo) | **Eu** | T5.14 | 03/01 | 2–3 | relato |
-| T5.16 | Capturas de tela reais no jogo, em inglês, para o CurseForge e o GitHub | **Eu** | T5.14 | 03/01 | 1 | 7 imagens |
-| T5.17 | Correções do candidato | Claude | T5.15 | 04/01 | 1–4 | — |
-| T5.18 | Página do CurseForge e README da 2.0 (texto e imagens) | Claude | T5.16 | 04/01 | 1,5 | `description.md` e README novos |
-| T5.19 | Tag `v2.0.0`, conferir o arquivo e atualizar a página no CurseForge | Claude + **Eu** | T5.17, T5.18 | 05/01 | 0,5 | **2.0.0 publicada** |
-
-### Sprint 6: Social com amigos, 2.1 (seg 11/01 a seg 25/01)
-
-| ID | Tarefa | Quem | Dep. | Data | h | Entrega / aceite |
-|---|---|---|---|---|---|---|
-| T6.1 | Script de teste para mensagens de addon no Forever | Claude | M6 | 11/01 | 1 | comando de teste |
-| T6.2 | Rodar o teste com um amigo ou segunda conta (envio, recebimento, limite) | **Eu** | T6.1 | 12/01 | 1 | relato: funciona ou não |
-| T6.3 | **Ponto de decisão:** seguir com a F7 ou adiar | **Eu** | T6.2 | 12/01 | 0,2 | decisão |
-| T6.4 | Protocolo: resumo da vila, presente diário, pontos da temporada; limites e versões | Claude | T6.3 | 13/01 | 3 | documento do protocolo e testes |
-| T6.5 | Implementar envio, recebimento, fila com limite e lista de amigos | Claude | T6.4 | 14–16/01 | 5 | testes com dois clientes simulados |
-| T6.6 | Tela de amigos (vila do amigo, mandar presente, comparação da temporada) | Claude | T6.5 | 18–19/01 | 4 | capturas |
-| T6.7 | Revisão dos textos EN/ptBR (Claude escreve junto com a tarefa) e cenas do simulador da F7 | **Codex** | T6.6 | 20/01 | 1,5 | chaves e imagens |
-| T6.8 | Teste no jogo com um amigo | **Eu** | T6.7 | 23/01 | 1,5 | relato |
-| T6.9 | Correções e tag `v2.1.0` | Claude + **Eu** | T6.8 | 25/01 | 1–3 | **2.1 publicada** |
-
----
-
-## 5. Carga por pessoa
-
-| Sprint | Eu | Claude | Codex |
-|---|---|---|---|
-| S0 Fundação | ~2 h | ~7,5 h | ~8 h |
-| S1 Retorno diário | ~2,5 h | ~13 h | ~6,5 h |
-| S2 Disposição | ~2 h | ~12 h | ~7,5 h |
-| S3 Personagem | ~2 h | ~13 h | ~10,5 h |
-| Arte (paralelo) | ~3–5 h | ~4 h | ~1 h |
-| S4 Coleção | ~2,5 h | ~16 h | ~8 h |
-| S5 Temporadas | ~5 h | ~24 h | ~11 h |
-| S6 Social | ~3 h | ~10 h | ~6,5 h |
-| **Total** | **~22 h** | **~100 h** | **~59 h** |
-
-Seu tempo se concentra no **sábado** (teste no jogo) e em decisões curtas na **segunda**.
-
-## 6. Riscos e plano de resposta
+## 8. Riscos
 
 | Risco | Prob. | Impacto | Resposta |
 |---|---|---|---|
+| O cliente do Forever não oferece eventos de chefe ou de fila | média | Aventura menor | o T3.0 responde antes da S3; o que não existir sai da §12 sem afetar o resto |
+| Fatos das masmorras novas do Forever não confirmados a tempo | média | S3 sem as masmorras novas | a S3 sai com as do Clássico; as novas entram quando confirmadas |
+| Retratos ou decoração do Véu atrasam | média | seguidores novos ou festa sem arte | Véu tem prazo (16/12); retratos podem entrar na alpha seguinte |
+| S5 cheia demais | média | 2.3 escorrega | chamados ou parte dos seguidores novos passam para a alpha seguinte |
+| Masmorras rendem demais | baixa | economia quebra | teste de economia em todo pull request (teto da §9 de `masmorras.md`) |
+| Save antigo quebra na migração (schema 4) | baixa | alto | teste com saves reais; migração nunca apaga campos |
 | Teste no jogo atrasa (sábado sem tempo) | média | alpha escorrega uma semana | o alpha sai no domingo seguinte; o sprint seguinte começa mesmo assim |
-| Arte das decorações demora ou não fica boa | média | F4 sem decorações | F4 sai com herbário e conquistas; decorações entram no alpha seguinte |
-| Janela cheia com cinco sistemas novos | média | telas apertadas | cada sistema entra por um lugar só; revisão de layout no simulador em toda tarefa de tela |
-| Briefing do Codex ambíguo gera retrabalho | média | +1 dia | briefing com critério de aceite e testes obrigatórios; dúvidas do Codex respondidas no pull request |
-| Save antigo quebra numa migração | baixa | alto (jogador perde vila) | teste de migração com save real em todo pull request; migração nunca apaga campos |
-| Som ou mensagens de addon não funcionam no Forever | média | F6 ou F7 reduzidas | conferido no jogo antes de implementar (T5.8, T6.2); F7 tem ponto de decisão |
-| Webhook do CurseForge falha numa tag | baixa | alpha não sai | Claude confere a entrega do webhook; reenvio da tag ou zip à mão |
-| Festas de fim de ano | alta | S5 mais lento | S5 já tem duas semanas |
+| Webhook do CurseForge falha numa tag | baixa | alpha não sai | conferir a entrega; reenviar a tag |
+| Festas de fim de ano | alta | S5 mais lenta | S5 já tem duas semanas |
 
-## 7. Lista de verificação de lançamento (cada alpha e a 2.0.0)
+## 9. Lista de verificação de cada versão
 
 - [ ] GitHub Actions verde na `main`
-- [ ] `## Version` do `.toc` e `CHANGELOG.md` atualizados
-- [ ] Save da 1.0 e do alpha anterior abrem no jogo
+- [ ] `## Version` do `.toc`, `CHANGELOG.md` e **Novidades** atualizados
+- [ ] Saves antigos abrem no jogo sem perder nada
 - [ ] Teste de sábado sem falha aberta
-- [ ] Tag enviada e entrega do webhook com resposta 200
-- [ ] Arquivo no CurseForge com o tipo certo (Alpha ou Release) e a versão do jogo certa
-- [ ] Página e README atualizados (na 2.0.0)
+- [ ] Nada de depuração no zip (`--@debug@`)
+- [ ] Tag enviada e arquivo no CurseForge com o tipo certo (Alpha ou Release)
+- [ ] Página do CurseForge e imagens atualizadas (nas Releases)
 
-## 8. Próximo passo
+## 10. Histórico
 
-T0.1 a T0.3 concluídas em 17/11. Em seguida: **T0.4** (você manda a amostra do save) e **T0.5** (Claude escreve os
-briefings do Codex para T0.6, T0.8 e T0.9).
+| Sprint | O que entrou | Quando |
+|---|---|---|
+| S0 Fundação | repositório próprio, testes no GitHub Actions, `UI/` dividida, `Balance.lua`, `KH.Day()`, migração com schema | 17/11 |
+| S1 Retorno diário | "Enquanto você esteve fora", encomenda do dia e sequência, Novidades | 17/11 |
+| F2.0 Economia | Vila 1–60, 27 ervas, Mercado 4 + 4, Oficina com 21 receitas, prédios pelo nível da vila | 17/11 (2.0.0 Release) |
+| S2 Visitantes | motor de eventos, cinco tipos, carrinho na vila, tela Visitantes, arte A6, teto de 20 min de Horta, textos revisados | 18/11 (2.1.0-alpha1 a alpha3) |
