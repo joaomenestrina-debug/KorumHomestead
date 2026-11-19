@@ -12,7 +12,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | | |
 |---|---|
 | **Versão publicada** | **2.0.0** no CurseForge (Release, 17/11) — é a que os jogadores usam. A **2.1** (eventos aleatórios + arte A6) saiu como **`v2.1.0-alpha1`**, **`v2.1.0-alpha2`** e **`v2.1.0-alpha3`** em 18/11 (Alpha no CurseForge; a alpha3 tira o `/kh debug` do zip) |
-| **Em desenvolvimento** | **2.2 e 2.3: masmorras e seguidores** (especificação em [masmorras.md](masmorras.md), aguardando aprovação; fatos do Forever em [historia-forever.md](historia-forever.md)). Plano antigo em [plano-2.0.md](plano-2.0.md) e [cronograma-2.0.md](cronograma-2.0.md) |
+| **Em desenvolvimento** | **2.2 e 2.3: masmorras e seguidores** (especificação **aprovada em 18/11** em [masmorras.md](masmorras.md); fatos do Forever em [historia-forever.md](historia-forever.md)). Plano antigo em [plano-2.0.md](plano-2.0.md) e [cronograma-2.0.md](cronograma-2.0.md) |
 | **Sprint atual** | **S2 — Eventos aleatórios**: motor, telas e arte na `v2.1.0-alpha1`; T2.10 (economia) feita em 18/11; T2.8 (textos) integrada; **`v2.1.0-alpha2`** publicada em 18/11 |
 | **Próximo marco** | S3 abre em **07/12** (`v2.2.0-alpha1` em 13/12) |
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
@@ -66,9 +66,9 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** aprovar `docs/masmorras.md` (decisões da §16) e conferir no jogo os fatos de `docs/historia-forever.md`. Jogar a alpha3 e relatar o que aparecer. A S3 (F3, Personagem) fica para a data do cronograma (07/12), por decisão de 18/11.
+- **Eu:** conferir no jogo os fatos de `docs/historia-forever.md` (quem está em cada masmorra nova, o conflito de cada zona, os nomes ptBR). Jogar a alpha3 e relatar o que aparecer. A S3 (F3, Personagem) fica para a data do cronograma (07/12), por decisão de 18/11.
 - **Codex:** T2.8 concluída e integrada (PR #20). Sem tarefa aberta. Não escrever código.
-- **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11; `v2.1.0-alpha3` também, só para tirar o `/kh debug` e o `/kh evento` do zip (entre `--@debug@`, o empacotador comenta). Especificação das masmorras e seguidores escrita em 18/11 (`docs/masmorras.md`, com `docs/historia-forever.md`). Próximo: ajustes que o dono pedir na especificação; correções da alpha.
+- **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11; `v2.1.0-alpha3` também, só para tirar o `/kh debug` e o `/kh evento` do zip (entre `--@debug@`, o empacotador comenta). Especificação das masmorras e seguidores escrita em 18/11 (`docs/masmorras.md`, com `docs/historia-forever.md`). Aprovada em 18/11. Próximo: S3 em 07/12; antes disso, o briefing dos 12 retratos para o Codex e correções da alpha.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
@@ -90,7 +90,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | A alpha1 e a economia (F2.0) saem **juntas** num build só (`main` desde e77d8d5). |
 | 17/11 | **Papéis:** Claude faz **todo o código** (lógica, telas, testes, simulador, textos EN/ptBR). O Codex faz **só arte** (pixel art a partir do kit de arte, aprovada pelo dono) **e revisão de texto**. |
 | 17/11 | **Economia da 2.0** aprovada (`docs/economia.md`): Nível da Vila 1–60; ervas na perícia do jogo ÷ 5; colher dá pouco XP; a Oficina sempre dá mais moedas e XP; Mercado 4 + 4; prédios pedem nível da vila e custam horas de renda. |
-| 18/11 | **Masmorras e seguidores** no lugar da F3 original (direção aprovada; regras em `docs/masmorras.md`): masmorras do WoW Forever, ameaças e habilidades, nível 1–30, qualidade e talentos, equipamento da Oficina, combos, raides, raridade e seguidores novos, chamados. S3 e S4 → 2.2; S5 → 2.3. Atributos do personagem, temporadas, coleção e decorações ficam para depois. |
+| 18/11 | **Masmorras e seguidores** no lugar da F3 original (especificação aprovada, decisões da §16 como propostas; regras em `docs/masmorras.md`): masmorras do WoW Forever, ameaças e habilidades, nível 1–30, qualidade e talentos, equipamento da Oficina, combos, raides, raridade e seguidores novos, chamados. S3 e S4 → 2.2; S5 → 2.3. Atributos do personagem, temporadas, coleção e decorações ficam para depois. |
 | 18/11 | **Todo evento tem relação com a história do WoW Forever.** Fonte única: `docs/historia-forever.md`; texto de evento só usa fato que está lá, confirmado no jogo ou em anúncio oficial. |
 | 18/11 | O `/kh debug` e o `/kh evento` ficam entre `--@debug@` e `--@end-debug@`: só existem na cópia do repositório. |
 | 17/11 | Toda mudança que o jogador percebe ganha linha na tela **Novidades** (`News.lua` + `news<id>_<n>` no `Locales.lua`). A tela abre sozinha uma vez ao logar depois da atualização; save novo não vê novidades antigas. A entrada 1 é a `2.0.0-alpha1`: as tarefas da S1 acrescentam linhas nela. |

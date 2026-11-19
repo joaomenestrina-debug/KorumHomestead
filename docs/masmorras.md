@@ -1,9 +1,10 @@
-# Masmorras e seguidores (S3 e S4, versão 2.2): especificação para aprovação
+# Masmorras e seguidores (S3 a S5, versões 2.2 e 2.3): especificação aprovada
 
 *18/11/2026, por Claude. Ideias do dono: mandar os seguidores para masmorras, equipá-los, subir de nível e combinar
 habilidades, na linha das missões de seguidores do WoW, "mas melhorado se possível"; mostrar a chance e os recomendados
 ao escolher o grupo; chamados de defesa, ataque e outros; seguidores com raridade, novos seguidores e drops raros; e
-**tudo sempre ligado à história do WoW Forever**. Direção aprovada em 18/11; este documento detalha as regras. Os
+**tudo sempre ligado à história do WoW Forever**. **Aprovada pelo dono em 18/11, com as decisões da §16 como
+propostas.** Os
 números finais ficam em `Balance.lua` e são conferidos pelos testes da seção 13.*
 
 A mecânica segue o gênero das missões de seguidores; a tela, os nomes, as habilidades e a arte são nossos. Os nomes e
@@ -432,10 +433,10 @@ novos, as masmorras e também para os **visitantes que já existem**.
 
 Depois da 2.3: coleção (os troféus entram nela), decorações, os quatro atributos do personagem e as temporadas.
 
-## 16. Decisões para o dono
+## 16. Decisões do dono (aprovadas em 18/11, como propostas)
 
 1. **Estalagem na Vila 30.** Hoje ela abre com a Sede 5. Manter (as masmorras são a camada de meio e fim de jogo) ou
-   abrir mais cedo? *Recomendo manter.*
+   abrir mais cedo? **Mantida na Vila 30.**
 2. **Nível máximo 30 dos seguidores** e as metas de ritmo da seção 3.1.
 3. **Raides semanais** (7 dias contados de quando foi feita).
 4. **Rol de até 20 seguidores**, com quartos (1 a 7, pelo nível da Estalagem) e Alojamento.
