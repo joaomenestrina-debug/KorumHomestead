@@ -34,7 +34,7 @@ local function BuildVillage(win)
     -- line, 432 of the 512 of the drawing), under the buildings and the cart. Shown only while their festival runs
     s.decor = {}
     for _, d in ipairs({{"winter", "winter_tree", 330, 150, 84}, {"winter", "snowman", 332, 262, 72},
-        {"winter", "gifts", 300, 78, 72}}) do
+        {"winter", "gifts", 302, 80, 100}}) do
         local festival, name, x, y, size = d[1], d[2], d[3], d[4], d[5]
         local tex = map:CreateTexture(nil, "ARTWORK")
         tex:SetTexture(VDIR .. name)
