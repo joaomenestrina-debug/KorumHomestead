@@ -1,4 +1,4 @@
-![The village](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/1-village.png)
+![The village](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/en/1-village.png)
 
 ## A cozy little village between adventures
 
@@ -20,6 +20,7 @@ Korum Homestead is a little world of its own. It doesn't interact with your char
 *   **Workshop** - 21 recipes in Alchemy, Cooking and Smithing. Crafted goods are always worth more than their ingredients.
 *   **Inn** - recruit up to six followers and send them on missions. They come back with coins and goods, and grow more experienced along the way.
 *   **Visitors** - now and then, while you play, someone arrives: a messenger with an urgent order, a generous merchant, a trading caravan, a rare fish in the Pond or a rare vein in the Mine. They don't stay long! *(2.1 alpha)*
+*   **Festivals** - during the Feast of Winter Veil the village dresses for the season: snow, a decorated tree, a snowman and a sled full of gifts. *(2.1 alpha)*
 *   **While you were away** - when you come back, a card shows what's ready, who returned and what was made.
 *   **Easy to learn** - each building introduces itself the first time you visit, and there's a complete guide whenever you need it.
 *   **Always close by** - minimize your village into a floating icon that tells you when something needs you. Move it anywhere on your screen, or use the minimap button.
@@ -27,13 +28,17 @@ Korum Homestead is a little world of its own. It doesn't interact with your char
 *   **One village per account.**
 *   **Available in English and Brazilian Portuguese.**
 
-![Visitors](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/2-visitors.png)
+![Visitors](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/en/2-visitors.png)
 
-![The Market](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/5-market.png)
+![The Garden](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/en/3-garden.png)
 
-![The Workshop](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/3-workshop.png)
+![The Workshop](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/en/4-workshop.png)
 
-![The Garden](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/6-garden.png)
+![The Inn](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/en/5-inn.png)
+
+![While you were away](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/en/6-away.png)
+
+![The village during the Feast of Winter Veil](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/en/7-winter-veil.png)
 
 ## How to start
 
@@ -57,7 +62,7 @@ Leave a comment or open an issue on [GitHub](https://github.com/joaomenestrina-d
 
 ***
 
-![A vila](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/1-village.png)
+![A vila](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/pt/1-village.png)
 
 ## Uma pequena vila entre aventuras
 
@@ -79,6 +84,7 @@ Korum Homestead é um pequeno mundo à parte. Ele não interfere no seu personag
 *   **Oficina** - 21 receitas de Alquimia, Culinária e Ferraria. O que você fabrica sempre vale mais que os ingredientes.
 *   **Estalagem** - recrute até seis seguidores e envie-os em missões. Eles voltam com moedas e mercadorias, ficando mais experientes a cada jornada.
 *   **Visitantes** - de vez em quando, enquanto você joga, alguém chega: um mensageiro com um pedido urgente, um mercador generoso, uma caravana de troca, um peixe raro na Lagoa ou um veio raro na Mina. Eles não ficam muito tempo! *(2.1 alpha)*
+*   **Festivais** - durante o Festival do Véu de Inverno a vila se veste para a época: neve, uma árvore enfeitada, um boneco de neve e um trenó cheio de presentes. *(2.1 alpha)*
 *   **Enquanto você esteve fora** - ao voltar, um cartão mostra o que está pronto, quem voltou e o que foi produzido.
 *   **Fácil de aprender** - cada construção se apresenta na primeira visita, e há um guia completo sempre que você precisar.
 *   **Sempre por perto** - minimize sua vila em um ícone flutuante que avisa quando algo precisa de você. Posicione-o onde quiser na tela ou use o botão no minimapa.
@@ -86,13 +92,17 @@ Korum Homestead é um pequeno mundo à parte. Ele não interfere no seu personag
 *   **Uma vila por conta.**
 *   **Disponível em inglês e português brasileiro.**
 
-![Visitantes](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/2-visitors.png)
+![Visitantes](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/pt/2-visitors.png)
 
-![O Mercado](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/5-market.png)
+![A Horta](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/pt/3-garden.png)
 
-![A Oficina](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/3-workshop.png)
+![A Oficina](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/pt/4-workshop.png)
 
-![A Horta](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/6-garden.png)
+![A Estalagem](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/pt/5-inn.png)
+
+![Enquanto você esteve fora](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/pt/6-away.png)
+
+![A vila no Festival do Véu de Inverno](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/pt/7-winter-veil.png)
 
 ## Como começar
 

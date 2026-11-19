@@ -151,7 +151,7 @@ O addon está na **raiz**; a ordem de carga é a do `KorumHomestead.toc` (os tes
 - **Ideia nova do dono (17/11): eventos aleatórios** (pedido urgente, caravana de troca, mercador generoso, peixe/mineral raro), avisados no ícone: descrita no `plano-2.0.md` (F-Eventos), entra na S2 (alpha2) no lugar dos Serviços (decisão de 17/11).
 - `python ferramentas/conferir_textos.py` confere se algum texto sai da janela ou se sobrepõe (fonte do jogo ~18% mais larga que a do simulador); rodar antes de cada build.
 - Ainda não visto no jogo: ícones de itens nos produtos (1.0.1), Celeiro com muitos itens, fila da Oficina com "+N".
-- Capturas do CurseForge vêm do simulador (ícones de ervas desenhados por ele); trocar por capturas reais na S5 (T5.16).
+- Imagens da página do CurseForge: `python ferramentas/simulador_ui.py pagina` gera `docs/pagina/en` e `docs/pagina/pt` (mesmas 7 telas, janela no idioma de cada metade de `docs/curseforge.md`), com a fonte e os ícones do jogo. Gerar de novo a cada pacote de domingo.
 - Histórico antigo do GitHub ainda tem commits com "João Menestrina" e "Co-Authored-By: Claude": reescrever só com
   autorização e depois de nenhum branch do Codex aberto.
 - `docs/tarefas/T0.6-*.png` são capturas anexadas pelo Codex; podem sair quando não forem mais úteis.

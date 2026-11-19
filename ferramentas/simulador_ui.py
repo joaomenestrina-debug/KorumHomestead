@@ -338,24 +338,29 @@ HOMESTEAD = [line.strip() for line in (ROOT / "KorumHomestead.toc").read_text(en
              if line.strip().endswith(".lua")]
 
 
+def window(path, locale, setup, view, after="", settle=2.0, clock_at=None, before_view="", after_settle=0.6):
+    """One screen of the window, saved at path: a fresh game with that save, the window open on that view."""
+    g = Game(locale, PT_NAMES if locale == "ptBR" else None)
+    g.run("math.randomseed(11)")
+    if clock_at is not None:
+        g.run(f"SIM.clock = {clock_at}")
+    g.run("KorumHomesteadDB = " + setup)
+    g.load("KorumHomestead", HOMESTEAD)
+    if before_view:
+        g.run(before_view)
+    g.run(f"NS.UI:Show('{view}')")
+    g.advance(settle)
+    if after:
+        g.run(after)
+        g.advance(after_settle)
+    return g.shot(path, "KorumHomesteadFrame")
+
+
 def homestead(out):
     made = []
 
-    def scene(name, locale, setup, view, after="", settle=2.0, clock_at=None, before_view="", after_settle=0.6):
-        g = Game(locale, PT_NAMES if locale == "ptBR" else None)
-        g.run("math.randomseed(11)")
-        if clock_at is not None:
-            g.run(f"SIM.clock = {clock_at}")
-        g.run("KorumHomesteadDB = " + setup)
-        g.load("KorumHomestead", HOMESTEAD)
-        if before_view:
-            g.run(before_view)
-        g.run(f"NS.UI:Show('{view}')")
-        g.advance(settle)
-        if after:
-            g.run(after)
-            g.advance(after_settle)
-        made.append(g.shot(out / f"{name}.png", "KorumHomesteadFrame"))
+    def scene(name, locale, setup, view, **kw):
+        made.append(window(out / f"{name}.png", locale, setup, view, **kw))
 
     now = 1700000000
     mid = ("{coins = 1240, xp = 150, level = 6, nplots = 5, selected = 2450, tutorial = {done = true}, newsSeen = 1000,"
@@ -436,8 +441,55 @@ def homestead(out):
     return made
 
 
+def pagina(out):
+    """The pictures of the addon's page (docs/curseforge.md): a few screens of a village well along, the same ones in
+    English (out/en) and in Portuguese (out/pt), so each half of the page shows the window in its own language."""
+    now = 1700000000
+    seen = "seen = {hall = true, garden = true, barn = true, market = true, mine = true, pond = true, workshop = true, inn = true}"
+    rich = ("{coins = 8640, xp = 0, level = 31, bubble = {show = false}, selected = 3356, tutorial = {done = true}, newsSeen = 1000, " + seen + ","
+            " stats = {harvested = 2140, earned = 31800, delivered = 64},"
+            " buildings = {hall = 5, garden = 5, barn = 4, market = 4, mine = 4, pond = 4, workshop = 4, inn = 4},"
+            " goods = {ore = 86, fish = 52, heal = 3, stew = 2},"
+            f" work = {{id = 'market', at = {now - 900}, time = 2400}},"
+            f" plots = {{[1] = {{plant = 3356, at = {now - 9000}}}, [2] = {{plant = 3357, at = {now - 2400}}},"
+            f" [3] = {{plant = 3355, at = {now - 1500}}}, [4] = {{plant = 2450, at = {now - 600}}},"
+            f" [5] = {{plant = 785, at = {now - 120}}}}},"
+            " crops = {[2447] = 22, [765] = 18, [2449] = 11, [785] = 16, [2450] = 9, [3355] = 6, [3356] = 4},"
+            " orders = {{plant = 3355, qty = 6, coins = 540, xp = 120, npc = 2}, {plant = 2450, qty = 7, coins = 560, xp = 122, npc = 4},"
+            " {plant = 785, qty = 10, coins = 410, xp = 90, npc = 1}}}")
+    away = (rich[:-1] + f", lastSeen = {now - 8 * 3600},"
+            " snapshot = {goods = {ore = 40, fish = 20, heal = 3, stew = 2}, buildings = {hall = 5, garden = 5, barn = 4, market = 4, mine = 4, pond = 4, workshop = 4, inn = 4}},"
+            f" made = {{mine = {now - 8 * 3600}, pond = {now - 8 * 3600}}},"
+            " followers = {[1] = {done = 6, mission = {kind = 'short', at = " + str(now - 8 * 3600) + ", time = 1800}}}}")
+    visitors = ("NS.Orders:Ensure(); NS.Events:Spawn('urgent'); "
+                "local e = NS.Events:Spawn('caravan'); local t = e.trades[1]; "
+                "if type(t.give) == 'number' then NS.db.crops[t.give] = t.n else NS.db.goods[t.give] = t.n end")
+    inn = ("NS.Inn:Start(1, 'short'); NS.Inn:Start(2, 'medium'); "
+           "NS.db.followers[3] = {done = 4, mission = {kind = 'short', at = NS.Now() - 2000, time = 1800}}; NS.UI:Refresh()")
+    shots = [
+        ("1-village", rich, "village", dict(before_view="NS.Events:Spawn('fish')")),
+        ("2-visitors", rich, "visitors", dict(before_view=visitors)),
+        ("3-garden", rich, "garden", {}),
+        ("4-workshop", rich, "workshop", dict(after="NS.Workshop:Craft('heal'); NS.Workshop:Craft('heal'); NS.UI:Refresh()")),
+        ("5-inn", rich, "inn", dict(after=inn)),
+        ("6-away", away, "village", dict(settle=5)),
+        ("7-winter-veil", rich, "village", dict(clock_at=1797768000, before_view="NS.Events:Spawn('fish')")),
+    ]
+    made = []
+    for lang, locale in (("en", "enUS"), ("pt", "ptBR")):
+        for name, setup, view, kw in shots:
+            path = window(out / lang / f"{name}.png", locale, setup, view, **kw)
+            img = Image.open(path)                 # lighter for the page: about the width it is shown at
+            img.resize((1000, round(img.height * 1000 / img.width)), Image.LANCZOS).save(path, optimize=True)
+            made.append(path)
+    return made
+
+
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    target = ROOT / "arquivo" / "telas" / "homestead"
-    for p in homestead(target):
-        print(p)
+    if "pagina" in sys.argv[1:]:           # python ferramentas/simulador_ui.py pagina -> docs/pagina/en, docs/pagina/pt
+        for p in pagina(ROOT / "docs" / "pagina"):
+            print(p)
+    else:
+        for p in homestead(ROOT / "arquivo" / "telas" / "homestead"):
+            print(p)
