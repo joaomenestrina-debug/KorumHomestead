@@ -11,6 +11,11 @@ Este documento diz **quem faz o quê e quando**. As regras de cada parte estão 
 > `beta` vira Beta, **sem nenhum dos dois vira Release**. Versões de trabalho saem como `vX.Y.0-alphaN`; só a versão
 > pronta sai sem sufixo. Nunca usar `-rc1` ou outro sufixo sem `alpha`: o CurseForge publicaria como Release.
 
+> **Um pacote por semana (decisão do dono, 19/11).** Durante a semana as mudanças se juntam na `main` (instaladas na
+> cópia do dono, com News e CHANGELOG da próxima versão). No **domingo** sai **uma** atualização com tudo o que a semana
+> trouxe (a alpha da semana, ou a Release quando for a hora). Nada de tag no meio da semana, salvo problema que impede
+> jogar ou risco real.
+
 ---
 
 ## 1. Visão geral
