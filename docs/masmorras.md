@@ -132,17 +132,17 @@ Cada seguidor escolhe um de dois, na lista abaixo (a combinação de cada um fic
 | Raridade | Seguidor (arquétipo) | Vem de | Habilidades |
 |---|---|---|---|
 | Raro | Patrulheira Skyborne | chamados de Zephras Isle | Rajada de Vento (Horda) / Passo Leve (Armadilhas) |
-| Raro | Xamã anão | Hall of Thanes | Totem Purificador (Veneno) / Escudo de Terra (Chefe brutal) |
-| Raro | Paladino Renegado | Ruins of Lordaeron | Luz Profana (Mortos-vivos) / Aura de Devoção (Blindados) |
-| Raro | Escavador | Excavation Site | Mestre das Ruínas (Armadilhas) / Saber Antigo (Magia hostil) |
+| Raro | Xamã anão | Salão dos Thanes | Totem Purificador (Veneno) / Escudo de Terra (Chefe brutal) |
+| Raro | Paladino Renegado | Ruínas de Lordaeron | Luz Profana (Mortos-vivos) / Aura de Devoção (Blindados) |
+| Raro | Escavador | Sítio de Escavação: Pantanal | Mestre das Ruínas (Armadilhas) / Saber Antigo (Magia hostil) |
 | Raro | Caçador Darkspear | chamados de Darkspear Island | Vodu (Medo) / Lança Farpada (Horda) |
-| Épico | Mago do Kirin Tor | City of Dalaran | Contrafeitiço Maior (Magia hostil) / Teleporte (masmorra 20% mais curta) |
+| Épico | Mago do Kirin Tor | Dalaran | Contrafeitiço Maior (Magia hostil) / Teleporte (masmorra 20% mais curta) |
 | Épico | Guardião de Hyjal (druida) | chamados de Mount Hyjal | Rejuvenescer (Veneno) / Forma de Urso (Chefe brutal) |
-| Épico | Fugitivo de Alcaz (ladino) | Alcaz Island Prison (resgate) | Furtividade (Armadilhas) / Golpe Baixo (Chefe brutal) |
-| Épico | Caçador de Blackmaw | Blackmaw Hold | Armadilha Congelante (Horda) / Tiro Sereno (Medo) |
-| Lendário | Anciã dos Ventos Skyborne | Hyjal Summit | **Tempestade de Zephras:** anula Horda e Magia hostil |
+| Épico | Fugitivo de Alcaz (ladino) | Prisão de Alcaz (resgate) | Furtividade (Armadilhas) / Golpe Baixo (Chefe brutal) |
+| Épico | Caçadora furbolg Bocanera | Gruta Bocanera (resgate) | Armadilha Congelante (Horda) / Tiro Sereno (Medo) |
+| Lendário | Anciã Moldavento Skyborne | Monte Hyjal (raide) | **Tempestade de Zephras:** anula Horda e Magia hostil |
 | Lendário | Thane de Ironforge | Barrow Deeps | **Bastião:** anula Chefe brutal e Blindados |
-| Lendário | Vigia de Hyjal | Hyjal Summit | **Luz Ancestral:** anula Mortos-vivos e Medo |
+| Lendário | Vigia de Hyjal | Monte Hyjal (raide) | **Luz Ancestral:** anula Mortos-vivos e Medo |
 
 - Os arquétipos vêm do que o Forever confirmou: a raça nova Skyborne de Zephras Isle, os paladinos Renegados e os xamãs
   anões, Dalaran, Hyjal depois de Archimonde, Darkspear Island e as masmorras novas (seção 11). Quem são de fato, com
@@ -175,32 +175,36 @@ seguidores ela pede (pode ir com menos, com chance menor).
 | # | Masmorra (EN) | Onde | Nível | Grupo | Duração | Ameaças | Ambiente |
 |---|---|---|---|---|---|---|---|
 | 1 | Ragefire Chasm | Orgrimmar | 1 | 1 | 1 h | Horda, Magia hostil | caverna |
-| 2 | ★ Hall of Thanes | Ironforge | 2 | 1 | 1 h | *a conferir* | fortaleza |
-| 3 | ★ Ruins of Lordaeron | Tirisfal | 3 | 1 | 1 h | *a conferir* | ruínas |
+| 2 | ★ Salão dos Thanes (Hall of Thanes) | Altaforja | 2 | 1 | 1 h | Blindados, Magia hostil | fortaleza |
+| 3 | ★ Ruínas de Lordaeron | Tirisfal | 3 | 1 | 1 h | Mortos-vivos, Veneno | ruínas |
 | 4 | Wailing Caverns | Barrens | 4 | 1 | 1 h 30 | Veneno, Medo | caverna |
 | 5 | The Deadmines | Westfall | 5 | 2 | 1 h 30 | Horda, Armadilhas | caverna |
 | 6 | Shadowfang Keep | Silverpine | 6 | 2 | 1 h 30 | Mortos-vivos, Magia hostil | fortaleza |
-| 7 | ★ Excavation Site | Wetlands | 7 | 2 | 2 h | *a conferir* | ruínas |
+| 7 | ★ Sítio de Escavação: Pantanal | Pantanal | 7 | 2 | 2 h | Horda, Magia hostil, Armadilhas | ruínas |
 | 8 | Blackfathom Deeps | Ashenvale | 8 | 2 | 2 h | Horda, Veneno | ruínas |
-| 9 | ★ City of Dalaran | Alterac | 9 | 2 | 2 h | *a conferir* | fortaleza |
+| 9 | ★ Dalaran | Alterac | 9 | 2 | 2 h | *a conferir* | fortaleza |
 | 10 | Gnomeregan | Dun Morogh | 10 | 2 | 2 h 30 | Armadilhas, Blindados, Horda | fortaleza |
 | 11 | Scarlet Monastery | Tirisfal | 12 | 3 | 2 h 30 | Horda, Magia hostil, Chefe brutal | fortaleza |
-| 12 | ★ Drowned City | Stranglethorn | 13 | 3 | 3 h | *a conferir* | ruínas |
-| 13 | ★ Krol'dok Stronghold | *a conferir* | 15 | 3 | 3 h | *a conferir* | fortaleza |
+| 12 | ★ A Cidade Afogada | Selva do Espinhaço | 13 | 3 | 3 h | Mortos-vivos, Magia hostil, Horda | ruínas |
+| 13 | ★ Fortaleza de Krol'Dok | *a conferir* | 15 | 3 | 3 h | Horda, Magia hostil, Chefe brutal | fortaleza |
 | 14 | Uldaman | Badlands | 17 | 3 | 3 h 30 | Blindados, Armadilhas, Magia hostil | ruínas |
 | 15 | Zul'Farrak | Tanaris | 19 | 3 | 3 h 30 | Horda, Veneno, Chefe brutal | ruínas |
-| 16 | ★ Alcaz Island Prison | Dustwallow | 20 | 3 | 4 h | *a conferir* | fortaleza |
+| 16 | ★ Prisão de Alcaz | Pântano Vadeoso | 20 | 3 | 4 h | Horda, Magia hostil, Chefe brutal | fortaleza |
 | 17 | Maraudon | Desolace | 22 | 3 | 4 h | Veneno, Blindados, Medo | caverna |
 | 18 | Sunken Temple | Swamp of Sorrows | 24 | 3 | 4 h 30 | Magia hostil, Veneno, Medo, Horda | ruínas |
 | 19 | Blackrock Depths | Blackrock | 26 | 3 | 5 h | Blindados, Magia hostil, Horda, Chefe brutal | fortaleza |
-| 20 | ★ Blackmaw Hold | Azshara | 28 | 3 | 5 h | *a conferir* | caverna |
-| 21 | ★ Shaper's Terrace | Un'Goro | 29 | 3 | 5 h 30 | *a conferir* | ruínas |
+| 20 | ★ Gruta Bocanera (Blackmaw Hold) | Azshara | 28 | 3 | 5 h | Horda, Magia hostil, Medo | caverna |
+| 21 | ★ O Terraço do Moldador | Un'Goro | 29 | 3 | 5 h 30 | *a conferir* | ruínas |
 | 22 | Scholomance | Western Plaguelands | 30 | 3 | 6 h | Mortos-vivos, Magia hostil, Medo, Veneno | cripta |
 | 23 | Stratholme | Eastern Plaguelands | 30 | 3 | 6 h | Mortos-vivos, Horda, Chefe brutal, Medo | cripta |
 | R1 | ★ Barrow Deeps | *a conferir* | 30 | 4 | 12 h | *a conferir* | cripta |
-| R2 | ★ Hyjal Summit | Mount Hyjal | 30 | 5 | 18 h | *a conferir* | natural |
+| R2 | ★ Monte Hyjal (Hyjal Summit) | Monte Hyjal | 30 | 5 | 18 h | *a conferir* | natural |
 | R3 | Onyxia's Lair | Dustwallow | 30 | 6 | 24 h | Chefe brutal, Magia hostil, Medo, Horda, Blindados | caverna |
 
+- **19/11:** as ameaças das masmorras novas que já têm criaturas no Wowhead do Forever foram preenchidas a partir de quem
+  está lá dentro (`docs/historia-forever.md`). Dalaran, o Terraço do Moldador e as raides novas seguem *a conferir*. O
+  Wowhead mostra ainda três masmorras novas fora desta lista (Casarão dos Brumanto, Sítio de Escavação - Bael Modan,
+  Contraforte de Eira dos Montes): entram quando tiverem criaturas e nível.
 - **As ameaças e o ambiente das masmorras novas do Forever saem do jogo, não de suposição:** o dono, que joga o Forever,
   confirma quem está lá dentro (ou um guia oficial), e só então elas ganham ameaças. Até lá, ficam fora da lista do jogo.
   O mesmo vale para a masmorra de Krol'dok e a raide Barrow Deeps, cujo lugar ainda não foi confirmado.
@@ -373,7 +377,7 @@ personagem faz no Forever e reage. O addon só lê eventos do jogo; nunca muda n
 ### Diário
 
 - Quando um grupo volta de uma masmorra ou de um chamado, ele traz **uma ou duas linhas** contando o que aconteceu:
-  *"Garrick segurou o portão do Hall of Thanes enquanto Sela calava o conjurador. Tobin achou um machado antigo nos
+  *"Garrick segurou o portão do Salão dos Thanes enquanto Sela calava o evocador Ferro Negro. Tobin achou um machado antigo nos
   escombros."*
 - As linhas são montadas com o que de fato aconteceu naquela ida: o lugar, as ameaças anuladas (por quem e com qual
   habilidade), a que ficou sem resposta, o combo, o ferimento, o drop. Por isso quase toda volta é diferente.
