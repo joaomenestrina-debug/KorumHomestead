@@ -391,7 +391,17 @@ def homestead(out):
     scene("7-village-english", "enUS", mid, "village")
     scene("10-oficina", "ptBR", mid, "workshop", after="NS.Workshop:Craft('heal'); NS.Workshop:Craft('heal'); NS.UI:Refresh()")
     scene("10b-oficina-culinaria", "ptBR", mid, "workshop", after="NS.UI.trade = 'cooking'; NS.Workshop:Craft('stew'); NS.UI:Refresh()")
-    scene("11-estalagem", "ptBR", mid, "inn", after="NS.Inn:Start(1, 'short'); NS.Inn:Start(2, 'medium'); NS.db.followers[3] = {done = 4, mission = {kind = 'short', at = NS.Now() - 2000, time = 1800}}; NS.UI:Refresh()")
+    inn = ("NS.db.buildings.inn = 6; NS.db.goods.fish = 300; "
+           "for fid, lv in pairs({mira = 12, tobin = 9, elda = 11, garrick = 8, sela = 10, bram = 7}) do NS.Inn:Get(fid).level = lv; NS.Inn:Get(fid).xp = 300 end; "
+           "NS.db.dungeons.merit = 1; NS.Inn:Promote('mira', 2); NS.Inn:Promote('elda', 1); "
+           "NS.Rand = function() return 1 end; NS.Dungeons:Send('scarlet', {'garrick', 'sela', 'bram'}); "
+           "NS.Dungeons:Send('deadmines', {'tobin', 'mira'}); NS.db.trips[2].at = NS.Now() - 99999; NS.Dungeons:CollectAll(); "
+           "NS.Dungeons:Send('blackfathom', {'tobin', 'elda'}); NS.db.trips[2].at = NS.Now() - 7300; NS.Rand = nil")
+    scene("11-estalagem", "ptBR", mid, "inn", before_view=inn)
+    scene("11b-estalagem-masmorras", "ptBR", mid, "inn", before_view=inn + "; NS.UI.innTab = 'dungeons'")
+    scene("11c-estalagem-grupo", "ptBR", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll(); NS.UI.innDungeon = 'gnomeregan'; NS.UI.innParty = {'tobin'}")
+    scene("11d-estalagem-ficha", "ptBR", mid, "inn", before_view=inn + "; NS.UI.innFollower = 'mira'")
+    scene("11e-inn-english", "enUS", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll(); NS.UI.innDungeon = 'scarlet'; NS.UI.innParty = NS.Dungeons:Suggest('scarlet')")
     scene("16-ajustes", "ptBR", mid, "settings")
     visitors = ("NS.db.level = 30; NS.db.buildings.workshop = 3; NS.Orders:Ensure(); NS.Events:Spawn('urgent'); "
                 "local e = NS.Events:Spawn('caravan'); local t = e.trades[1]; "
@@ -464,14 +474,15 @@ def pagina(out):
     visitors = ("NS.Orders:Ensure(); NS.Events:Spawn('urgent'); "
                 "local e = NS.Events:Spawn('caravan'); local t = e.trades[1]; "
                 "if type(t.give) == 'number' then NS.db.crops[t.give] = t.n else NS.db.goods[t.give] = t.n end")
-    inn = ("NS.Inn:Start(1, 'short'); NS.Inn:Start(2, 'medium'); "
-           "NS.db.followers[3] = {done = 4, mission = {kind = 'short', at = NS.Now() - 2000, time = 1800}}; NS.UI:Refresh()")
+    inn = ("NS.Rand = function() return 1 end; NS.Inn:Get('elda').level = 6; "
+           "NS.Dungeons:Send('ragefire', {'mira'}); NS.Dungeons:Send('deadmines', {'tobin', 'elda'}); "
+           "NS.db.trips[2].at = NS.Now() - 99999; NS.Rand = nil; NS.UI:Refresh()")
     shots = [
         ("1-village", rich, "village", dict(before_view="NS.Events:Spawn('fish')")),
         ("2-visitors", rich, "visitors", dict(before_view=visitors)),
         ("3-garden", rich, "garden", {}),
         ("4-workshop", rich, "workshop", dict(after="NS.Workshop:Craft('heal'); NS.Workshop:Craft('heal'); NS.UI:Refresh()")),
-        ("5-inn", rich, "inn", dict(after=inn)),
+        ("5-inn", rich, "inn", dict(before_view=inn)),
         ("6-away", away, "village", dict(settle=5)),
         ("7-winter-veil", rich, "village", dict(clock_at=1797768000, before_view="NS.Events:Spawn('fish')")),
     ]

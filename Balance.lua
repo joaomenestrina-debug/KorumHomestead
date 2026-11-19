@@ -222,15 +222,138 @@ B.RECIPES = {
     {id = "arcanite", trade = "smithing", level = 7, time = 3600, item = 12360, inputs = {{"ore", 60}, {13466, 1}}}, -- Arcanite Bar
 }
 
--- Inn capacity, follower progression, and bonus pay per follower level.
-B.INN = {maxFollowers = 6, maxLevel = 5, missionsPerLevel = 3, payBonusPerLevel = 0.1}
-
--- Inn missions: mission id, duration seconds, fish cost, coin reward, and ore reward.
-B.MISSIONS = {
-    {id = "short", time = 1800, fish = 2, coins = 40, ore = 0},
-    {id = "medium", time = 7200, fish = 6, coins = 170, ore = 2},
-    {id = "long", time = 28800, fish = 20, coins = 750, ore = 8},
+-- ----------------------------------------------------------------------------------------------------------------
+-- Dungeons and followers (docs/masmorras.md, approved on 18/11). Icons are the ones of the game (Interface\Icons\...).
+-- ----------------------------------------------------------------------------------------------------------------
+-- The eight threats a dungeon can have
+B.THREATS = {
+    horde = "ability_warrior_cleave",              -- many enemies
+    boss = "ability_warrior_savageblow",           -- a brutal boss
+    magic = "spell_shadow_shadowbolt",             -- hostile magic
+    poison = "ability_creature_poison_03",         -- poison and disease
+    traps = "spell_fire_selfdestruct",
+    undead = "spell_shadow_raisedead",
+    fear = "spell_shadow_possession",
+    armored = "ability_warrior_defensivestance",
 }
+B.THREAT_ORDER = {"horde", "boss", "magic", "poison", "traps", "undead", "fear", "armored"}
+
+-- What each ability counters (a list: the legendary signatures counter two) and its icon.
+B.ABILITIES = {
+    volley = {counters = {"horde"}, icon = "ability_upgrademoonglaive"},
+    eagle = {counters = {"traps"}, icon = "ability_hunter_eagleeye"},
+    aimed = {counters = {"boss"}, icon = "ability_hunter_snipershot"},
+    hammer = {counters = {"armored"}, icon = "inv_hammer_04"},
+    locks = {counters = {"traps"}, icon = "inv_misc_key_03"},
+    silver = {counters = {"undead"}, icon = "inv_weapon_shortblade_05"},
+    herbs = {counters = {"poison"}, icon = "spell_nature_healingtouch"},
+    holy = {counters = {"undead"}, icon = "spell_holy_holybolt"},
+    balm = {counters = {"fear"}, icon = "spell_nature_slow"},
+    shield = {counters = {"boss"}, icon = "ability_warrior_shieldwall"},
+    warcry = {counters = {"fear"}, icon = "ability_warrior_battleshout"},
+    whirl = {counters = {"horde"}, icon = "ability_whirlwind"},
+    counter = {counters = {"magic"}, icon = "spell_frost_iceshock"},
+    fireball = {counters = {"undead"}, icon = "spell_fire_fireball02"},
+    blizzard = {counters = {"horde"}, icon = "spell_frost_icestorm"},
+    courage = {counters = {"fear"}, icon = "spell_holy_restoration"},
+    distract = {counters = {"traps"}, icon = "ability_rogue_distract"},
+    dissonant = {counters = {"magic"}, icon = "spell_holy_silence"},
+}
+
+-- Traits: the first comes with the follower, the second is picked at Epic (one of the follower's `epic`).
+--   points  chance points, counted `when` the dungeon is of one of those environments, or against `threat`
+--   perOther  points for each other follower in the group      rare  points of rare find chance
+--   xp  more xp for itself      groupXP  more xp for the whole group      short  the run takes this much less time
+--   neverInjured   never comes back hurt      gear  the gear of this follower counts this many levels more (S4)
+B.TRAITS = {
+    forest = {points = 10, when = {"cave", "natural"}},
+    ironhands = {gear = 1},
+    wise = {groupXP = 0.10},
+    fearsUndead = {points = -10, threat = "undead", untilLevel = 20},
+    curious = {rare = 5},
+    company = {perOther = 5},
+    swift = {short = 0.15},
+    lucky = {rare = 10},
+    tough = {neverInjured = true},
+    quick = {xp = 0.25},
+    partner = {points = 10},           -- with the follower named in its argument in the same group
+    likes = {points = 10},             -- in dungeons of the environment named in its argument
+}
+
+-- The followers. `rare` = the two abilities to pick from at Rare; `epic` = the two traits to pick from at Epic
+-- ({"likes", env} and {"partner", follower} carry their argument). `portrait` = Media/Village/follower<n>.
+B.FOLLOWERS = {
+    {id = "mira", portrait = 1, rarity = "uncommon", start = "volley", rare = {"eagle", "aimed"}, trait = "forest",
+        epic = {{"swift"}, {"lucky"}}},
+    {id = "tobin", portrait = 2, rarity = "uncommon", start = "hammer", rare = {"locks", "silver"}, trait = "ironhands",
+        epic = {{"tough"}, {"likes", "fortress"}}},
+    {id = "elda", portrait = 3, rarity = "uncommon", start = "herbs", rare = {"holy", "balm"}, trait = "wise",
+        epic = {{"quick"}, {"likes", "cave"}}},
+    {id = "garrick", portrait = 4, rarity = "uncommon", start = "shield", rare = {"warcry", "whirl"}, trait = "fearsUndead",
+        epic = {{"tough"}, {"partner", "elda"}}},
+    {id = "sela", portrait = 5, rarity = "uncommon", start = "counter", rare = {"fireball", "blizzard"}, trait = "curious",
+        epic = {{"lucky"}, {"likes", "crypt"}}},
+    {id = "bram", portrait = 6, rarity = "uncommon", start = "courage", rare = {"distract", "dissonant"}, trait = "company",
+        epic = {{"swift"}, {"partner", "mira"}}},
+}
+
+-- The dungeons of WoW Forever that its Wowhead already has (rule of 19/11: what it does not have does not exist yet).
+-- level = the follower level it is made for; size = followers it asks; hours = how long it takes.
+B.DUNGEONS = {
+    {id = "ragefire", level = 1, size = 1, hours = 1, threats = {"horde", "magic"}, env = "cave"},
+    {id = "thanes", level = 2, size = 1, hours = 1, threats = {"armored", "magic"}, env = "fortress", new = true},
+    {id = "lordaeron", level = 3, size = 1, hours = 1, threats = {"undead", "poison"}, env = "ruins", new = true},
+    {id = "wailing", level = 4, size = 1, hours = 1.5, threats = {"poison", "fear"}, env = "cave"},
+    {id = "deadmines", level = 5, size = 2, hours = 1.5, threats = {"horde", "traps"}, env = "cave"},
+    {id = "shadowfang", level = 6, size = 2, hours = 1.5, threats = {"undead", "magic"}, env = "fortress"},
+    {id = "excavation", level = 7, size = 2, hours = 2, threats = {"horde", "magic", "traps"}, env = "ruins", new = true},
+    {id = "blackfathom", level = 8, size = 2, hours = 2, threats = {"horde", "poison"}, env = "ruins"},
+    {id = "gnomeregan", level = 10, size = 2, hours = 2.5, threats = {"traps", "armored", "horde"}, env = "fortress"},
+    {id = "scarlet", level = 12, size = 3, hours = 2.5, threats = {"horde", "magic", "boss"}, env = "fortress"},
+    {id = "drowned", level = 13, size = 3, hours = 3, threats = {"undead", "magic", "horde"}, env = "ruins", new = true},
+    {id = "kroldok", level = 15, size = 3, hours = 3, threats = {"horde", "magic", "boss"}, env = "fortress", new = true},
+    {id = "uldaman", level = 17, size = 3, hours = 3.5, threats = {"armored", "traps", "magic"}, env = "ruins"},
+    {id = "zulfarrak", level = 19, size = 3, hours = 3.5, threats = {"horde", "poison", "boss"}, env = "ruins"},
+    {id = "alcaz", level = 20, size = 3, hours = 4, threats = {"horde", "magic", "boss"}, env = "fortress", new = true},
+    {id = "maraudon", level = 22, size = 3, hours = 4, threats = {"poison", "armored", "fear"}, env = "cave"},
+    {id = "sunken", level = 24, size = 3, hours = 4.5, threats = {"magic", "poison", "fear", "horde"}, env = "ruins"},
+    {id = "brd", level = 26, size = 3, hours = 5, threats = {"armored", "magic", "horde", "boss"}, env = "fortress"},
+    {id = "blackmaw", level = 28, size = 3, hours = 5, threats = {"horde", "magic", "fear"}, env = "cave", new = true},
+    {id = "scholomance", level = 30, size = 3, hours = 6, threats = {"undead", "magic", "fear", "poison"}, env = "crypt"},
+    {id = "stratholme", level = 30, size = 3, hours = 6, threats = {"undead", "horde", "boss", "fear"}, env = "crypt"},
+}
+
+-- The rules of a run (docs/masmorras.md §3, §6, §8 and §9)
+--   threat     points one uncountered threat takes          below/above  points per level the group is under/over it
+--   missing    points per follower missing                  aboveMax     the most the levels above add
+--   maxChance  the chance counts up to this; what passes 100 becomes a reward bonus (150 = x1.5)
+--   coinShare  coins per follower per hour, as a share of what the Garden makes in one hour now
+--   xpShare    village xp per follower per hour, as a share of the xp of the level now
+--   fishPerHour   fish per follower per hour of road
+--   fxpBase, fxpPerLevel   follower xp of a run: base + perLevel x dungeon level (half on a failure)
+--   lowGap, lowXP   a dungeon more than lowGap levels under the follower gives lowXP of its xp
+--   openAhead  a dungeon opens when the best follower is at most this many levels under it
+--   injury, injuryHours   the chance of each follower to come back hurt from a failure, and the rest it takes
+--   daily      the dungeon of the day gives this much more follower xp
+--   merit, epic   insignia drop chance on a success, from that dungeon level up (meritIcon, epicIcon: their icons)
+B.DUNGEON = {
+    threat = 25, below = 5, above = 2, aboveMax = 10, missing = 20, maxChance = 150, warnBelow = 5,
+    coinShare = 0.045, xpShare = 0.005, fishPerHour = 2,
+    fxpBase = 60, fxpPerLevel = 4, lowGap = 5, lowXP = 0.25,
+    openAhead = 3, injury = 0.30, injuryHours = 2, daily = 0.5,
+    merit = {chance = 0.10, from = 8}, epic = {chance = 0.05, from = 19},
+    meritIcon = "inv_jewelry_talisman_08", epicIcon = "inv_jewelry_trinketpvp_01",
+}
+
+-- Followers: level 1 to maxLevel; xp to the next level = xpBase + xpPerLevel x level (+ late x each level past lateFrom).
+-- Rare at rareLevel with a Merit insignia, Epic at epicLevel with an Epic one. Changing a pick costs respecHours x
+-- (changes + 1) hours of what the Garden makes now.
+B.FOLLOWER = {maxLevel = 30, xpBase = 60, xpPerLevel = 30, late = 25, lateFrom = 20, rareLevel = 10, epicLevel = 20,
+    respecHours = 1}
+function B.FollowerXPToNext(level)
+    local F = B.FOLLOWER
+    return F.xpBase + F.xpPerLevel * level + (level >= F.lateFrom and F.late * (level - F.lateFrom + 1) or 0)
+end
 
 -- While you were away (Away.lua): the window tells what happened only after this long closed (seconds).
 B.AWAY = {minSeconds = 1800}

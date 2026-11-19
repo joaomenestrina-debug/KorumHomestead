@@ -21,6 +21,8 @@ Daily.lua
 Festivals.lua
 Village.lua
 Works.lua
+Journal.lua
+Dungeons.lua
 Events.lua
 Probe.lua
 Advice.lua

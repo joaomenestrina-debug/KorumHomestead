@@ -2,7 +2,8 @@
 
     python ferramentas/icones_do_jogo.py
 
-1. Lists every item the addon shows (herbs, goods, Workshop items, the keepsake of the streak).
+1. Lists every item the addon shows (herbs, goods, Workshop items, the keepsake of the streak) and the icons it names
+   directly (threats, abilities, insignias).
 2. Asks the Wowhead of WoW Forever which icon each one uses.
 3. Writes, in the folder of the game's files (KORUM_WOW_ASSETS, by default C:/AI/Tools/wowf_extract):
    item_icons.json (item -> icon) and homestead-listfile.csv (the icons and the fonts, with their numbers in the game's
@@ -43,6 +44,20 @@ def items():
     return sorted({int(i) for i in ids.split(",")})
 
 
+def spell_icons():
+    """The icons the addon names directly (threats, abilities, insignias: Balance.lua), not through an item."""
+    import test_homestead
+    h = test_homestead.Homestead("test_a_new_homestead_has_two_plots_and_a_little_money")
+    h.setUp()
+    names = h.lua.eval("""(function() local out = {}
+        for _, icon in pairs(NS.Balance.THREATS) do out[#out + 1] = icon end
+        for _, a in pairs(NS.Balance.ABILITIES) do out[#out + 1] = a.icon end
+        out[#out + 1] = NS.Balance.DUNGEON.meritIcon
+        out[#out + 1] = NS.Balance.DUNGEON.epicIcon
+        return table.concat(out, ",") end)()""")
+    return sorted({n.lower() for n in names.split(",")})
+
+
 def icon_of(item):
     req = urllib.request.Request(f"https://www.wowhead.com/forever/item={item}&xml", headers={"User-Agent": "Mozilla/5.0"})
     xml = urllib.request.urlopen(req, timeout=20).read().decode("utf-8", "replace")
@@ -61,7 +76,7 @@ def main():
     icons["qmark"] = "inv_misc_questionmark"
     old.write_text(json.dumps(icons, indent=1), encoding="utf-8")
     missing = [k for k, v in icons.items() if not v]
-    want = {f"interface/icons/{v}.blp" for v in icons.values() if v} | set(FONTS)
+    want = {f"interface/icons/{v}.blp" for v in list(icons.values()) + spell_icons() if v} | set(FONTS)
     lines = []
     with open(COMMUNITY, encoding="utf-8", errors="replace") as f:
         for line in f:

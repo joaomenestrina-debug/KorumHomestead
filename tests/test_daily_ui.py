@@ -37,7 +37,7 @@ class AwayCard(Base):
             db.coins = 5000
             db.buildings.hall = 5; db.buildings.mine = 2; db.buildings.inn = 1
             NS.Farm:Plant(1, 2447); NS.Farm:Plant(2, 2447)
-            NS.db.goods.fish = 10; NS.Inn:Start(1, "short")
+            NS.db.goods.fish = 10; NS.Rand = function() return 1 end; assert(NS.Dungeons:Send('ragefire', {'mira'})); NS.Rand = nil
         """)
 
     def test_the_card_opens_after_eight_hours_and_collects_everything(self):
@@ -48,7 +48,7 @@ class AwayCard(Base):
         self.open("village")
         self.assertTrue(self.card())
         self.assertEqual(self.ev("NS.UI.away.card.lines[1].text:GetText()"), "2 plots are ready to harvest")
-        self.assertEqual(self.ev("NS.UI.away.card.lines[2].text:GetText()"), "1 follower came back from a mission")
+        self.assertEqual(self.ev("NS.UI.away.card.lines[2].text:GetText()"), "1 group came back from a dungeon")
         self.assertEqual(self.ev("NS.UI.away.card.lines[3].text:GetText()"), "Made:")
         self.assertTrue(self.ev("NS.UI.away.card.collect.enabledState"))
         self.press("NS.UI.away.card.collect")

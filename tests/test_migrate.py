@@ -24,7 +24,7 @@ class SaveOf101(Base):
 
     def test_it_takes_the_current_shape(self):
         self.assertEqual(self.ev("NS.db.schema"), self.ev("NS.SCHEMA"))
-        self.assertEqual(self.ev("NS.SCHEMA"), 3)
+        self.assertEqual(self.ev("NS.SCHEMA"), 4)
 
     def test_nothing_the_player_had_is_lost(self):
         self.assertEqual(self.ev("NS.db.coins"), 16846)
@@ -36,7 +36,11 @@ class SaveOf101(Base):
         for building, level in {"garden": 5, "market": 3, "workshop": 1, "hall": 5, "barn": 5, "pond": 2, "mine": 3, "inn": 1}.items():
             self.assertEqual(self.ev(f"NS.Village:Level('{building}')"), level, building)
         self.assertEqual(self.ev("NS.db.goods.stew"), 1)
-        self.assertEqual(self.ev("NS.db.followers[1].mission.kind"), "long")
+        self.assertEqual(self.ev("NS.db.followers.mira.level"), 1)                # 0 missions: old level 1 -> 1
+        self.assertEqual(self.ev("NS.db.followers.mira.quality"), "uncommon")
+        self.assertEqual(self.ev("NS.db.trips[1].party[1]"), "mira")              # the long mission comes back with its pay
+        self.assertEqual(self.ev("NS.db.trips[1].coins"), 750)
+        self.assertEqual(self.ev("NS.db.trips[1].ore"), 8)
         self.assertEqual(self.ev("#NS.db.orders"), 8)                # the 3 old ones kept, 1 herb + 4 item orders added
         self.assertTrue(self.ev("NS.db.seen.workshop"))
         self.assertAlmostEqual(self.ev("NS.db.bubble.x"), 2218.67, places=1)

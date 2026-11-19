@@ -8,6 +8,7 @@
         schema 1    every save of 1.0.x (they have no number)
         schema 2    2.0: the number itself; nothing else changes yet
         schema 3    2.0 economy: "Herbalism 1-20" becomes the Village level 1-60 (docs/economia.md)
+        schema 4    2.2 dungeons: the followers are kept by id, with a level 1-30 (docs/masmorras.md §14)
 
     To change the shape: raise KH.SCHEMA, add KH.MIGRATIONS[new number] = function(db) ... end, and a test that opens the
     saved sample of the previous version (tests/fixtures/).
@@ -15,7 +16,7 @@
 
 local addonName, KH = ...
 
-KH.SCHEMA = 3
+KH.SCHEMA = 4
 
 KH.MIGRATIONS = {
     [2] = function(db)
@@ -42,6 +43,32 @@ KH.MIGRATIONS = {
                 o.coins, o.xp = KH.Orders.HerbPay(plant, o.qty), KH.Orders.HerbXP(plant, o.qty)
             end
         end
+    end,
+
+    -- The six followers of the plain missions keep their place and become Uncommon, at level 2 x (old level) - 1 (the
+    -- old level was 1 + one per 3 missions, up to 5). A mission on its way comes back at its time with its old pay.
+    [4] = function(db)
+        local NAMES = {"mira", "tobin", "elda", "garrick", "sela", "bram"}
+        local OLD = {short = {coins = 40, ore = 0}, medium = {coins = 170, ore = 2}, long = {coins = 750, ore = 8}}
+        local old = db.followers or {}
+        local new, trips = {}, db.trips or {}
+        local serial = 0
+        for i, fid in ipairs(NAMES) do
+            local f = old[i]
+            if type(f) == "table" then
+                local level = math.min(5, 1 + math.floor((tonumber(f.done) or 0) / 3))
+                new[fid] = {level = 2 * level - 1, xp = 0, quality = "uncommon", changes = 0, runs = tonumber(f.done) or 0}
+                local m = f.mission
+                if type(m) == "table" and OLD[m.kind] then
+                    serial = serial + 1
+                    trips[#trips + 1] = {n = serial, at = m.at, time = m.time, party = {fid}, ok = true,
+                        coins = math.floor(OLD[m.kind].coins * (1 + 0.1 * (level - 1))), ore = OLD[m.kind].ore}
+                end
+            end
+        end
+        db.followers, db.trips = new, trips
+        db.dungeons = db.dungeons or {}
+        db.dungeons.serial = math.max(db.dungeons.serial or 0, serial)
     end,
 }
 

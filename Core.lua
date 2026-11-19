@@ -32,7 +32,10 @@ KH.defaults = {
     minimap = {angle = 215, hide = false},
     buildings = {},        -- hall, garden, barn, market -> level (Village.lua fills what is missing)
     queue = {},            -- the Workshop's work: {recipe, at, time}
-    followers = {},        -- the Inn's: {done = missions made, mission = {kind, at, time}}
+    followers = {},        -- the Inn's, by id: {level, xp, quality, ability, trait, changes, runs, hurt, marks} (Dungeons.lua)
+    trips = {},            -- groups in a dungeon: {n, dungeon, at, time, party, total, ok, coins, vxp, fxp, hurt, drop, ...}
+    dungeons = {serial = 0, merit = 0, epic = 0, runs = 0},   -- insignias and counters of the dungeons
+    journal = {},          -- the last runs, for the Journal of the followers (Journal.lua)
     goods = {},            -- ore, fish: what the Mine and the Pond made and was not sold or used
     made = {},             -- mine, pond -> the time up to which their production was counted
     work = nil,            -- the building being built: {id, at, time}

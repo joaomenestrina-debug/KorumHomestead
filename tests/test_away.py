@@ -37,7 +37,7 @@ class Away(Base):
             db.crops[2447] = 3; db.crops[765] = 1
             NS.Farm:Plant(1, 2447); NS.Farm:Plant(2, 2447)
             NS.Workshop:Craft("heal")
-            NS.Inn:Start(1, "short")
+            NS.Rand = function() return 1 end; assert(NS.Dungeons:Send('ragefire', {'mira'})); NS.Rand = nil
             NS.Away:Mark()
         """)
 
@@ -87,9 +87,10 @@ class Away(Base):
     def test_collect_all_harvests_and_brings_the_followers_in(self):
         self.village()
         self.run_lua(f"NOW = NOW + 8 * {HOUR}")
+        pay = self.ev("NS.db.trips[1].coins")
         got = self.ev("NS.Away:CollectAll()")
         self.assertEqual(got["harvested"], 2 * self.ev("NS.Data.Yield(NS.Data.Plant(2447), NS.db.level)"))
-        self.assertEqual(got["coins"], self.ev("NS.Inn.Mission('short').coins"))
+        self.assertEqual(got["coins"], pay)
         self.assertEqual(self.ev("NS.Farm:ReadyCount()"), 0)
         self.assertEqual(self.ev("NS.Inn:BackCount()"), 0)
 

@@ -1,11 +1,9 @@
 --[[
-    Korum Homestead - the Workshop and the Inn
+    Korum Homestead - the Workshop
 
     The Workshop turns herbs into potions, one at a time, in a queue that goes on while the game is closed. Each level of the
     Workshop adds a place in the queue and, up to the third, a recipe.
 
-    The Inn shelters the followers (one more per level, six at most). A follower can be sent on a mission: it takes time, costs
-    fish for the road, and brings coins and ore back. The more missions a follower has done, the better it pays.
 
         Workshop:Slots() / Workshop:Unlocked(recipeId) / Workshop:CanCraft(recipeId)
         Workshop.Shown(trade)           the 3 recipes the Workshop screen shows for a trade
@@ -13,10 +11,6 @@
         Workshop:Craft(recipeId)        takes the herbs and puts the potion in the queue
         Workshop:Update()               finishes the potions whose time is over; returns {recipeId, ...}
 
-        Inn:Count()                     how many followers there are
-        Inn:Status(i)                   "locked" | "idle" | "away" | "back", seconds left, progress 0..1
-        Inn:Start(i, kind) / Inn:Collect(i) / Inn:CollectAll()
-        Inn:Update()                    returns how many followers just came back
 ]]
 
 local addonName, KH = ...
@@ -26,8 +20,6 @@ local B = KH.Balance
 
 local W = {}
 KH.Workshop = W
-local I = {}
-KH.Inn = I
 
 -- ----------------------------------------------------------------------------
 -- The Workshop
@@ -178,107 +170,6 @@ function W:Update()
     return done
 end
 
--- ----------------------------------------------------------------------------
--- The Inn
--- ----------------------------------------------------------------------------
-I.NAMES = {"Mira", "Tobin", "Elda", "Garrick", "Sela", "Bram"}
-I.MAX = B.INN.maxFollowers
-I.MISSIONS = B.MISSIONS
-
-function I.Mission(id)
-    for _, m in ipairs(I.MISSIONS) do
-        if m.id == id then return m end
-    end
-end
-
-function I:Count() return math.min(I.MAX, V:Level("inn")) end
-
-function I:Follower(i)
-    local db = KH.db
-    db.followers[i] = db.followers[i] or {done = 0}
-    return db.followers[i]
-end
-
--- follower progression uses the cap and mission interval in Balance.lua
-function I:Level(i)
-    return math.min(B.INN.maxLevel, 1 + math.floor(self:Follower(i).done / B.INN.missionsPerLevel))
-end
-
-function I:Pay(i, mission)
-    return math.floor(mission.coins * (1 + B.INN.payBonusPerLevel * (self:Level(i) - 1)))
-end
-
-function I:Status(i)
-    if i > self:Count() then return "locked", 0, 0 end
-    local f = self:Follower(i)
-    if not f.mission then return "idle", 0, 0 end
-    local left = f.mission.at + f.mission.time - KH.Now()
-    if left <= 0 then return "back", 0, 1 end
-    return "away", left, math.min(1, math.max(0, (KH.Now() - f.mission.at) / f.mission.time))
-end
-
-function I:Start(i, kind)
-    local m = I.Mission(kind)
-    if not m then return false, "noMission" end
-    if self:Status(i) ~= "idle" then return false, "notIdle" end
-    if V:Good("fish") < m.fish then return false, "fish", m.fish end
-    KH.db.goods.fish = V:Good("fish") - m.fish
-    self:Follower(i).mission = {kind = kind, at = KH.Now(), time = m.time}
-    return true
-end
-
-function I:Collect(i)
-    if self:Status(i) ~= "back" then return 0, 0 end
-    local f = self:Follower(i)
-    local m = I.Mission(f.mission.kind)
-    local coins, ore = self:Pay(i, m), m.ore
-    f.mission = nil
-    f.done = f.done + 1
-    local db = KH.db
-    db.coins = db.coins + coins
-    db.stats.earned = db.stats.earned + coins
-    if ore > 0 then db.goods.ore = V:Good("ore") + ore end
-    return coins, ore
-end
-
-function I:CollectAll()
-    local coins, ore = 0, 0
-    for i = 1, self:Count() do
-        local c, o = self:Collect(i)
-        coins, ore = coins + c, ore + o
-    end
-    return coins, ore
-end
-
-function I:BackCount()
-    local n = 0
-    for i = 1, self:Count() do
-        if self:Status(i) == "back" then n = n + 1 end
-    end
-    return n
-end
-
-function I:AwayCount()
-    local n = 0
-    for i = 1, self:Count() do
-        if self:Status(i) == "away" then n = n + 1 end
-    end
-    return n
-end
-
--- followers that came back since the last time this was asked
-local announced = {}
-function I:Update()
-    local news = 0
-    for i = 1, I.MAX do
-        local back = self:Status(i) == "back"
-        if back and not announced[i] then news = news + 1 end
-        announced[i] = back or nil
-    end
-    return news
-end
-
 KH:On("PLAYER_LOGIN", function()
     W:Update()
-    for i = 1, I.MAX do announced[i] = I:Status(i) == "back" or nil end
 end)

@@ -135,8 +135,4 @@ local function BuildWorkshop(win)
     return s
 end
 
--- ----------------------------------------------------------------------------
--- The Inn: the followers and their missions
--- ----------------------------------------------------------------------------
-
 P.builders.workshop = BuildWorkshop
