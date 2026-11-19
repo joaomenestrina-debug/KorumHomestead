@@ -6,9 +6,13 @@ The addon's Lua runs for real (lupa, Lua 5.1) against ferramentas/simulador_ui.l
 resolves the anchors into rectangles. This file paints those rectangles with Pillow: the addon's own textures (TGA),
 tints, texture coordinates, rotation, masks, additive blending, and the texts with their colour codes.
 
-What it cannot be: the game. The font is a stand-in (the client's Friz Quadrata is not on disk), the herb icons are
-drawn placeholders (the real ones live inside the game's data), and text metrics differ a little.
+The game's own font and item icons live inside its data. `ferramentas/icones_do_jogo.py` lists what the addon shows
+and how to copy those files out of the installed game into a folder of this computer (KORUM_WOW_ASSETS, by default
+C:/AI/Tools/wowf_extract). They stay there, never in the repository: they are Blizzard's. Without that folder the
+simulator falls back to a stand-in font and drawn icons. What it still cannot be: the game; text metrics differ a little.
 """
+import json
+import os
 import math
 import pathlib
 import re
@@ -22,7 +26,18 @@ HERE = pathlib.Path(__file__).resolve().parent
 S = 2                                   # pixels per UI unit (a sharp picture)
 W, H = 1280, 720
 
-FONT_FILES = ["C:/Windows/Fonts/candara.ttf", "C:/Windows/Fonts/segoeui.ttf", "C:/Windows/Fonts/arial.ttf"]
+GAME = pathlib.Path(os.environ.get("KORUM_WOW_ASSETS", "C:/AI/Tools/wowf_extract"))
+_icon_map = GAME / "item_icons.json"
+ITEM_ICONS = json.loads(_icon_map.read_text(encoding="utf-8")) if _icon_map.is_file() else {}
+
+
+def game_icon(name):
+    """An icon of the game (Interface\Icons\name), from the files copied out of it, or None."""
+    p = GAME / "interface" / "icons" / (name.lower() + ".blp")
+    return Image.open(p).convert("RGBA") if p.is_file() else None
+
+
+FONT_FILES = [str(GAME / "fonts" / "frizqt__.ttf"), "C:/Windows/Fonts/candara.ttf", "C:/Windows/Fonts/segoeui.ttf", "C:/Windows/Fonts/arial.ttf"]
 FONT_PATH = next((f for f in FONT_FILES if pathlib.Path(f).exists()), None)
 _fonts = {}
 
@@ -141,7 +156,10 @@ def load_texture(path, addon_dirs):
     img = None
     low = path.replace("/", "\\").lower()
     if low.startswith("icon:"):
-        img = herb_icon(int(low[5:]))
+        name = ITEM_ICONS.get(low[5:])
+        img = (name and game_icon(name)) or herb_icon(int(low[5:]))
+    elif low.startswith("interface\\icons\\") and game_icon(low.split("\\")[-1]) is not None:
+        img = game_icon(low.split("\\")[-1])
     elif "inv_misc_coin" in low:
         img = coin_icon()
     elif "minimap-trackingborder" in low:
