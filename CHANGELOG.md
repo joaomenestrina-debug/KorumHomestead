@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.0-alpha4
+- The minimap button shows the village logo, the same as the icon on the screen.
+
 ## 2.1.0-alpha2
 The visitors stay a bonus at every level, and their texts were reviewed.
 
