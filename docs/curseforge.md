@@ -1,30 +1,28 @@
 ![The village](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/en/1-village.png)
 
-## A cozy little village between adventures
+## Turn the time between adventures into your own village
 
-Waiting for a dungeon? Taking a flight or a boat? Got a few minutes before the next raid?
+Waiting for a dungeon? On a flight or boat? A few minutes before the next raid? Put that downtime to work in Korum Homestead.
 
-Why not spend that time building a village of your own?
+Plant herbs, fill orders, craft useful goods, improve your buildings, welcome visitors and send followers on missions. Your village keeps producing while you're away, so there's always a harvest to collect, a follower to welcome home or a new upgrade to plan when you return.
 
-Grow herbs, craft useful goods, improve your buildings, welcome visitors and send followers on adventures. Your village keeps growing even when you're away, so there's always something waiting when you return.
+Korum Homestead adds a relaxing village life to WoW without touching your character, inventory or gold. Everything you earn stays in the village, and you don't need any other addon to play.
 
-Korum Homestead is a little world of its own. It doesn't interact with your character, inventory or gold. Everything you earn and build stays within the village. No extra addons required.
+## Make your village your own
 
-## Features
-
-*   **Village** - eight buildings on a hand-drawn map, each with seven levels. Your Village grows from level 1 to 60, and every level opens something new.
-*   **Garden** - grow 27 herbs from the game, from Peacebloom to Icecap, each with its own growing time.
-*   **Barn and Market** - sell your harvest, or fill the villagers' orders (herbs and Workshop goods) for more coins and XP. An order of the day rewards you for coming back day after day.
-*   **Hall** - improve your village one project at a time. It points out the best upgrade for now.
-*   **Mine and Pond** - ore and fish pile up as time goes by.
-*   **Workshop** - 21 recipes in Alchemy, Cooking and Smithing. Crafted goods are always worth more than their ingredients.
-*   **Inn** - recruit up to six followers and send them on missions. They come back with coins and goods, and grow more experienced along the way.
-*   **Visitors** - now and then, while you play, someone arrives: a messenger with an urgent order, a generous merchant, a trading caravan, a rare fish in the Pond or a rare vein in the Mine. They don't stay long! *(2.1 alpha)*
-*   **Festivals** - during the Feast of Winter Veil the village dresses for the season: snow, a decorated tree, a snowman and a sled full of gifts. *(2.1 alpha)*
-*   **While you were away** - when you come back, a card shows what's ready, who returned and what was made.
-*   **Easy to learn** - each building introduces itself the first time you visit, and there's a complete guide whenever you need it.
-*   **Always close by** - minimize your village into a floating icon that tells you when something needs you. Move it anywhere on your screen, or use the minimap button.
-*   **Made for your adventures** - the village hides itself when combat begins.
+*   **Village** - build eight buildings on a hand-drawn map, with seven levels to grow through. Raise your Village from level 1 to 60 and unlock something new along the way.
+*   **Garden** - plant 27 herbs from the game, from Peacebloom to Icecap. Each has its own growing time, so there's always another crop to plan.
+*   **Barn and Market** - turn your harvest into coins or fill residents' orders for more coins and XP. The order of the day and its streak give you a reason to come back tomorrow.
+*   **Hall** - choose your next project and improve the village one building at a time. It points you to a useful upgrade for where you are now.
+*   **Mine and Pond** - let ore and fish gather over time, then collect them when you're ready.
+*   **Workshop** - make 21 recipes across Alchemy, Cooking and Smithing. Crafted goods are worth more than their ingredients.
+*   **Inn** - recruit up to six followers and send them on missions. Welcome them back with coins and goods, and watch their experience grow.
+*   **Visitors** - keep an eye out while you play. A messenger, generous merchant, trading caravan, rare fish or rare ore can bring a limited-time opportunity. *(2.1 alpha)*
+*   **Festivals** - celebrate the season as your village changes for the Feast of Winter Veil, with snow, a decorated tree, a snowman and a sled full of gifts. *(2.1 alpha)*
+*   **While you were away** - come back to a quick summary of what's ready, who returned and what was made.
+*   **Easy to learn** - each building introduces itself on your first visit, and a complete guide is always there when you need it.
+*   **Always close by** - minimize your village to a floating icon that lets you know when something is ready. Place it anywhere on screen or open the village from the minimap button.
+*   **Made for your adventures** - the village hides itself when combat begins, so it stays out of the way when the action starts.
 *   **One village per account.**
 *   **Available in English and Brazilian Portuguese.**
 
@@ -40,13 +38,13 @@ Korum Homestead is a little world of its own. It doesn't interact with your char
 
 ![The village during the Feast of Winter Veil](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/en/7-winter-veil.png)
 
-## How to start
+## Get started
 
 Type **/kh**, click the village icon or use the minimap button.
 
-Your village is ready to welcome you. Head to the Garden, choose a seed and plant it. Come back when it's ready, collect your herbs, visit the Market and start making your village a little bigger.
+Start in the Garden: choose a seed and plant it. When it's ready, harvest your herbs, visit the Market and put your rewards toward the next step for your village. A few minutes now can set up your next visit.
 
-Coming from version 1.0? Your village is carried over, and nothing you had is lost.
+Coming from version 1.0? Your village carries over, so everything you've built and earned stays with you.
 
 ## Commands
 
@@ -56,7 +54,7 @@ Coming from version 1.0? Your village is carried over, and nothing you had is lo
 
 ## Feedback
 
-Have an idea, found something broken or just want to share your thoughts?
+Have an idea, spotted a problem or want to tell us what you'd like to see next?
 
 Leave a comment or open an issue on [GitHub](https://github.com/joaomenestrina-debug/KorumHomestead).
 
@@ -64,31 +62,29 @@ Leave a comment or open an issue on [GitHub](https://github.com/joaomenestrina-d
 
 ![A vila](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/pt/1-village.png)
 
-## Uma pequena vila entre aventuras
+## Faça o tempo entre aventuras render uma vila sua
 
-Esperando na fila de uma masmorra? Fazendo uma viagem de barco ou voo? Tem alguns minutos antes da próxima raide?
+Na fila de uma masmorra? A caminho de barco ou de voo? Com alguns minutos até a próxima raide? Aproveite esse intervalo para fazer sua vila crescer no Korum Homestead.
 
-Que tal aproveitar esse tempo para construir sua própria vila?
+Plante ervas, atenda encomendas, produza itens, melhore construções, receba visitantes e envie seguidores em missões. A vila continua produzindo enquanto você está longe. Quando voltar, pode colher, receber seus seguidores e escolher a próxima melhoria.
 
-Cultive ervas, produza itens, melhore suas construções, receba visitantes e envie seus seguidores em missões. Sua vila continua crescendo mesmo quando você está longe, então sempre haverá algo esperando por você quando voltar.
+Korum Homestead traz uma atividade tranquila para o seu tempo no WoW, sem mexer no personagem, no inventário ou no ouro. Tudo o que você conquista fica dentro da vila, e nenhum outro addon é necessário.
 
-Korum Homestead é um pequeno mundo à parte. Ele não interfere no seu personagem, inventário ou ouro. Tudo o que você conquista e constrói fica dentro da vila. Nenhum outro addon é necessário.
+## Dê forma à sua vila
 
-## Funcionalidades
-
-*   **Vila** - oito construções num mapa desenhado à mão, cada uma com sete níveis. Sua Vila cresce do nível 1 ao 60, e cada nível libera algo novo.
-*   **Horta** - cultive 27 ervas do jogo, das mais simples às mais raras, cada uma com seu próprio tempo de crescimento.
-*   **Celeiro e Mercado** - venda sua colheita ou atenda às encomendas dos moradores (ervas e itens da Oficina) para ganhar mais moedas e XP. A encomenda do dia recompensa quem volta dia após dia.
-*   **Sede** - melhore sua vila, uma obra de cada vez. Ela mostra a melhor melhoria para o momento.
-*   **Mina e Lagoa** - minério e peixe se acumulam com o passar do tempo.
-*   **Oficina** - 21 receitas de Alquimia, Culinária e Ferraria. O que você fabrica sempre vale mais que os ingredientes.
-*   **Estalagem** - recrute até seis seguidores e envie-os em missões. Eles voltam com moedas e mercadorias, ficando mais experientes a cada jornada.
-*   **Visitantes** - de vez em quando, enquanto você joga, alguém chega: um mensageiro com um pedido urgente, um mercador generoso, uma caravana de troca, um peixe raro na Lagoa ou um veio raro na Mina. Eles não ficam muito tempo! *(2.1 alpha)*
-*   **Festivais** - durante o Festival do Véu de Inverno a vila se veste para a época: neve, uma árvore enfeitada, um boneco de neve e um trenó cheio de presentes. *(2.1 alpha)*
-*   **Enquanto você esteve fora** - ao voltar, um cartão mostra o que está pronto, quem voltou e o que foi produzido.
-*   **Fácil de aprender** - cada construção se apresenta na primeira visita, e há um guia completo sempre que você precisar.
-*   **Sempre por perto** - minimize sua vila em um ícone flutuante que avisa quando algo precisa de você. Posicione-o onde quiser na tela ou use o botão no minimapa.
-*   **Feito para suas aventuras** - a vila se esconde automaticamente quando um combate começa.
+*   **Vila** - construa oito prédios num mapa desenhado à mão e desenvolva cada um por sete níveis. Faça sua Vila crescer do nível 1 ao 60 e descubra novidades pelo caminho.
+*   **Horta** - plante 27 ervas do jogo, cada uma com seu próprio tempo de crescimento. Sempre há uma próxima colheita para planejar.
+*   **Celeiro e Mercado** - transforme sua colheita em moedas ou atenda às encomendas dos moradores para ganhar mais moedas e XP. A encomenda do dia e sua sequência dão motivo para voltar amanhã.
+*   **Sede** - escolha a próxima obra e melhore a vila, uma construção de cada vez. Ela indica uma melhoria útil para o momento.
+*   **Mina e Lagoa** - deixe minérios e peixes se acumularem com o tempo e recolha tudo quando quiser.
+*   **Oficina** - prepare 21 receitas de Alquimia, Culinária e Ferraria. Os produtos fabricados valem mais que seus ingredientes.
+*   **Estalagem** - recrute até seis seguidores e envie-os em missões. Receba-os de volta com moedas e mercadorias enquanto ganham experiência.
+*   **Visitantes** - fique de olho enquanto joga. Um mensageiro, um mercador generoso, uma caravana, um peixe raro ou um veio de minério podem trazer uma oportunidade por tempo limitado. *(2.1 alpha)*
+*   **Festivais** - celebre a época com mudanças na vila durante o Festival do Véu de Inverno: neve, árvore enfeitada, boneco de neve e trenó cheio de presentes. *(2.1 alpha)*
+*   **Enquanto você esteve fora** - volte e veja de uma vez o que ficou pronto, quem retornou e o que foi produzido.
+*   **Fácil de aprender** - cada construção se apresenta na primeira visita, e um guia completo está sempre disponível.
+*   **Sempre por perto** - minimize a vila em um ícone flutuante que avisa quando algo fica pronto. Posicione-o onde quiser na tela ou abra a vila pelo botão no minimapa.
+*   **Feito para suas aventuras** - a vila se esconde quando o combate começa e sai do caminho na hora da ação.
 *   **Uma vila por conta.**
 *   **Disponível em inglês e português brasileiro.**
 
@@ -104,13 +100,13 @@ Korum Homestead é um pequeno mundo à parte. Ele não interfere no seu personag
 
 ![A vila no Festival do Véu de Inverno](https://raw.githubusercontent.com/joaomenestrina-debug/KorumHomestead/main/docs/pagina/pt/7-winter-veil.png)
 
-## Como começar
+## Comece agora
 
 Digite **/kh**, clique no ícone da vila ou use o botão no minimapa.
 
-Sua vila está pronta para receber você. Vá até a Horta, escolha uma semente e plante. Volte quando estiver pronta, faça a colheita, visite o Mercado e comece a aumentar sua vila.
+Comece pela Horta: escolha uma semente e plante. Quando estiver pronta, faça a colheita, passe no Mercado e use as recompensas para dar o próximo passo na sua vila. Alguns minutos agora já preparam sua próxima visita.
 
-Vem da versão 1.0? Sua vila é mantida, e nada do que você tinha se perde.
+Vem da versão 1.0? Sua vila continua aqui, com tudo o que você construiu e conquistou.
 
 ## Comandos
 
@@ -120,6 +116,6 @@ Vem da versão 1.0? Sua vila é mantida, e nada do que você tinha se perde.
 
 ## Feedback
 
-Encontrou um problema ou teve alguma ideia para melhorar o addon?
+Teve uma ideia, encontrou um problema ou quer contar o que gostaria de ver no addon?
 
 Deixe um comentário ou abra uma solicitação no [GitHub](https://github.com/joaomenestrina-debug/KorumHomestead).
