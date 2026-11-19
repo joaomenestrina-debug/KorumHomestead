@@ -829,6 +829,32 @@ class Homestead(unittest.TestCase):
         for name in ("map_winter", "winter_tree", "snowman", "gifts"):
             self.assertTrue((HOME / "Media" / "Village" / f"{name}.tga").exists(), name)
 
+    def test_orders_and_visitors_ask_only_for_items_on_the_workshop_screen(self):
+        # Workshop 4: the screen shows the two best open recipes of each trade and the next one; the old ones left it
+        self.lua.execute("NS.db.buildings.workshop = 4; NS.db.level = 37")
+        for trade in ("alchemy", "cooking", "smithing"):
+            shown = [self.ev(f"NS.Workshop.Shown('{trade}')[{i}].id") for i in (1, 2, 3)]
+            self.assertEqual(len(shown), 3)
+        self.assertEqual([self.ev(f"NS.Workshop.Shown('cooking')[{i}].id") for i in (1, 2, 3)], ["roast", "cod", "feast"])
+        self.assertFalse(self.ev("NS.Workshop:Offered('stew')"))      # open but no longer on the screen
+        self.assertTrue(self.ev("NS.Workshop:Offered('cod')"))
+        self.assertFalse(self.ev("NS.Workshop:Offered('feast')"))     # on the screen but still closed
+        for _ in range(60):
+            self.lua.execute("NS.db.orders = {}; NS.Orders:Ensure()")
+            for i in range(1, 5):
+                good = self.ev(f"NS.db.orders[{i}].good")
+                if good:
+                    self.assertTrue(self.ev(f"NS.Workshop:Offered('{good}')"), good)
+            e = self.lua.eval("function() NS.db.events = nil; return NS.Events:Spawn('merchant') end")()
+            if e is not None and isinstance(e.key, str) and self.ev(f"NS.Workshop.Recipe('{e.key}') ~= nil"):
+                self.assertTrue(self.ev(f"NS.Workshop:Offered('{e.key}')"), e.key)
+        # an order of a save for an item that left the screen and the barn cannot fill is replaced
+        self.lua.execute("NS.db.orders[4] = {good = 'stew', qty = 5, coins = 100, xp = 10, npc = 1}; NS.Orders:Ensure()")
+        self.assertNotEqual(self.ev("NS.db.orders[4].good"), "stew")
+        # one the barn can fill stays: the player delivers it
+        self.lua.execute("NS.db.goods.stew = 5; NS.db.orders[4] = {good = 'stew', qty = 5, coins = 100, xp = 10, npc = 1}; NS.Orders:Ensure()")
+        self.assertEqual(self.ev("NS.db.orders[4].good"), "stew")
+
     def test_the_animations_end_and_survive_an_error(self):
         self.lua.execute("""
             LOG = {}

@@ -82,7 +82,7 @@ end
 local function OpenItems()
     local out = {}
     for _, r in ipairs(KH.Workshop.RECIPES) do
-        if KH.Workshop:Unlocked(r.id) then out[#out + 1] = r.id end
+        if KH.Workshop:Offered(r.id) then out[#out + 1] = r.id end
     end
     return out
 end

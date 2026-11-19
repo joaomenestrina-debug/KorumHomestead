@@ -76,9 +76,11 @@ class Kinds(Base):
         value = self.ev(f"(function() local k = NS.Events:Get({id_}).key; return type(k) == 'number' and NS.Data.Plant(k).sell or NS.Village:GoodSell(k) end)()")
         self.assertAlmostEqual(price, value * 2, delta=max(2, value * 0.06))
         coins = self.ev("NS.db.coins")
+        wants = self.ev(f"NS.Events:Get({id_}).left")         # up to twenty (fewer for a costly item: the cap)
+        self.assertTrue(5 < wants <= 20)
         self.lua.execute(f"NS.Events:Sell({id_}, 5)")
         self.assertEqual(self.ev("NS.db.coins"), coins + 5 * price)
-        self.assertEqual(self.ev(f"NS.Events:Get({id_}).left"), 15)
+        self.assertEqual(self.ev(f"NS.Events:Get({id_}).left"), wants - 5)
         self.lua.execute(f"NS.Events:Sell({id_})")                          # the rest he wants
         self.assertEqual(self.open_count(), 0)
 

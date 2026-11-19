@@ -187,7 +187,7 @@ function Orders:MakeGoods()
     local db, W = KH.db, KH.Workshop
     local open = {}
     for _, r in ipairs(W.RECIPES) do
-        if W:Unlocked(r.id) then open[#open + 1] = r.id end
+        if W:Offered(r.id) then open[#open + 1] = r.id end
     end
     if #open == 0 then return nil end
     local id = open[Rand(#open)]
@@ -212,6 +212,12 @@ end
 function Orders:Ensure()
     local db = KH.db
     for i = 1, D.ORDER_SLOTS do
+        local o = db.orders[i]
+        -- an order for an item that left the Workshop screen (the Workshop grew) and that the barn cannot fill: a new one
+        if o and o.good and KH.Workshop.Recipe(o.good) and not KH.Workshop:Offered(o.good)
+            and KH.Village:Good(o.good) < o.qty then
+            db.orders[i] = nil
+        end
         if not db.orders[i] then db.orders[i] = self:Make(i) end
     end
 end

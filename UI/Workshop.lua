@@ -24,7 +24,7 @@ local function BuildWorkshop(win)
     s.tradeHint:SetPoint("LEFT", s.trades, "RIGHT", 16, 0)
     s.tradeHint:SetWidth(s.width - 360 - 16)          -- what is left beside the tabs; a long hint takes two lines
     s.tradeHint:SetWordWrap(true)
-    for i = 1, 3 do
+    for i = 1, Wk.ROWS do
         local row = CreateFrame("Frame", nil, s.frame)
         row:SetSize(W, RECIPE_H)
         row:SetPoint("TOPLEFT", 0, -RECIPE_TOP - (i - 1) * (RECIPE_H + RECIPE_GAP))
@@ -82,19 +82,12 @@ local function BuildWorkshop(win)
         local best, why
         self.trades:Sync()
         self.tradeHint:SetText(T("tradeHint_" .. UI.trade))
-        local recipes = Wk.OfTrade(UI.trade)
-        -- 7 recipes a trade, 3 rows: the two best already open and the next one to come
-        local open = 0
-        for i, r in ipairs(recipes) do if r.level <= level then open = i end end
-        local from = math.max(1, math.min(#recipes - #self.rows + 1, open - (#self.rows - 2)))
+        local recipes = Wk.Shown(UI.trade, level)          -- the two best already open and the next one to come
         local shown = {}
-        for i = 1, #self.rows do
-            local r = recipes[from + i - 1]
-            if r then shown[#shown + 1] = r.id end
-        end
+        for i, r in ipairs(recipes) do shown[i] = r.id end
         best, why = KH.Advice:Craft(shown)                  -- what the Market asks first, then what is worth the most
         for i, row in ipairs(self.rows) do
-            local r = recipes[from + i - 1]
+            local r = recipes[i]
             row:SetShown(r ~= nil)
             if not r then break end
             row.id = r.id

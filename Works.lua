@@ -8,6 +8,8 @@
     fish for the road, and brings coins and ore back. The more missions a follower has done, the better it pays.
 
         Workshop:Slots() / Workshop:Unlocked(recipeId) / Workshop:CanCraft(recipeId)
+        Workshop.Shown(trade)           the 3 recipes the Workshop screen shows for a trade
+        Workshop:Offered(recipeId)      open and on the screen: the only items orders and visitors ask for
         Workshop:Craft(recipeId)        takes the herbs and puts the potion in the queue
         Workshop:Update()               finishes the potions whose time is over; returns {recipeId, ...}
 
@@ -67,6 +69,19 @@ function W.OfTrade(trade)
     return out
 end
 
+-- 7 recipes a trade, 3 rows on the screen: the two best already open and the next one to come
+W.ROWS = 3
+function W.Shown(trade, level)
+    local recipes = W.OfTrade(trade)
+    level = level or V:Level("workshop")
+    local open = 0
+    for i, r in ipairs(recipes) do if r.level <= level then open = i end end
+    local from = math.max(1, math.min(#recipes - W.ROWS + 1, open - (W.ROWS - 2)))
+    local out = {}
+    for i = from, math.min(#recipes, from + W.ROWS - 1) do out[#out + 1] = recipes[i] end
+    return out
+end
+
 -- how many of an input the homestead holds, and taking some away
 function W.Stock(key)
     if type(key) == "string" then return KH.Village:Good(key) end
@@ -99,6 +114,17 @@ function W:Slots() return W.QueueAt(V:Level("workshop")) end
 function W:Unlocked(id)
     local r = W.Recipe(id)
     return r ~= nil and V:Level("workshop") >= r.level
+end
+
+-- what orders and visitors may ask for: an item the player sees on the Workshop screen and can make there (an old
+-- recipe that left the screen is not asked for: the player would not find it)
+function W:Offered(id)
+    local r = W.Recipe(id)
+    if not r or not self:Unlocked(id) then return false end
+    for _, shown in ipairs(W.Shown(r.trade)) do
+        if shown.id == id then return true end
+    end
+    return false
 end
 
 function W:Has(r)

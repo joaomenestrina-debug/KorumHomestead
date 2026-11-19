@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0-alpha6
+- The Market orders, the urgent orders and the merchants ask only for Workshop items you can see and make on its screen: no more orders for a recipe the Workshop no longer shows.
+- The sled full of presents of Winter Veil is bigger, the size of the visitors' cart.
+
 ## 2.1.0-alpha5
 - During the Feast of Winter Veil (15 December to 2 January) the village is covered in snow, with a decorated pine, a snowman and a sled full of presents.
 
