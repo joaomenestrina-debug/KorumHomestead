@@ -27,6 +27,7 @@ KH.Workshop = W
 -- Three trades, three recipes each. An input is {herb item id, amount} (from the Barn's herbs) or {"fish" | "ore", amount}
 -- (from the Pond and the Mine). Cooking lives on fish, smithing on ore, alchemy on herbs.
 W.TRADES = {"alchemy", "cooking", "smithing"}
+W.TABS = {"alchemy", "cooking", "smithing", "gear"}      -- the tabs of the screen: the three trades and the equipment
 W.RECIPES = B.RECIPES
 
 -- what one item is worth and the xp of crafting it (Balance.lua B.CRAFT): always more than its raw materials
@@ -112,7 +113,7 @@ end
 -- recipe that left the screen is not asked for: the player would not find it)
 function W:Offered(id)
     local r = W.Recipe(id)
-    if not r or not self:Unlocked(id) then return false end
+    if not r or r.trade == "gear" or not self:Unlocked(id) then return false end
     for _, shown in ipairs(W.Shown(r.trade)) do
         if shown.id == id then return true end
     end

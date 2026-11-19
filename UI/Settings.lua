@@ -25,6 +25,8 @@ local function BuildSettings(win)
         function(v) KH.db.bubble.show = v; UI:ApplyBubble() end)
     s.label, y = Kit.Toggle(s.frame, y, W, function() return KH.db.bubble.label ~= false end,
         function(v) KH.db.bubble.label = v; UI:UpdateAlert() end)
+    s.adventure, y = Kit.Toggle(s.frame, y, W, function() return KH.Adventure:On() end,
+        function(v) KH.db.adventure = KH.db.adventure or {}; KH.db.adventure.on = v and true or false end)
     s.about = Kit.Text(s.frame, 10, C.textMuted)
     s.about:SetPoint("BOTTOMLEFT", 0, 12)
     s.news = Kit.Button(s.frame, 170, 30, "", function() UI:ShowNews(false) end)
@@ -34,7 +36,7 @@ local function BuildSettings(win)
         self.head:SetText(T("settingsH"))
         self.sub:SetText(T("settingsS"))
         self.langLabel:SetText(T("language"))
-        for _, spec in ipairs({{self.alerts, "optAlerts"}, {self.welcome, "optWelcome"}, {self.minimap, "optMinimap"}, {self.bubble, "optBubble"}, {self.label, "optLabel"}}) do
+        for _, spec in ipairs({{self.alerts, "optAlerts"}, {self.welcome, "optWelcome"}, {self.minimap, "optMinimap"}, {self.bubble, "optBubble"}, {self.label, "optLabel"}, {self.adventure, "optAdventure"}}) do
             spec[1].label:SetText(T(spec[2]))
             spec[1].desc:SetText(T(spec[2] .. "D"))
             spec[1]:Sync()

@@ -213,7 +213,7 @@ class Journal(Base):
         self.lua.execute(f"NOW = NOW + {2 * HOUR}; NS.Inn:CollectAll()")
         lines = self.lua.eval("function() local l = NS.Journal:Lines(NS.Journal:Latest()); return l[1], l[2] end")()
         self.assertEqual(lines[0], "Mira and Tobin went into The Deadmines. Mira held back the crowd with Volley.")
-        self.assertEqual(lines[1], "The traps caught them off guard. They came back victorious.")
+        self.assertTrue(lines[1].startswith("The traps caught them off guard. They came back victorious."), lines[1])
         self.assertEqual(self.ev("#NS.Journal:For('tobin')"), 1)
         self.assertTrue(self.ev("NS.db.followers.tobin.marks.first ~= nil"))
 
@@ -280,6 +280,153 @@ class Migration(Base):
         self.lua.execute("NS.Inn:CollectAll()")
         self.assertEqual(self.ev("NS.db.coins"), coins + 170)
         self.assertEqual(self.ev("NS.db.goods.ore"), 2)
+
+
+class Equipment(Base):
+    def test_every_piece_is_worth_more_than_its_bars(self):
+        bad = self.lua.eval("""(function() local out = {}
+            for _, r in ipairs(NS.Workshop.RECIPES) do
+                if r.trade == 'gear' then
+                    local sum = 0
+                    for _, i in ipairs(r.inputs) do sum = sum + NS.Village:GoodSell(i[1]) * i[2] end
+                    if NS.Workshop.Value(r.id) <= sum then out[#out + 1] = r.id end
+                end
+            end
+            return table.concat(out, ',') end)()""")
+        self.assertEqual(bad, "")
+
+    def test_orders_and_visitors_never_ask_for_equipment(self):
+        self.lua.execute("NS.db.buildings.workshop = 7")
+        self.assertFalse(self.ev("NS.Workshop:Offered('gw1')"))
+
+    def test_equipping_adds_its_level_and_swapping_returns_the_old_piece(self):
+        self.inn(mira=1, tobin=1)
+        self.lua.execute("NS.db.goods.gw1 = 1; NS.db.goods.gw3 = 1; NS.db.goods.ga2 = 1")
+        self.assertTrue(self.ev("(NS.Inn:Equip('mira', 'gw1'))"))
+        self.assertEqual(self.ev("NS.Inn:GearPower('mira')"), 1)
+        self.assertEqual(self.ev("NS.Inn:BestGear('mira', 'weapon')"), "gw3")
+        self.assertTrue(self.ev("(NS.Inn:Equip('mira', 'gw3'))"))
+        self.assertEqual(self.ev("NS.db.goods.gw1"), 1)
+        self.assertIn("gear:3:mira", self.parts("ragefire", ["mira"]))
+        # Tobin's Iron hands: each piece one level more
+        self.assertTrue(self.ev("(NS.Inn:Equip('tobin', 'ga2'))"))
+        self.assertEqual(self.ev("NS.Inn:GearPower('tobin')"), 3)
+        self.assertTrue(self.ev("NS.Inn:Unequip('mira', 'weapon')"))
+        self.assertEqual(self.ev("NS.db.goods.gw3"), 1)
+
+
+class Consumables(Base):
+    def test_a_potion_adds_10_and_is_spent(self):
+        self.inn(mira=1)
+        self.lua.execute("NS.db.goods.heal = 1")
+        self.assertEqual(self.lua.eval("function() return (NS.Dungeons:Chance('ragefire', {'mira'}, {potion = 'heal'})) end")(), 95)
+        self.lua.execute("NS.Rand = function() return 1 end; assert(NS.Dungeons:Send('ragefire', {'mira'}, {potion = 'heal'})); NS.Rand = nil")
+        self.assertEqual(self.ev("NS.db.goods.heal"), 0)
+
+    def test_food_gives_more_xp(self):
+        self.inn(mira=1)
+        plain = self.lua.eval("function() local _, _, x = NS.Dungeons:Reward('ragefire', {'mira'}, 100, -1); return x.mira end")()
+        fed = self.lua.eval("function() local _, _, x = NS.Dungeons:Reward('ragefire', {'mira'}, 100, -1, {food = 'stew'}); return x.mira end")()
+        self.assertGreater(fed, plain)
+
+    def test_the_optional_boss_adds_a_threat_and_time(self):
+        self.inn(mira=1)
+        self.assertEqual(self.ev("#NS.Dungeons:Threats('ragefire', {boss = true})"), 3)
+        self.assertEqual(self.ev("NS.Dungeons:Duration('ragefire', {'mira'}, {boss = true})"), 4500)
+
+
+class Combos(Base):
+    def test_each_combo_needs_two_followers_and_applies_its_effect(self):
+        self.inn(mira=10, sela=10, garrick=10, elda=10)
+        self.lua.execute("NS.db.dungeons.merit = 9; NS.Inn:Promote('sela', 2)")      # Sela takes Blizzard
+        self.assertEqual(self.ev("NS.Dungeons:Combos({'mira', 'sela'})[1].id"), "crossfire")
+        self.assertIn("combo:15:crossfire", self.parts("deadmines", ["mira", "sela"]))
+        self.assertEqual(self.ev("#NS.Dungeons:Combos({'mira'})"), 0)
+        # Wall and Mend: nobody comes back hurt
+        self.lua.execute("local n = 0; NS.Rand = function() n = n + 1; return n == 1 and 9999 or 1 end")
+        self.lua.execute("assert(NS.Dungeons:Send('deadmines', {'garrick', 'elda'})); NS.Rand = nil")
+        self.assertFalse(self.ev("NS.db.trips[1].ok"))
+        self.assertEqual(self.ev("#NS.db.trips[1].hurt"), 0)
+
+    def test_the_book_learns_a_combo_once_when_the_group_comes_back(self):
+        self.inn(mira=10, sela=10)
+        self.lua.execute("NS.db.dungeons.merit = 9; NS.Inn:Promote('sela', 1)")      # Sela takes Fireball
+        self.assertFalse(self.ev("NS.Dungeons:Known('crossfire')"))
+        self.send("deadmines", ["mira", "sela"])
+        self.assertFalse(self.ev("NS.Dungeons:Known('crossfire')"))
+        self.lua.execute(f"NOW = NOW + {2 * HOUR}; NS.Inn:CollectAll()")
+        self.assertTrue(self.ev("NS.Dungeons:Known('crossfire')"))
+
+
+class Raid(Base):
+    def test_onyxia_once_a_week_with_a_core_and_an_epic_insignia(self):
+        self.inn(mira=30, tobin=30, elda=30, garrick=30, sela=30, bram=30)
+        party = "{'mira', 'tobin', 'elda', 'garrick', 'sela', 'bram'}"
+        self.lua.execute(f"NS.Rand = function() return 1 end; assert(NS.Dungeons:Send('onyxia', {party})); NS.Rand = nil")
+        self.assertGreater(self.ev("NS.Dungeons:RaidLeft('onyxia')"), 0)
+        self.lua.execute(f"NOW = NOW + {24 * HOUR}; NS.Inn:CollectAll()")
+        self.assertEqual(self.ev("NS.Village:Good('core')"), 1)
+        self.assertEqual(self.ev("NS.db.dungeons.epic"), 1)
+        self.assertEqual(tuple(self.lua.eval(f"function() return NS.Dungeons:Send('onyxia', {party}) end")())[:2], (False, "raidWeek"))
+        self.lua.execute(f"NOW = NOW + {6 * 24 * HOUR}")
+        self.assertEqual(self.ev("NS.Dungeons:RaidLeft('onyxia')"), 0)
+
+
+class Mastery(Base):
+    def test_level_30_picks_a_mastery_and_a_title(self):
+        self.inn(mira=29)
+        self.assertFalse(self.ev("NS.Inn:Master('mira', 'veteran')"))
+        self.lua.execute("NS.Inn:Get('mira').level = 30")
+        self.assertTrue(self.ev("NS.Inn:Master('mira', 'veteran')"))
+        self.assertFalse(self.ev("NS.Inn:Master('mira', 'mentor')"))
+        self.assertIn("veteran:10:mira", self.parts("ragefire", ["mira"]))
+        self.assertTrue(self.ev("NS.db.followers.mira.marks.title ~= nil"))
+
+
+class Adventure(Base):
+    def instance(self, name, kind="party", iid=36):
+        self.lua.execute(f"function GetInstanceInfo() return [[{name}]], '{kind}', 1, '', 5, 0, false, {iid} end")
+
+    def test_a_queue_opens_the_village_at_most_every_ten_minutes(self):
+        self.lua.execute("QUEUED = false; function GetLFGMode() return QUEUED and 'queued' or nil end")
+        self.lua.execute("QUEUED = true; Fire('LFG_UPDATE')")
+        self.assertEqual(self.ev("NS.UI.view"), "village")
+        self.assertTrue(self.ev("KorumHomesteadFrame:IsShown()"))
+        self.lua.execute("KorumHomesteadFrame:Hide(); QUEUED = false; Fire('LFG_UPDATE'); NOW = NOW + 300; QUEUED = true; Fire('LFG_UPDATE')")
+        self.assertFalse(self.ev("KorumHomesteadFrame:IsShown()"))
+        self.lua.execute("QUEUED = false; Fire('LFG_UPDATE'); NOW = NOW + 301; QUEUED = true; Fire('LFG_UPDATE')")
+        self.assertTrue(self.ev("KorumHomesteadFrame:IsShown()"))
+
+    def test_a_boss_inspires_the_followers_there_and_does_not_add_up(self):
+        self.inn(mira=5, tobin=5)
+        self.instance("The Deadmines")
+        self.lua.execute("Fire('ENCOUNTER_END', 1, 'Rhahk', 1, 5, 1)")
+        self.assertEqual(self.ev("NS.db.adventure.inspired.deadmines"), 3)
+        self.assertTrue(self.ev("NS.db.adventure.visited.deadmines"))
+        self.assertIn("inspired:15:nil", self.parts("deadmines", ["mira", "tobin"]))
+        self.lua.execute("Fire('BOSS_KILL', 1, 'Rhahk')")                      # the same fight: nothing more
+        self.lua.execute("NOW = NOW + 120; Fire('ENCOUNTER_END', 2, 'Gilnid', 1, 5, 1)")
+        self.assertEqual(self.ev("NS.db.adventure.inspired.deadmines"), 3)     # renews, never more than 3
+        self.send("deadmines", ["mira", "tobin"])
+        self.assertEqual(self.ev("NS.db.adventure.inspired.deadmines"), 2)
+
+    def test_a_dungeon_of_the_forever_is_found_by_its_name(self):
+        self.instance("Salão dos Thanes", iid=99999)
+        self.assertEqual(self.ev("NS.Adventure:CurrentDungeon()"), "thanes")
+
+    def test_a_lost_fight_or_the_setting_off_changes_nothing(self):
+        self.instance("The Deadmines")
+        self.lua.execute("Fire('ENCOUNTER_END', 1, 'Rhahk', 1, 5, 0)")
+        self.assertIsNone(self.ev("NS.db.adventure.inspired.deadmines"))
+        self.lua.execute("NS.db.adventure.on = false; Fire('ENCOUNTER_END', 1, 'Rhahk', 1, 5, 1)")
+        self.assertIsNone(self.ev("NS.db.adventure.inspired.deadmines"))
+
+    def test_a_raid_boss_gives_an_epic_insignia_once_a_week(self):
+        self.instance("Onyxia's Lair", kind="raid", iid=249)
+        self.lua.execute("Fire('ENCOUNTER_END', 1, 'Onyxia', 9, 40, 1)")
+        self.assertEqual(self.ev("NS.db.dungeons.epic"), 1)
+        self.lua.execute("NOW = NOW + 3600; Fire('ENCOUNTER_END', 1, 'Onyxia', 9, 40, 1)")
+        self.assertEqual(self.ev("NS.db.dungeons.epic"), 1)
 
 
 if __name__ == "__main__":

@@ -73,4 +73,5 @@ function D.Preload()
     for _, p in ipairs(D.PLANTS) do pcall(C_Item.RequestLoadItemDataByID, p[1]) end
     for _, item in pairs(KH.Village and KH.Village.ITEM or {}) do pcall(C_Item.RequestLoadItemDataByID, item) end
     pcall(C_Item.RequestLoadItemDataByID, KH.Balance.DAILY.rareItem)        -- the keepsake of the streak
+    for _, item in pairs(KH.Balance.TROPHIES or {}) do pcall(C_Item.RequestLoadItemDataByID, item) end   -- the dungeon trophies
 end

@@ -400,7 +400,10 @@ def homestead(out):
     scene("11-estalagem", "ptBR", mid, "inn", before_view=inn)
     scene("11b-estalagem-masmorras", "ptBR", mid, "inn", before_view=inn + "; NS.UI.innTab = 'dungeons'")
     scene("11c-estalagem-grupo", "ptBR", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll(); NS.UI.innDungeon = 'gnomeregan'; NS.UI.innParty = {'tobin'}")
-    scene("11d-estalagem-ficha", "ptBR", mid, "inn", before_view=inn + "; NS.UI.innFollower = 'mira'")
+    scene("11d-estalagem-ficha", "ptBR", mid, "inn", before_view=inn + "; NS.db.goods.gw3 = 1; NS.db.goods.ga2 = 1; NS.Inn:Equip('mira', 'gw3'); NS.UI.innFollower = 'mira'")
+    scene("11f-estalagem-livro", "ptBR", mid, "inn", before_view=inn + "; NS.db.dungeons.combos = {crossfire = true, wall = true}; NS.db.dungeons.trophies = {deadmines = 1, ragefire = 1, scarlet = 1}; NS.UI.innTab = 'book'")
+    scene("11g-estalagem-opcoes", "ptBR", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll(); NS.db.goods.heal = 2; NS.db.goods.stew = 1; NS.db.dungeons.combos = {crossfire = true}; NS.Inn:Get('sela').ability = 'fireball'; NS.UI.innDungeon = 'scarlet'; NS.UI.innParty = {'mira', 'sela', 'elda'}; NS.UI.innOpts = {potion = 'heal', food = 'stew', boss = true}")
+    scene("11h-estalagem-mestre", "ptBR", mid, "inn", before_view=inn + "; NS.Inn:Get('garrick').level = 30; NS.UI.innFollower = 'garrick'")
     scene("11e-inn-english", "enUS", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll(); NS.UI.innDungeon = 'scarlet'; NS.UI.innParty = NS.Dungeons:Suggest('scarlet')")
     scene("16-ajustes", "ptBR", mid, "settings")
     visitors = ("NS.db.level = 30; NS.db.buildings.workshop = 3; NS.Orders:Ensure(); NS.Events:Spawn('urgent'); "

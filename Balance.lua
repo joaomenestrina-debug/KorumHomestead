@@ -158,6 +158,7 @@ B.GOODS = {
     truesilver = {sell = 600, item = 7911, rare = "ore"},    -- Truesilver Ore
     darkiron = {sell = 720, item = 11370, rare = "ore"},     -- Dark Iron Ore
     arcane = {sell = 960, item = 12363, rare = "ore"},       -- Arcane Crystal
+    core = {sell = 900, item = 17010},                       -- the Core of the raids (Fiery Core): equipment of level 7
 }
 B.RARE_ORDER = {"lobster", "eel", "firefin", "truesilver", "darkiron", "arcane"}
 
@@ -220,6 +221,22 @@ B.RECIPES = {
     {id = "blade", trade = "smithing", level = 5, time = 1500, item = 3487, inputs = {{"ore", 40}, {2450, 1}}},
     {id = "thorium", trade = "smithing", level = 6, time = 2400, item = 12359, inputs = {{"ore", 50}}},       -- Thorium Bar
     {id = "arcanite", trade = "smithing", level = 7, time = 3600, item = 12360, inputs = {{"ore", 60}, {13466, 1}}}, -- Arcanite Bar
+    -- Equipment for the followers (docs/masmorras.md §4): a weapon and an armor at each Workshop level, made of the bars
+    -- of the Smithing trade; `power` is the level of the piece (+1 chance point each). Level 7 also asks a raid Core.
+    {id = "gw1", trade = "gear", slot = "weapon", power = 1, level = 1, time = 600, item = 2847, inputs = {{"copper", 3}}},   -- Copper Shortsword
+    {id = "ga1", trade = "gear", slot = "armor", power = 1, level = 1, time = 600, item = 3471, inputs = {{"copper", 3}}},    -- Copper Chain Vest
+    {id = "gw2", trade = "gear", slot = "weapon", power = 2, level = 2, time = 1200, item = 3848, inputs = {{"bar", 3}}},     -- Big Bronze Knife
+    {id = "ga2", trade = "gear", slot = "armor", power = 2, level = 2, time = 1200, item = 3842, inputs = {{"bar", 3}}},      -- Green Iron Leggings
+    {id = "gw3", trade = "gear", slot = "weapon", power = 3, level = 3, time = 1800, item = 3849, inputs = {{"bar", 3}, {"tools", 1}}},  -- Hardened Iron Shortsword
+    {id = "ga3", trade = "gear", slot = "armor", power = 3, level = 3, time = 1800, item = 3844, inputs = {{"bar", 3}, {"tools", 1}}},   -- Green Iron Hauberk
+    {id = "gw4", trade = "gear", slot = "weapon", power = 4, level = 4, time = 2400, item = 7941, inputs = {{"mithril", 3}}},  -- Heavy Mithril Axe
+    {id = "ga4", trade = "gear", slot = "armor", power = 4, level = 4, time = 2400, item = 7930, inputs = {{"mithril", 3}}},   -- Heavy Mithril Breastplate
+    {id = "gw5", trade = "gear", slot = "weapon", power = 5, level = 5, time = 3000, item = 7945, inputs = {{"mithril", 3}, {"blade", 1}}}, -- Big Black Mace
+    {id = "ga5", trade = "gear", slot = "armor", power = 5, level = 5, time = 3000, item = 7939, inputs = {{"mithril", 3}, {"blade", 1}}},  -- Truesilver Breastplate
+    {id = "gw6", trade = "gear", slot = "weapon", power = 6, level = 6, time = 3600, item = 12773, inputs = {{"thorium", 3}}}, -- Ornate Thorium Handaxe
+    {id = "ga6", trade = "gear", slot = "armor", power = 6, level = 6, time = 3600, item = 12405, inputs = {{"thorium", 3}}},  -- Thorium Armor
+    {id = "gw7", trade = "gear", slot = "weapon", power = 7, level = 7, time = 4800, item = 12784, inputs = {{"arcanite", 2}, {"core", 1}}}, -- Arcanite Reaper
+    {id = "ga7", trade = "gear", slot = "armor", power = 7, level = 7, time = 4800, item = 12640, inputs = {{"arcanite", 2}, {"core", 1}}},  -- Lionheart Helm
 }
 
 -- ----------------------------------------------------------------------------------------------------------------
@@ -321,6 +338,40 @@ B.DUNGEONS = {
     {id = "blackmaw", level = 28, size = 3, hours = 5, threats = {"horde", "magic", "fear"}, env = "cave", new = true},
     {id = "scholomance", level = 30, size = 3, hours = 6, threats = {"undead", "magic", "fear", "poison"}, env = "crypt"},
     {id = "stratholme", level = 30, size = 3, hours = 6, threats = {"undead", "horde", "boss", "fear"}, env = "crypt"},
+    -- the raids: once every B.RAID.every seconds each, counted from when it was done
+    {id = "onyxia", level = 30, size = 6, hours = 24, threats = {"boss", "magic", "fear", "horde", "armored"}, env = "cave",
+        raid = true},
+}
+
+-- The trophy of each dungeon: a real item that drops there in the game (its icon). The new dungeons of the Forever get
+-- theirs when the Wowhead of the Forever lists what drops in them.
+B.TROPHIES = {
+    ragefire = 14145, wailing = 6627, deadmines = 5191, shadowfang = 6220, blackfathom = 6909, gnomeregan = 9492,
+    scarlet = 7717, uldaman = 9418, zulfarrak = 9372, maraudon = 17780, sunken = 10837, brd = 11684,
+    scholomance = 13937, stratholme = 13505, onyxia = 18422,
+}
+
+-- The game's own ids of the dungeons (GetInstanceInfo), to know where the character is (the Adventure, §12). The new
+-- dungeons of the Forever are found by their name.
+B.INSTANCES = {
+    [389] = "ragefire", [43] = "wailing", [36] = "deadmines", [33] = "shadowfang", [48] = "blackfathom",
+    [90] = "gnomeregan", [189] = "scarlet", [70] = "uldaman", [209] = "zulfarrak", [349] = "maraudon",
+    [109] = "sunken", [230] = "brd", [289] = "scholomance", [329] = "stratholme", [249] = "onyxia",
+}
+
+-- Combos: two abilities of different followers in the same group (docs/masmorras.md §7)
+--   points  chance points     short  run this much shorter     fxp  more follower xp     coins  more coins
+--   noHurt  nobody hurt        rare  rare chance x            undead  points against the undead      crypt  trophy sure in crypts
+--   boss  points with the optional boss
+B.COMBOS = {
+    {id = "wall", a = {"shield"}, b = {"herbs"}, noHurt = true},
+    {id = "crossfire", a = {"volley"}, b = {"fireball", "blizzard"}, points = 15},
+    {id = "backdoor", a = {"locks"}, b = {"distract"}, short = 0.25},
+    {id = "blessed", a = {"silver"}, b = {"holy"}, undead = 20, crypt = true},
+    {id = "chorus", a = {"courage"}, b = {"warcry"}, fxp = 0.25},
+    {id = "eyes", a = {"eagle"}, b = {"counter"}, rare = 2},
+    {id = "storm", a = {"blizzard"}, b = {"whirl"}, coins = 0.25},
+    {id = "shotshield", a = {"aimed"}, b = {"shield"}, points = 10, boss = 10},
 }
 
 -- The rules of a run (docs/masmorras.md §3, §6, §8 and §9)
@@ -343,7 +394,13 @@ B.DUNGEON = {
     openAhead = 3, injury = 0.30, injuryHours = 2, daily = 0.5,
     merit = {chance = 0.10, from = 8}, epic = {chance = 0.05, from = 19},
     meritIcon = "inv_jewelry_talisman_08", epicIcon = "inv_jewelry_trinketpvp_01",
+    trophyMin = 0.05, trophyMax = 0.20, bossTrophy = 1.5, bossShort = 0.25,
+    potion = 10, foodXP = 0.20, foodHurt = 0.5, inspired = 15, inspiredRuns = 3,
+    miraTrophy = 0.05, garrickHurt = 0.10, veteran = 10, mentorXP = 0.10,
 }
+
+-- The raids: once a week each (counted from when it was done); a success brings a Core and an Epic insignia
+B.RAID = {every = 7 * 24 * 3600, core = 1}
 
 -- Followers: level 1 to maxLevel; xp to the next level = xpBase + xpPerLevel x level (+ late x each level past lateFrom).
 -- Rare at rareLevel with a Merit insignia, Epic at epicLevel with an Epic one. Changing a pick costs respecHours x

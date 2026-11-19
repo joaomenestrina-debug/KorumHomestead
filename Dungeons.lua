@@ -1,34 +1,32 @@
 --[[
-    Korum Homestead - the followers and the dungeons (docs/masmorras.md, S3)
+    Korum Homestead - the followers and the dungeons (docs/masmorras.md)
 
-    The Inn shelters the followers (one more per Inn level). They no longer go on plain missions: they go to the
-    dungeons of WoW Forever. Each dungeon has threats; each follower has abilities that counter them. The chance of a run
-    comes from the threats left uncountered, the levels, the group size and the traits, and is shown before sending.
+    The Inn shelters the followers (one more per Inn level). They go to the dungeons of WoW Forever. Each dungeon has
+    threats; each follower has abilities that counter them. The chance of a run comes from the threats left uncountered,
+    the levels, the group size, the traits, the equipment, the combos and the potion, and is shown before sending.
     Nobody dies: a failure brings half the reward and maybe a follower hurt for a while.
 
     Everything about a run is decided when it is sent (the roll, the reward, who gets hurt, what drops) and shown when the
-    group comes back, so closing the game changes nothing.
+    group comes back, so closing the game changes nothing. `opts` = {potion = good, food = good, boss = true}.
 
-        Inn:Count()                         followers the Inn shelters now (the first N of B.FOLLOWERS)
-        Inn:List()                          their ids, in order
-        Inn:Get(id) / Inn.Def(id)           the saved state / the fixed data of a follower
+        Inn:Count() / Inn:List() / Inn:Has(id) / Inn:Get(id) / Inn.Def(id)
         Inn:State(id)                       "home" | "away" | "back" | "hurt", seconds left
         Inn:Abilities(id) / Inn:Traits(id)  what it has now
         Inn:AddXP(id, n)                    levels gained
         Inn:NextQuality(id)                 "rare" | "epic" | nil, and whether it can take it now
         Inn:Promote(id, pick)               takes the insignia and makes the pick (1 or 2)
-        Inn:RespecCost(id) / Inn:Respec(id, pick)
+        Inn:RespecCost(id) / Inn:Respec(id, "ability" | "trait")
+        Inn:GearPower(id) / Inn:Equip(id, gearId) / Inn:Unequip(id, slot) / Inn:BestGear(id, slot)
+        Inn:Master(id, "veteran" | "mentor")   at the highest level, with a Title
         Inn:BackCount() / Inn:AwayCount() / Inn:CollectAll() / Inn:Update()
 
         Dungeons.Get(id) / Dungeons.LIST
-        Dungeons:Open(id)                   open by the level of the best follower
-        Dungeons:Daily()                    the dungeon of the day (more follower xp)
-        Dungeons:Chance(id, party)          total, parts, counters, uncountered
-        Dungeons:Free(fid)                  at home, not hurt, in a room
-        Dungeons:Recommended(id, party)     free followers sorted by how much they add: {{id, gain, counters}}
-        Dungeons:Suggest(id)                the best group among the free followers
-        Dungeons:Cost(id, party) / Dungeons:Duration(id, party) / Dungeons:Reward(id, party, total)
-        Dungeons:Send(id, party)            ok, why
+        Dungeons:Open(id) / Dungeons:Daily() / Dungeons:RaidLeft(id)
+        Dungeons:Threats(id, opts) / Dungeons:Chance(id, party, opts)   total, parts, counters, uncountered
+        Dungeons:Combos(party) / Dungeons:Known(comboId)
+        Dungeons:Free(fid) / Dungeons:Recommended(id, party, opts) / Dungeons:Suggest(id, opts)
+        Dungeons:Cost / Duration / Reward / TrophyChance (id, party, ...)
+        Dungeons:Send(id, party, opts)      ok, why
         Dungeons:Trips() / Dungeons:Collect(n) / Dungeons:CollectAll()
 ]]
 
@@ -43,8 +41,13 @@ KH.Dungeons = Dg
 
 local R = B.DUNGEON
 
+local function Has(list, x)
+    for _, v in ipairs(list) do if v == x then return true end end
+    return false
+end
 local function Roll() return (KH.Rand or math.random)(10000) / 10000 end
 local function Round(x) return math.floor(x + 0.5) end
+local function Opt(opts, k) return opts and opts[k] end
 
 -- ----------------------------------------------------------------------------
 -- The followers
@@ -187,6 +190,64 @@ function I:Respec(id, what)
     return true
 end
 
+-- the chance points of the equipment of a follower (Iron hands: each piece one level more)
+function I:GearPower(id)
+    local f = self:Get(id)
+    local extra = 0
+    for _, t in ipairs(self:Traits(id)) do extra = extra + (B.TRAITS[t[1]].gear or 0) end
+    local sum = 0
+    for _, gid in pairs(f.gear or {}) do
+        local r = KH.Workshop.Recipe(gid)
+        if r then sum = sum + r.power + extra end
+    end
+    return sum
+end
+
+-- puts a piece from the Barn on the follower; the one it had goes back to the Barn
+function I:Equip(id, gid)
+    local r = KH.Workshop.Recipe(gid)
+    if not r or r.trade ~= "gear" then return false, "nothing" end
+    if V:Good(gid) < 1 then return false, "noGear" end
+    local f = self:Get(id)
+    f.gear = f.gear or {}
+    local db = KH.db
+    local old = f.gear[r.slot]
+    if old then db.goods[old] = V:Good(old) + 1 end
+    db.goods[gid] = V:Good(gid) - 1
+    f.gear[r.slot] = gid
+    return true
+end
+
+function I:Unequip(id, slot)
+    local f = self:Get(id)
+    local gid = f.gear and f.gear[slot]
+    if not gid then return false end
+    KH.db.goods[gid] = V:Good(gid) + 1
+    f.gear[slot] = nil
+    return true
+end
+
+-- the best piece of a slot in the Barn that is better than what the follower wears
+function I:BestGear(id, slot)
+    local f = self:Get(id)
+    local now = f.gear and f.gear[slot]
+    local power = now and KH.Workshop.Recipe(now).power or 0
+    local best
+    for _, r in ipairs(KH.Workshop.RECIPES) do
+        if r.trade == "gear" and r.slot == slot and V:Good(r.id) > 0 and r.power > power then best, power = r.id, r.power end
+    end
+    return best
+end
+
+-- Mastery at the highest level: "veteran" (more chance in every dungeon) or "mentor" (more xp for its group); a Title too
+function I:Master(id, pick)
+    local f = self:Get(id)
+    if f.level < B.FOLLOWER.maxLevel or f.mastery or (pick ~= "veteran" and pick ~= "mentor") then return false end
+    f.mastery = pick
+    KH.Journal:Mark(id, "title")
+    return true
+end
+
 -- ----------------------------------------------------------------------------
 -- The dungeons
 -- ----------------------------------------------------------------------------
@@ -209,7 +270,7 @@ end
 function Dg:OpenList()
     local out = {}
     for _, d in ipairs(Dg.LIST) do
-        if self:Open(d.id) then out[#out + 1] = d.id end
+        if self:Open(d.id) and not d.raid then out[#out + 1] = d.id end
     end
     return out
 end
@@ -221,17 +282,49 @@ function Dg:Daily(day)
     return open[(day * 37) % #open + 1]
 end
 
-local function Has(list, x)
-    for _, v in ipairs(list) do if v == x then return true end end
-    return false
+function Dg:RaidLeft(id)
+    local d = Dg.Get(id)
+    if not (d and d.raid) then return 0 end
+    local at = (KH.db.dungeons.raids or {})[id] or 0
+    return math.max(0, at + B.RAID.every - KH.Now())
+end
+
+-- the combos a group forms: two abilities of two different followers
+function Dg:Combos(party)
+    local out = {}
+    for _, c in ipairs(B.COMBOS) do
+        local found = false
+        for _, fa in ipairs(party) do
+            for _, fb in ipairs(party) do
+                if fa ~= fb and not found then
+                    local hasA, hasB = false, false
+                    for _, ab in ipairs(I:Abilities(fa)) do if Has(c.a, ab) then hasA = true end end
+                    for _, ab in ipairs(I:Abilities(fb)) do if Has(c.b, ab) then hasB = true end end
+                    found = hasA and hasB
+                end
+            end
+        end
+        if found then out[#out + 1] = c end
+    end
+    return out
+end
+
+function Dg:Known(comboId) return (KH.db.dungeons.combos or {})[comboId] == true end
+
+-- the threats of a run: the optional boss adds one more Brutal boss
+function Dg:Threats(id, opts)
+    local d = Dg.Get(id)
+    local list = {unpack(d.threats)}
+    if Opt(opts, "boss") and not d.raid then list[#list + 1] = "boss" end
+    return list
 end
 
 -- total chance (not clamped), the parts {{key, points, arg}}, the counters {{threat, fid, ability}} and the threats left
-function Dg:Chance(id, party)
+function Dg:Chance(id, party, opts)
     local d = Dg.Get(id)
     local parts, counters, open = {}, {}, {}
     local used = {}
-    for _, threat in ipairs(d.threats) do
+    for _, threat in ipairs(self:Threats(id, opts)) do
         local found
         for _, fid in ipairs(party) do
             for k, ab in ipairs(I:Abilities(fid)) do
@@ -271,7 +364,17 @@ function Dg:Chance(id, party)
             elseif name == "company" then Add("trait", tr.perOther * (#party - 1), fid)
             elseif name == "partner" and Has(party, arg) then Add("trait", tr.points, fid) end
         end
+        Add("gear", I:GearPower(fid), fid)
+        if I:Get(fid).mastery == "veteran" then Add("veteran", R.veteran, fid) end
     end
+    for _, c in ipairs(self:Combos(party)) do
+        local pts = (c.points or 0) + ((c.undead and Has(d.threats, "undead")) and c.undead or 0)
+            + ((c.boss and Opt(opts, "boss")) and c.boss or 0)
+        if pts ~= 0 then Add("combo", pts, c.id) end
+    end
+    if Opt(opts, "potion") and #party > 0 then Add("potion", R.potion) end
+    local insp = ((KH.db.adventure or {}).inspired or {})[id]
+    if insp and insp > 0 and #party > 0 then Add("inspired", R.inspired) end
     return total, parts, counters, open
 end
 
@@ -285,16 +388,16 @@ function Dg:Free(fid)
     return I:Has(fid) and I:State(fid) == "home"
 end
 
-function Dg:Recommended(id, party)
+function Dg:Recommended(id, party, opts)
     party = party or {}
     local d = Dg.Get(id)
-    local base = self:Chance(id, party)
+    local base = self:Chance(id, party, opts)
     local out = {}
     for _, fid in ipairs(I:List()) do
         if not Has(party, fid) then
             local with = {unpack(party)}
             with[#with + 1] = fid
-            local total, _, counters = self:Chance(id, with)
+            local total, _, counters = self:Chance(id, with, opts)
             local mine = {}
             for _, c in ipairs(counters) do if c[2] == fid then mine[#mine + 1] = c[1] end end
             out[#out + 1] = {id = fid, gain = total - base, counters = mine, free = self:Free(fid), full = #party >= d.size}
@@ -308,8 +411,9 @@ function Dg:Recommended(id, party)
     return out
 end
 
--- the group with the best chance among the free followers (a tie goes to the lower average level, so the strong stay free)
-function Dg:Suggest(id)
+-- the group with the best chance among the free followers (a tie goes to the smaller group, then to the lower average
+-- level, so the strong stay free for higher dungeons)
+function Dg:Suggest(id, opts)
     local d = Dg.Get(id)
     local free = {}
     for _, fid in ipairs(I:List()) do if self:Free(fid) then free[#free + 1] = fid end end
@@ -317,13 +421,12 @@ function Dg:Suggest(id)
     local pick = {}
     local function Try(start)
         if #pick > 0 then
-            local total = self:Chance(id, pick)
+            local total = math.min(R.maxChance, (self:Chance(id, pick, opts)))
             local level = 0
             for _, fid in ipairs(pick) do level = level + I:Get(fid).level end
             level = level / #pick
-            local capped = math.min(R.maxChance, total)
-            if capped > bestTotal or (capped == bestTotal and (#pick < #best or (#pick == #best and level < bestLevel))) then
-                best, bestTotal, bestLevel = {unpack(pick)}, capped, level
+            if total > bestTotal or (total == bestTotal and (#pick < #best or (#pick == #best and level < bestLevel))) then
+                best, bestTotal, bestLevel = {unpack(pick)}, total, level
             end
         end
         if #pick >= d.size then return end
@@ -337,7 +440,7 @@ function Dg:Suggest(id)
     return best, bestTotal
 end
 
-function Dg:Duration(id, party)
+function Dg:Duration(id, party, opts)
     local cut = 0
     for _, fid in ipairs(party) do
         for _, t in ipairs(I:Traits(fid)) do
@@ -345,7 +448,9 @@ function Dg:Duration(id, party)
             if tr.short then cut = math.max(cut, tr.short) end
         end
     end
-    return Round(Dg.Get(id).hours * 3600 * (1 - cut))
+    for _, c in ipairs(self:Combos(party)) do if c.short then cut = math.max(cut, c.short) end end
+    local long = (Opt(opts, "boss") and not Dg.Get(id).raid) and (1 + R.bossShort) or 1
+    return Round(Dg.Get(id).hours * 3600 * (1 - cut) * long)
 end
 
 function Dg:Cost(id, party)
@@ -353,7 +458,7 @@ function Dg:Cost(id, party)
 end
 
 -- coins, village xp and the xp of each follower {fid = xp} on a success with that total (a failure is half)
-function Dg:Reward(id, party, total, day)
+function Dg:Reward(id, party, total, day, opts)
     local d = Dg.Get(id)
     local _, bonus = Dg.Odds(total)
     local db = KH.db
@@ -363,7 +468,13 @@ function Dg:Reward(id, party, total, day)
     local group = 0
     for _, fid in ipairs(party) do
         for _, t in ipairs(I:Traits(fid)) do group = group + (B.TRAITS[t[1]].groupXP or 0) end
+        if I:Get(fid).mastery == "mentor" then group = group + R.mentorXP end
     end
+    for _, c in ipairs(self:Combos(party)) do
+        group = group + (c.fxp or 0)
+        if c.coins then coins = Round(coins * (1 + c.coins)) end
+    end
+    if Opt(opts, "food") then group = group + R.foodXP end
     local daily = (self:Daily(day) == id) and R.daily or 0
     local fxp = {}
     for _, fid in ipairs(party) do
@@ -381,12 +492,29 @@ local function RareBonus(party)
     for _, fid in ipairs(party) do
         for _, t in ipairs(I:Traits(fid)) do rare = rare + (B.TRAITS[t[1]].rare or 0) end
     end
-    return 1 + rare / 100
+    local mult = 1 + rare / 100
+    for _, c in ipairs(Dg:Combos(party)) do if c.rare then mult = mult * c.rare end end
+    return mult
 end
 
-function Dg:Send(id, party)
+-- the chance of the trophy of the dungeon: 5% to 20% by its level, more with the optional boss and with Mira at home;
+-- sure in a crypt with Blessed Steel
+function Dg:TrophyChance(id, party, opts)
+    local d = Dg.Get(id)
+    if not B.TROPHIES[id] then return 0 end
+    for _, c in ipairs(self:Combos(party)) do
+        if c.crypt and d.env == "crypt" then return 1 end
+    end
+    local ch = R.trophyMin + (R.trophyMax - R.trophyMin) * (d.level - 1) / 29
+    if Opt(opts, "boss") then ch = ch * R.bossTrophy end
+    if I:Has("mira") and not Has(party, "mira") and I:State("mira") == "home" then ch = ch + R.miraTrophy end
+    return math.min(1, ch * RareBonus(party))
+end
+
+function Dg:Send(id, party, opts)
     local d = Dg.Get(id)
     if not d or not self:Open(id) then return false, "closed" end
+    if d.raid and self:RaidLeft(id) > 0 then return false, "raidWeek" end
     if #party == 0 then return false, "empty" end
     if #party > d.size then return false, "full" end
     local seen = {}
@@ -396,31 +524,54 @@ function Dg:Send(id, party)
     end
     local cost = self:Cost(id, party)
     if V:Good("fish") < cost then return false, "fish", cost end
+    for _, k in ipairs({"potion", "food"}) do
+        local g = Opt(opts, k)
+        if g and V:Good(g) < 1 then return false, "noConsumable" end
+    end
     local db = KH.db
     db.goods.fish = V:Good("fish") - cost
-    local total, _, counters, open = self:Chance(id, party)
+    if Opt(opts, "potion") then db.goods[opts.potion] = V:Good(opts.potion) - 1 end
+    if Opt(opts, "food") then db.goods[opts.food] = V:Good(opts.food) - 1 end
+    local total, _, counters, open = self:Chance(id, party, opts)
     local odds = Dg.Odds(total)
     local ok = Roll() * 100 < odds
-    local coins, vxp, fxp = self:Reward(id, party, total)
-    local hurt, drop = {}, nil
+    local coins, vxp, fxp = self:Reward(id, party, total, nil, opts)
+    local hurt, drops, combos = {}, {}, {}
+    for _, c in ipairs(self:Combos(party)) do combos[#combos + 1] = c.id end
     if ok then
         local rare = RareBonus(party)
-        if d.level >= R.epic.from and Roll() < R.epic.chance * rare then drop = "epic"
-        elseif d.level >= R.merit.from and Roll() < R.merit.chance * rare then drop = "merit" end
+        if d.raid then
+            drops[#drops + 1] = "epic"
+            drops[#drops + 1] = "core"
+        elseif d.level >= R.epic.from and Roll() < R.epic.chance * rare then drops[#drops + 1] = "epic"
+        elseif d.level >= R.merit.from and Roll() < R.merit.chance * rare then drops[#drops + 1] = "merit" end
+        if Roll() < self:TrophyChance(id, party, opts) then drops[#drops + 1] = "trophy" end
     else
         coins, vxp = Round(coins / 2), Round(vxp / 2)
         for fid, x in pairs(fxp) do fxp[fid] = Round(x / 2) end
+        local noHurt = false
+        for _, c in ipairs(self:Combos(party)) do if c.noHurt then noHurt = true end end
+        local risk = R.injury * (Opt(opts, "food") and R.foodHurt or 1)
+        if I:Has("garrick") and not Has(party, "garrick") and I:State("garrick") == "home" then risk = risk - R.garrickHurt end
         for _, fid in ipairs(party) do
-            local tough = false
+            local tough = noHurt
             for _, t in ipairs(I:Traits(fid)) do if B.TRAITS[t[1]].neverInjured then tough = true end end
-            if not tough and Roll() < R.injury then hurt[#hurt + 1] = fid end
+            if not tough and Roll() < risk then hurt[#hurt + 1] = fid end
         end
     end
+    if d.raid then
+        db.dungeons.raids = db.dungeons.raids or {}
+        db.dungeons.raids[id] = KH.Now()                -- tried this week, success or not
+    end
+    db.adventure = db.adventure or {}
+    db.adventure.inspired = db.adventure.inspired or {}
+    local insp = db.adventure.inspired[id]
+    if insp and insp > 0 then db.adventure.inspired[id] = insp - 1 end
     db.dungeons.serial = (db.dungeons.serial or 0) + 1
     db.trips = db.trips or {}
-    db.trips[#db.trips + 1] = {n = db.dungeons.serial, dungeon = id, at = KH.Now(), time = self:Duration(id, party),
-        party = {unpack(party)}, total = total, ok = ok, coins = coins, vxp = vxp, fxp = fxp, hurt = hurt, drop = drop,
-        counters = counters, open = open}
+    db.trips[#db.trips + 1] = {n = db.dungeons.serial, dungeon = id, at = KH.Now(), time = self:Duration(id, party, opts),
+        party = {unpack(party)}, total = total, ok = ok, coins = coins, vxp = vxp, fxp = fxp, hurt = hurt, drops = drops,
+        counters = counters, open = open, combos = combos, boss = Opt(opts, "boss") or nil}
     return true
 end
 
@@ -450,9 +601,21 @@ function Dg:Collect(n)
     end
     local back = trip.at + trip.time
     for _, fid in ipairs(trip.hurt or {}) do I:Get(fid).hurt = back + R.injuryHours * 3600 end
-    if trip.drop then db.dungeons[trip.drop] = (db.dungeons[trip.drop] or 0) + 1 end
+    local d = db.dungeons
+    for _, drop in ipairs(trip.drops or {}) do
+        if drop == "trophy" then
+            d.trophies = d.trophies or {}
+            d.trophies[trip.dungeon] = (d.trophies[trip.dungeon] or 0) + 1
+        elseif drop == "core" then
+            db.goods.core = V:Good("core") + B.RAID.core
+        else
+            d[drop] = (d[drop] or 0) + 1
+        end
+    end
+    d.combos = d.combos or {}
+    for _, c in ipairs(trip.combos or {}) do d.combos[c] = true end
     if trip.dungeon then
-        db.dungeons.runs = (db.dungeons.runs or 0) + 1
+        d.runs = (d.runs or 0) + 1
         KH.Journal:Add(trip)
     end
     return trip, ups

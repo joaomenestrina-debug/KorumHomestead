@@ -23,6 +23,7 @@ Village.lua
 Works.lua
 Journal.lua
 Dungeons.lua
+Adventure.lua
 Events.lua
 Probe.lua
 Advice.lua

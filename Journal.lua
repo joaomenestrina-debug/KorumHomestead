@@ -35,7 +35,7 @@ function J:Add(trip)
     local db = KH.db
     db.journal = db.journal or {}
     local entry = {at = trip.at + trip.time, d = trip.dungeon, ok = trip.ok, party = trip.party, by = trip.counters,
-        open = trip.open, hurt = trip.hurt, drop = trip.drop, total = trip.total}
+        open = trip.open, hurt = trip.hurt, drops = trip.drops, combos = trip.combos, total = trip.total}
     table.insert(db.journal, entry)
     while #db.journal > B.JOURNAL.keep do table.remove(db.journal, 1) end
     for _, fid in ipairs(trip.party) do
@@ -63,7 +63,11 @@ function J:Lines(e)
     if e.open and e.open[1] then second = T("j_open_" .. e.open[1]) .. " " end
     second = (second or "") .. T(e.ok and "j_ok" or "j_fail")
     if e.hurt and #e.hurt > 0 then second = second .. " " .. T(#e.hurt == 1 and "j_hurt1" or "j_hurtN", Names(e.hurt)) end
-    if e.drop then second = second .. " " .. T("j_drop_" .. e.drop) end
+    if e.combos and e.combos[1] then second = T("j_combo", T("cb_" .. e.combos[1])) .. " " .. second end
+    for _, drop in ipairs(e.drops or {e.drop}) do
+        second = second .. " " .. (drop == "trophy" and T("j_drop_trophy", KH.Data.Name(KH.Balance.TROPHIES[e.d]) or "")
+            or T("j_drop_" .. drop))
+    end
     return {first, second}
 end
 

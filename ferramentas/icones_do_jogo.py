@@ -40,6 +40,7 @@ def items():
         for _, p in ipairs(NS.Data.PLANTS) do out[#out + 1] = p[1] end
         for _, i in pairs(NS.Village.ITEM) do out[#out + 1] = i end
         out[#out + 1] = NS.Balance.DAILY.rareItem
+        for _, i in pairs(NS.Balance.TROPHIES) do out[#out + 1] = i end
         return table.concat(out, ",") end)()""")
     return sorted({int(i) for i in ids.split(",")})
 

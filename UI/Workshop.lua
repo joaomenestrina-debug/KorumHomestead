@@ -17,12 +17,12 @@ local function BuildWorkshop(win)
     local Wk = KH.Workshop
     s.rows = {}
     local options = {}
-    for _, trade in ipairs(Wk.TRADES) do options[#options + 1] = {value = trade, label = T("trade_" .. trade)} end
-    s.trades = Kit.Segmented(s.frame, 360, options, function() return UI.trade end, function(v) UI.trade = v; UI:Refresh() end)
+    for _, trade in ipairs(Wk.TABS) do options[#options + 1] = {value = trade, label = T("trade_" .. trade)} end
+    s.trades = Kit.Segmented(s.frame, 440, options, function() return UI.trade end, function(v) UI.trade = v; UI:Refresh() end)
     s.trades:SetPoint("TOPLEFT", 0, -58)
     s.tradeHint = Kit.Text(s.frame, 11, C.textSoft)
     s.tradeHint:SetPoint("LEFT", s.trades, "RIGHT", 16, 0)
-    s.tradeHint:SetWidth(s.width - 360 - 16)          -- what is left beside the tabs; a long hint takes two lines
+    s.tradeHint:SetWidth(s.width - 440 - 16)          -- what is left beside the tabs; a long hint takes two lines
     s.tradeHint:SetWordWrap(true)
     for i = 1, Wk.ROWS do
         local row = CreateFrame("Frame", nil, s.frame)

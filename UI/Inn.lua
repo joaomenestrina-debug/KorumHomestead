@@ -124,8 +124,8 @@ local function BuildInn(win)
     local W = s.width
     local In, Dg = KH.Inn, KH.Dungeons
 
-    s.tabs = Kit.Segmented(s.frame, 300, {{value = "followers", label = T("innTabFollowers")},
-        {value = "dungeons", label = T("innTabDungeons")}},
+    s.tabs = Kit.Segmented(s.frame, 360, {{value = "followers", label = T("innTabFollowers")},
+        {value = "dungeons", label = T("innTabDungeons")}, {value = "book", label = T("innTabBook")}},
         function() return UI.innTab end,
         function(v) UI.innTab = v; UI.innFollower, UI.innDungeon = nil, nil; UI:Refresh() end)
     s.tabs:SetPoint("TOPLEFT", 0, -58)
@@ -135,8 +135,8 @@ local function BuildInn(win)
     end)
     s.back:SetPoint("TOPLEFT", 0, -58)
     s.tabHint = Kit.Text(s.frame, 11, C.textSoft)
-    s.tabHint:SetPoint("TOPLEFT", 316, -66)
-    s.tabHint:SetWidth(W - 316)
+    s.tabHint:SetPoint("TOPLEFT", 376, -66)
+    s.tabHint:SetWidth(W - 376)
     s.tabHint:SetWordWrap(false)
 
     -- the followers tab
@@ -204,6 +204,32 @@ local function BuildInn(win)
     s.page = Kit.Text(dl, 11, C.textSoft)
     s.page:SetPoint("BOTTOMLEFT", 80, 12)
 
+    -- the book: combos and trophies
+    local book = CreateFrame("Frame", nil, s.frame)
+    book:SetAllPoints(s.frame)
+    s.book = book
+    book.combosHead = Kit.Text(book, 11, C.textMuted)
+    book.combosHead:SetPoint("TOPLEFT", 0, -TOP)
+    book.combos = {}
+    for k = 1, #KH.Balance.COMBOS do
+        local line = Kit.Text(book, 10, C.textSoft)
+        line:SetPoint("TOPLEFT", ((k - 1) % 2) * (W / 2), -TOP - 20 - math.floor((k - 1) / 2) * 40)
+        line:SetWidth(W / 2 - 12)
+        line:SetWordWrap(true)
+        book.combos[k] = line
+    end
+    book.trophiesHead = Kit.Text(book, 11, C.textMuted)
+    book.trophiesHead:SetPoint("TOPLEFT", 0, -TOP - 190)
+    book.trophies = {}
+    local ids = {}
+    for _, d in ipairs(Dg.LIST) do if KH.Balance.TROPHIES[d.id] then ids[#ids + 1] = d.id end end
+    for k, did in ipairs(ids) do
+        local b = IconButton(book, 36)
+        b:SetPoint("TOPLEFT", ((k - 1) % 12) * 44, -TOP - 212 - math.floor((k - 1) / 12) * 44)
+        b.dungeon = did
+        book.trophies[k] = b
+    end
+
     -- one dungeon: the run
     local run = CreateFrame("Frame", nil, s.frame)
     run:SetAllPoints(s.frame)
@@ -243,11 +269,11 @@ local function BuildInn(win)
     run.free = {}
     for k = 1, In.MAX do
         local r = CreateFrame("Button", nil, run)
-        r:SetSize(380, 34)
-        r:SetPoint("TOPLEFT", 0, -172 - (k - 1) * 37)
+        r:SetSize(380, 30)
+        r:SetPoint("TOPLEFT", 0, -172 - (k - 1) * 32)
         r.surface, r.outline = Kit.Rounded(r, 9, 1, 1, 1, 0.04, 0.05)
         r.disc = r:CreateTexture(nil, "ARTWORK")
-        r.disc:SetSize(28, 28)
+        r.disc:SetSize(26, 26)
         r.disc:SetPoint("LEFT", 4, 0)
         r.name = Kit.Text(r, 11, C.text)
         r.name:SetPoint("LEFT", 38, 0)
@@ -275,27 +301,59 @@ local function BuildInn(win)
     run.chanceLabel = Kit.Text(run, 10, C.textSoft)
     run.chanceLabel:SetPoint("TOPLEFT", 400, -184)
     run.parts = {}
-    for k = 1, 8 do
+    for k = 1, 6 do
         local line = Kit.Text(run, 10, C.textSoft)
-        line:SetPoint("TOPLEFT", 400, -202 - (k - 1) * 16)
+        line:SetPoint("TOPLEFT", 400, -198 - (k - 1) * 15)
         line:SetWidth(W - 400)
         line:SetWordWrap(false)
         run.parts[k] = line
+    end
+    run.combo = Kit.Text(run, 10, C.accent)
+    run.combo:SetPoint("TOPLEFT", 400, -292)
+    run.combo:SetWidth(W - 400)
+    run.combo:SetWordWrap(false)
+    run.opts = {}
+    local function Cycle(kind)
+        local goods = {false}
+        for _, r in ipairs(KH.Workshop.RECIPES) do
+            if r.trade == kind and V:Good(r.id) > 0 then goods[#goods + 1] = r.id end
+        end
+        local key = kind == "alchemy" and "potion" or "food"
+        local o = UI.innOpts or {}
+        local now = o[key] or false
+        local nextOne = goods[1]
+        for i, g in ipairs(goods) do if g == now then nextOne = goods[i % #goods + 1] end end
+        o[key] = nextOne or nil
+        UI.innOpts = o
+        UI:Refresh()
+    end
+    for k, kind in ipairs({"alchemy", "cooking", "boss"}) do
+        local b = Kit.Button(run, math.floor((W - 16) / 3), 26, "", function()
+            if kind == "boss" then
+                UI.innOpts = UI.innOpts or {}
+                UI.innOpts.boss = not UI.innOpts.boss or nil
+                UI:Refresh()
+            else
+                Cycle(kind)
+            end
+        end)
+        b:SetPoint("BOTTOMLEFT", (k - 1) * (math.floor((W - 16) / 3) + 8), 72)
+        run.opts[k] = b
     end
     run.reward = Kit.Text(run, 11, C.gold)
     run.reward:SetPoint("BOTTOMLEFT", 0, 48)
     run.reward:SetWidth(W)
     run.reward:SetWordWrap(false)
     run.suggest = Kit.Button(run, 180, 36, "", function()
-        UI.innParty = Dg:Suggest(UI.innDungeon)
+        UI.innParty = Dg:Suggest(UI.innDungeon, UI.innOpts)
         UI:Refresh()
     end)
     run.suggest:SetPoint("BOTTOMLEFT", 0, 0)
     run.send = Kit.Button(run, 220, 36, "", function()
-        local ok, why, n = Dg:Send(UI.innDungeon, UI.innParty or {})
+        local ok, why, n = Dg:Send(UI.innDungeon, UI.innParty or {}, UI.innOpts)
         if ok then
             Notice(T("dgSent", T("dg_" .. UI.innDungeon)))
-            UI.innDungeon, UI.innParty = nil, nil
+            UI.innDungeon, UI.innParty, UI.innOpts = nil, nil, nil
             UI.innTab = "followers"
         else
             Notice(why == "fish" and T("why_fishN", n) or Reason(why))
@@ -331,32 +389,61 @@ local function BuildInn(win)
     end
     sheet.traits = {}
     for k = 1, 2 do
-        local line = Kit.Text(sheet, 11, C.textSoft)
-        line:SetPoint("TOPLEFT", 0, -254 - (k - 1) * 18)
-        line:SetWidth(320)
-        line:SetWordWrap(false)
+        local line = Kit.Text(sheet, 10, C.textSoft)
+        line:SetPoint("TOPLEFT", 0, -250 - (k - 1) * 28)
+        line:SetWidth(334)
+        line:SetWordWrap(true)
         sheet.traits[k] = line
     end
+    sheet.gear = {}
+    for k, slot in ipairs({"weapon", "armor"}) do
+        local g = IconButton(sheet, 22)
+        g:SetPoint("TOPLEFT", 0, -308 - (k - 1) * 28)
+        g.text = Kit.Text(sheet, 10, C.textSoft)
+        g.text:SetPoint("LEFT", g, "RIGHT", 8, 0)
+        g.text:SetWidth(222)
+        g.text:SetWordWrap(false)
+        g.button = Kit.Button(sheet, 80, 24, "", function()
+            local fid = UI.innFollower
+            local best = In:BestGear(fid, slot)
+            if best then
+                local ok, why = In:Equip(fid, best)
+                if not ok then Notice(Reason(why)) end
+            else
+                In:Unequip(fid, slot)
+            end
+            UI:Refresh()
+        end)
+        g.button:SetPoint("TOPLEFT", 256, -307 - (k - 1) * 28)
+        g.slot = slot
+        sheet.gear[k] = g
+    end
     sheet.promo = Kit.Text(sheet, 11, C.text)
-    sheet.promo:SetPoint("TOPLEFT", 0, -300)
+    sheet.promo:SetPoint("TOPLEFT", 0, -366)
     sheet.promo:SetWidth(320)
     sheet.pick = {}
     for k = 1, 2 do
-        local b = Kit.Button(sheet, 150, 30, "", function()
-            if In:Promote(UI.innFollower, k) then Notice(T("promoted", FName(UI.innFollower))) end
+        local b = Kit.Button(sheet, 150, 28, "", function()
+            local fid = UI.innFollower
+            local f = In:Get(fid)
+            if f.level >= KH.Balance.FOLLOWER.maxLevel and not f.mastery then
+                if In:Master(fid, k == 1 and "veteran" or "mentor") then Notice(T("ttl_" .. fid)) end
+            elseif In:Promote(fid, k) then
+                Notice(T("promoted", FName(fid)))
+            end
             UI:Refresh()
         end)
-        b:SetPoint("TOPLEFT", (k - 1) * 158, -336)
+        b:SetPoint("TOPLEFT", (k - 1) * 158, -398)
         sheet.pick[k] = b
     end
     sheet.respec = {}
     for k, what in ipairs({"ability", "trait"}) do
-        local b = Kit.Button(sheet, 150, 26, "", function()
+        local b = Kit.Button(sheet, 150, 24, "", function()
             local ok, why = In:Respec(UI.innFollower, what)
             if not ok then Notice(Reason(why)) end
             UI:Refresh()
         end)
-        b:SetPoint("TOPLEFT", (k - 1) * 158, -374)
+        b:SetPoint("TOPLEFT", (k - 1) * 158, -432)
         sheet.respec[k] = b
     end
     sheet.journalHead = Kit.Text(sheet, 11, C.textMuted)
@@ -431,7 +518,12 @@ local function BuildInn(win)
                 else
                     row.chance:SetText("|cff757a87" .. T("lockedLv", d.level - KH.Balance.DUNGEON.openAhead) .. "|r")
                 end
-                row.tag:SetText(d.id == daily and T("dgDaily") or "")
+                local visited = ((KH.db.adventure or {}).visited or {})[d.id]
+                if d.raid then
+                    local left = Dg:RaidLeft(d.id)
+                    row.tag:SetText(left > 0 and ("|cff757a87" .. T("dgRaidLeft", KH.Duration(left)) .. "|r") or T("dgRaid"))
+                elseif d.id == daily then row.tag:SetText(T("dgDaily"))
+                else row.tag:SetText(visited and ("|cffa8adb8" .. T("advVisited") .. "|r") or "") end
             end
         end
         s.page:SetText(UI.innPage .. " / " .. pages)
@@ -450,11 +542,18 @@ local function BuildInn(win)
         s.head:SetText(T("dg_" .. id)); s.sub:SetText(T("runS", d.size))
         run.meta:SetText(T("dgMeta", d.level, d.size, KH.Duration(Dg:Duration(id, party))) .. "  ·  " .. T("env_" .. d.env)
             .. (Dg:Daily() == id and ("  ·  |cff40d9c4" .. T("dgDaily") .. "|r") or ""))
-        local total, parts, counters = Dg:Chance(id, party)
+        local opts = UI.innOpts or {}
+        if d.raid then opts.boss = nil end
+        for _, key in ipairs({"potion", "food"}) do
+            if opts[key] and V:Good(opts[key]) < 1 then opts[key] = nil end
+        end
+        UI.innOpts = opts
+        local total, parts, counters = Dg:Chance(id, party, opts)
         local countered = {}
         for _, c in ipairs(counters) do countered[#countered + 1] = c[1] end
+        local threats = Dg:Threats(id, opts)
         for k, b in ipairs(run.threats) do
-            local th = d.threats[k]
+            local th = threats[k]
             if th then
                 local dim = false
                 for i, c in ipairs(countered) do if c == th then dim = true; table.remove(countered, i); break end end
@@ -476,7 +575,7 @@ local function BuildInn(win)
             end
         end
         run.freeHead:SetText(T("runFree"))
-        local recs = Dg:Recommended(id, party)
+        local recs = Dg:Recommended(id, party, opts)
         for k, r in ipairs(run.free) do
             local rec = recs[k]
             r:SetShown(rec ~= nil)
@@ -512,6 +611,9 @@ local function BuildInn(win)
                 local what
                 if p[1] == "threat" then what = T("partThreat", T("th_" .. p[3]))
                 elseif p[1] == "trait" then what = T("partTrait", FName(p[3]))
+                elseif p[1] == "gear" then what = T("partGear", FName(p[3]))
+                elseif p[1] == "veteran" then what = T("partVeteran", FName(p[3]))
+                elseif p[1] == "combo" then what = T("partCombo", T("cb_" .. p[3]))
                 elseif p[1] == "missing" then what = T("partMissing", p[3])
                 else what = T("part_" .. p[1]) end
                 line:SetText(sign .. p[2] .. "|r  " .. what)
@@ -519,16 +621,31 @@ local function BuildInn(win)
                 line:SetText("")
             end
         end
-        if #party > 0 then
-            local coins, vxp = Dg:Reward(id, party, total)
-            run.reward:SetText(T("runReward", KH.Number(coins), KH.Number(vxp), Dg:Cost(id, party), V:Good("fish")))
+        local combos = Dg:Combos(party)
+        if combos[1] then
+            run.combo:SetText(Dg:Known(combos[1].id) and T("runCombo", T("cb_" .. combos[1].id) .. " · " .. T("cbd_" .. combos[1].id))
+                or T("runComboUnknown"))
+        else
+            run.combo:SetText("")
+        end
+        run.opts[1]:SetLabel(T("runPotion", opts.potion and T("good_" .. opts.potion) or T("runNone")))
+        run.opts[2]:SetLabel(T("runFood", opts.food and T("good_" .. opts.food) or T("runNone")))
+        run.opts[3]:SetLabel(T("runBoss", opts.boss and T("runBossOn") or T("runBossOff")))
+        run.opts[3]:SetShown(not d.raid)
+        if d.raid and Dg:RaidLeft(id) > 0 then
+            run.reward:SetText(T("dgRaid") .. " · " .. T("dgRaidLeft", KH.Duration(Dg:RaidLeft(id))))
+        elseif #party > 0 then
+            local coins, vxp = Dg:Reward(id, party, total, nil, opts)
+            local trophy = Dg:TrophyChance(id, party, opts)
+            run.reward:SetText(T("runReward", KH.Number(coins), KH.Number(vxp), Dg:Cost(id, party), V:Good("fish"))
+                .. (trophy > 0 and ("  ·  " .. T("runTrophy", math.floor(trophy * 100 + 0.5))) or ""))
         else
             run.reward:SetText(T("runPick"))
         end
         run.suggest:SetLabel(T("runSuggest"))
         run.send:SetLabel(T("runSend"))
         run.send:SetStyle("primary")
-        run.send:SetEnabledState(#party > 0)
+        run.send:SetEnabledState(#party > 0 and not (d.raid and Dg:RaidLeft(id) > 0))
         s.action:Hide()
         s.note:SetText("")
     end
@@ -564,10 +681,37 @@ local function BuildInn(win)
                 line:SetText("")
             end
         end
+        for _, g in ipairs(sheet.gear) do
+            local gid = f.gear and f.gear[g.slot]
+            if gid then
+                g.tex:SetTexture(D.Icon(KH.Workshop.Recipe(gid).item)); g.tex:SetAlpha(1)
+                g:SetScript("OnEnter", function(self) Tip(self, T("good_" .. gid), {T("gearHint")}) end)
+                g.text:SetText(T("good_" .. gid) .. " |cff59d973" .. T("gearPower", KH.Workshop.Recipe(gid).power) .. "|r")
+            else
+                g.tex:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark"); g.tex:SetAlpha(0.3)
+                g:SetScript("OnEnter", function(self) Tip(self, T("slot_" .. g.slot), {T("gearHint")}) end)
+                g.text:SetText(T("slot_" .. g.slot) .. ": |cff757a87" .. T("gearNone") .. "|r")
+            end
+            g:Show()
+            local best = In:BestGear(fid, g.slot)
+            g.button:SetShown(best ~= nil or gid ~= nil)
+            g.button:SetLabel(best and T("gearEquip", T("gearPower", KH.Workshop.Recipe(best).power)) or T("gearOff"))
+            g.button:SetStyle(best and "primary" or "quiet")
+        end
         local q, ok = In:NextQuality(fid)
         local def = In.Def(fid)
         for _, b in ipairs(sheet.pick) do b:Hide() end
-        if not q then
+        if f.level >= KH.Balance.FOLLOWER.maxLevel and not f.mastery then
+            sheet.promo:SetText(T("masterH"))
+            for k, b in ipairs(sheet.pick) do
+                local m = k == 1 and "veteran" or "mentor"
+                b:Show(); b:SetStyle("primary")
+                b:SetLabel(T("master_" .. m))
+                b:SetScript("OnEnter", function(self) Tip(self, T("master_" .. m), {T("masterd_" .. m)}) end)
+            end
+        elseif f.mastery and not (q and ok) then
+            sheet.promo:SetText(T("masterDone", T("master_" .. f.mastery), T("ttl_" .. fid)))
+        elseif not q then
             sheet.promo:SetText(T("promoDone"))
         elseif not ok then
             local merit, epic = In:Insignias()
@@ -604,18 +748,51 @@ local function BuildInn(win)
         s.note:SetText("")
     end
 
+    local function RefreshBook()
+        s.head:SetText(T("bookH")); s.sub:SetText(T("bookS"))
+        local known = 0
+        for k, c in ipairs(KH.Balance.COMBOS) do
+            local line = book.combos[k]
+            if Dg:Known(c.id) then
+                known = known + 1
+                line:SetText("|cff40d9c4" .. T("cb_" .. c.id) .. "|r  " .. T("cbd_" .. c.id))
+            else
+                line:SetText("|cff757a87" .. T("bookUnknown") .. "|r  " .. T("cbh_" .. c.id))
+            end
+        end
+        book.combosHead:SetText(T("bookCombos", known, #KH.Balance.COMBOS))
+        local got = 0
+        local trophies = KH.db.dungeons.trophies or {}
+        for _, b in ipairs(book.trophies) do
+            local item = KH.Balance.TROPHIES[b.dungeon]
+            local have = (trophies[b.dungeon] or 0) > 0
+            if have then got = got + 1 end
+            b.tex:SetTexture(D.Icon(item))
+            b.tex:SetAlpha(have and 1 or 0.25)
+            if b.tex.SetDesaturated then b.tex:SetDesaturated(not have) end
+            b:SetScript("OnEnter", function(self) Tip(self, have and D.Name(item) or T("bookUnknown"), {T("dg_" .. b.dungeon)}) end)
+            b:Show()
+        end
+        book.trophiesHead:SetText(T("bookTrophies", got, #book.trophies))
+        s.action:Hide()
+        s.note:SetText("")
+    end
+
     function s:Refresh()
         local level = V:Level("inn")
         local view = "list"
         if level == 0 then view = "none"
         elseif UI.innFollower and In:Has(UI.innFollower) then view = "sheet"
         elseif UI.innDungeon and Dg.Get(UI.innDungeon) and Dg:Open(UI.innDungeon) then view = "run"
-        elseif UI.innTab == "dungeons" then view = "dungeons" end
+        elseif UI.innTab == "dungeons" then view = "dungeons"
+        elseif UI.innTab == "book" then view = "book" end
         local inner = view == "sheet" or view == "run"
         self.tabs:SetShown(view ~= "none" and not inner)
         self.back:SetShown(inner)
         self.back:SetLabel(view == "sheet" and T("backFollowers") or T("backDungeons"))
+        if inner then self.tabs:Hide() end
         self.tabHint:SetShown(view == "list" or view == "dungeons")
+        self.book:SetShown(view == "book")
         self.tabHint:SetText(view == "dungeons" and T("dgHint") or T("innHint"))
         self.list:SetShown(view == "list")
         self.dlist:SetShown(view == "dungeons")
@@ -627,6 +804,7 @@ local function BuildInn(win)
         elseif view == "list" then RefreshList()
         elseif view == "dungeons" then RefreshDungeons()
         elseif view == "run" then RefreshRun()
+        elseif view == "book" then RefreshBook()
         else RefreshSheet() end
     end
     return s
