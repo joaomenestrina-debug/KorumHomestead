@@ -22,6 +22,28 @@ Visitors come to the village, the art was redrawn, and the village dresses for W
 - The Barn shows the space of the herbs, the ore and the fish apart; the Mine and the Pond show their own stock, and the Hall recommends a bigger Barn when ore or fish are filling it.
 - The minimap button counts and lists the same as the icon on the screen: visitors, plots ready, orders you can deliver and followers back.
 
+### Em português
+Visitantes chegam à vila, a arte foi redesenhada e a vila se enfeita para o Véu de Inverno. Sua vila é mantida: nada do que você tem se perde.
+
+**Visitantes**
+- De vez em quando, enquanto você joga, alguém chega: um mensageiro com um pedido urgente, um mercador generoso, uma caravana de troca, um peixe raro na Lagoa ou um veio raro na Mina.
+- Um carrinho brilha no mapa da vila enquanto há alguém por lá; um clique abre a tela de Visitantes, com o que cada um quer, quanto tempo fica e a resposta (entregar, vender, trocar, recolher).
+- O aviso ao lado do ícone na tela e o botão do minimapa dizem quem chegou e quanto tempo fica. Se o prazo acaba, a oportunidade vai junto; nada do que você tem é tirado.
+- Nos níveis altos, os pedidos urgentes e os mercadores pedem menos unidades de ervas tardias e itens da Oficina, para cada visita continuar sendo um extra ao lado da Horta; o preço continua o dobro.
+
+**Véu de Inverno**
+- Durante o Festival do Véu de Inverno (15 de dezembro a 2 de janeiro) a vila fica coberta de neve, com um pinheiro enfeitado, um boneco de neve e um trenó cheio de presentes.
+
+**Arte**
+- O mapa, todas as construções em cada nível, os seguidores e os visitantes foram redesenhados em alta resolução.
+- O botão do minimapa mostra o logo da vila, o mesmo do ícone na tela.
+
+**Outras mudanças**
+- As encomendas do Mercado, os pedidos urgentes e os mercadores só pedem itens da Oficina que aparecem e podem ser feitos na tela dela.
+- Um brilho no alto da janela abre as Novidades quando você quiser; a tela agora rola.
+- O Celeiro mostra separado o espaço das ervas, do minério e do peixe; a Mina e a Lagoa mostram o próprio estoque, e a Sede recomenda um Celeiro maior quando minério ou peixe o estão enchendo.
+- O botão do minimapa conta e mostra o mesmo que o ícone na tela: visitantes, canteiros prontos, encomendas para entregar e seguidores de volta.
+
 ## 2.1.0-alpha6
 - The Market orders, the urgent orders and the merchants ask only for Workshop items you can see and make on its screen: no more orders for a recipe the Workshop no longer shows.
 - The sled full of presents of Winter Veil is bigger, the size of the visitors' cart.

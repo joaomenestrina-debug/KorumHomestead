@@ -82,7 +82,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 17/11 | **Ícones de itens do jogo** para tudo o que é item; pixel art própria (do dono com o ChatGPT, ou do Codex, sempre aprovada pelo dono) só para lugares, mapa, decorações, retratos e logo. |
 | 17/11 | Versões de trabalho da 2.0 saem como **Alpha** no CurseForge (tag `v2.0.0-alphaN`). Só `v2.0.0` sem sufixo. Nunca `-rc`. |
 | 17/11 | Tudo público sai assinado como **Korum**: autor dos commits `Korum`, sem `Co-Authored-By`, sem citar IA. |
-| 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). |
+| 17/11 | O "What's new" do CurseForge vem do `CHANGELOG.md` (`manual-changelog` no `.pkgmeta`). Desde 19/11 cada versão tem o texto em inglês e, logo abaixo, `### Em português` com o mesmo conteúdo. |
 | 17/11 | Nada castiga quem fica fora; progresso nunca se perde. Saves antigos sempre abrem. |
 | 17/11 | **Cuidar do excesso de moedas.** A encomenda do dia paga 2,5× uma encomenda normal (o dobro de ervas × 1,25 por erva); os prêmios da sequência são XP e Lótus Negra, **nunca moedas**. Nenhuma recompensa nova dá moedas sem passar pela conta da economia (T2.0). |
 | 19/11 | **2.1.0 publicada como Release** a pedido do dono. Na tela de Novidades, entradas da mesma versão ficam sob um título só (as alphas guardam seus ids, quem testou vê só o que veio depois). |
