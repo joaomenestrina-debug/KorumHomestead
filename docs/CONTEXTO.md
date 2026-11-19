@@ -13,7 +13,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 |---|---|
 | **Versão publicada** | **2.1.0** no CurseForge (Release, 19/11, a pedido do dono) — visitantes, arte nova, Véu de Inverno, minimapa com o logo. Antes: 2.0.0 (Release, 17/11) e as alphas `v2.1.0-alpha1` a `alpha6` (18–19/11). Próximo pacote: domingo, como `v2.2.0-alphaN` ou `v2.1.1` |
 | **Em desenvolvimento** | **2.2 e 2.3: masmorras e seguidores** (especificação **aprovada em 18/11** em [masmorras.md](masmorras.md); fatos do Forever em [historia-forever.md](historia-forever.md)). Cronograma em [cronograma-2.0.md](cronograma-2.0.md) (reescrito em 18/11); plano antigo em [plano-2.0.md](plano-2.0.md) |
-| **Sprint atual** | **S2 — Eventos aleatórios**: motor, telas e arte na `v2.1.0-alpha1`; T2.10 (economia) feita em 18/11; T2.8 (textos) integrada; **`v2.1.0-alpha2`** publicada em 18/11 |
+| **Sprint atual** | **Entre sprints (até 06/12):** S2 fechada com a **2.1.0 Release** em 19/11; falta o T3.0b (dono) para o Claude fazer o T3.0c. Página do CurseForge renovada (imagens do simulador, EN e ptBR) |
 | **Próximo marco** | S3 abre em **07/12** (`v2.2.0-alpha1` em 13/12) |
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
 | **Arte A6** | Aprovada e no jogo, a partir de `arquivo/arte_v5/*@hd.png`, reduzida para perto do tamanho de tela (prédios 256, retratos 128, mapa 1024×512); o logo segue o antigo em pixel (ícones pequenos: simples, poucas cores) |
@@ -68,7 +68,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 
 ## 2. O que fazer agora (por pessoa)
 
-- **Eu:** testar o T3.0 (`/kh debug`, `/kh eventos`: uma masmorra, uma fila, trocas de zona) até 29/11. Jogar a alpha3 e relatar o que aparecer. A S3 (F3, Personagem) fica para a data do cronograma (07/12), por decisão de 18/11.
+- **Eu:** testar o T3.0 (`/kh debug`, `/kh eventos`: uma masmorra, uma fila, trocas de zona) até 29/11 e avisar o Claude. Jogar a 2.1.0 e relatar o que aparecer. A S3 (F3, Personagem) fica para a data do cronograma (07/12), por decisão de 18/11.
 - **Codex:** **A7** e **A8** aprovados e integrados em 19/11; nenhuma tarefa de arte aberta. Não escrever código.
 - **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11; `v2.1.0-alpha3` também, só para tirar o `/kh debug` e o `/kh evento` do zip (entre `--@debug@`, o empacotador comenta). Especificação das masmorras e seguidores escrita em 18/11 (`docs/masmorras.md`, com `docs/historia-forever.md`). Aprovada em 18/11; a Aventura (a vila reage ao que o personagem faz) e o Diário dos seguidores entraram depois (§12 e §13). Tag `v2.1.0-alpha4` criada em 19/11 (logo no minimapa, dica e número iguais aos do ícone, caminho do topo no inglês). Comando do T3.0 pronto: `/kh debug` e depois `/kh eventos` (`Probe.lua`, só na cópia do repositório). Briefings A7 e A8 escritos em 19/11. Próximo: o dono testa o T3.0 numa masmorra, numa fila e numa troca de zona; A7 no jogo e tag `v2.1.0-alpha5` em 19/11 (Véu de Inverno); tag `v2.1.0-alpha6` em 19/11 (pedidos só de itens da tela da Oficina, trenó maior); **2.1.0 publicada como Release em 19/11** a pedido do dono (as novidades das alphas aparecem sob um título só, "Versão 2.1.0").
 
