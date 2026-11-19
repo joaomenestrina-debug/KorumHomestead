@@ -14,6 +14,11 @@
         Events:Sell(id, n)          merchant: sells up to n (or all he still wants) at his price
         Events:Trade(id, i)         caravan: makes trade i (once)
         Events:Collect(id)          fish, ore: brings the find to the Barn
+        Events:Answer(defId)        call: a group left for it (Dungeons:Send does it); the event leaves the list
+
+    A call (docs/masmorras.md §10) is an event for the followers: a place of the Forever asks for help. Its event carries
+    `def`, the same fields as a dungeon (level, size, hours, threats, env) plus `call` (defense, attack, escort, rescue,
+    recon), `place` and `mult`; the Inn builds the group for it as for a dungeon (Dungeons.Get("call:<id>")).
         Events:Missed()             events that went away unanswered since the last call (and forgets them)
 ]]
 
@@ -162,14 +167,62 @@ end
 function MAKE.fish() return Find("fish") end
 function MAKE.ore() return Find("ore") end
 
--- what may come now: no rare fish without a Pond, no rare ore without a Mine
+-- someone can be saved in a rescue there
+local function Rescued(place)
+    for _, def in ipairs(B.FOLLOWERS) do
+        if def.from and def.from.rescue == place then return true end
+    end
+    return false
+end
+
+-- the place of a call: the zone the character is in comes first (the Adventure, with its own waits); otherwise any
+-- place, the ones the character has been to more often
+local function DrawPlace()
+    local here = KH.Adventure and KH.Adventure:CallPlace()
+    if here then return here end
+    local seen = (KH.db.adventure or {}).zones or {}
+    local total, list = 0, {}
+    for _, place in ipairs(B.PLACE_ORDER) do
+        local w = seen[place] and B.CALLS.visited or 1
+        total = total + w
+        list[#list + 1] = {place, w}
+    end
+    local roll = Rand(total)
+    for _, item in ipairs(list) do
+        roll = roll - item[2]
+        if roll <= 0 then return item[1] end
+    end
+    return list[1][1]
+end
+
+function MAKE.call()
+    local C = B.CALLS
+    local place = DrawPlace()
+    local kinds = {}
+    for _, kind in ipairs(C.order) do
+        if (kind ~= "rescue" or Rescued(place)) and (kind ~= "recon" or B.PLACES[place].dungeon) then kinds[#kinds + 1] = kind end
+    end
+    local kind = kinds[Rand(#kinds)]
+    local c = C[kind]
+    local level = math.max(1, KH.Dungeons:Best() - Rand(C.levelDown + 1) + 1)
+    local size = math.max(1, math.min(RandRange(c.size[1], c.size[2]), #KH.Inn:RoomList()))
+    local hours = c.hours[1] + (c.hours[2] - c.hours[1]) * (Rand(3) - 1) / 2
+    local pool, threats = {unpack(B.PLACES[place].threats)}, {}
+    for i = 1, math.min(c.threats, #pool) do threats[i] = table.remove(pool, Rand(#pool)) end
+    return {call = kind, place = place, time = c.time,
+        def = {call = kind, place = place, level = level, size = size, hours = hours, threats = threats,
+            env = B.PLACES[place].env, mult = c.mult}}
+end
+
+-- what may come now: no rare fish without a Pond, no rare ore without a Mine, no call without a follower in a room
 local function Possible(kind)
     if kind == "fish" then return V:Level("pond") > 0 end
     if kind == "ore" then return V:Level("mine") > 0 end
+    if kind == "call" then return KH.Inn ~= nil and #KH.Inn:RoomList() > 0 end
     return true
 end
 
-local KINDS = {"urgent", "merchant", "caravan", "fish", "ore"}
+local KINDS = {"urgent", "merchant", "caravan", "fish", "ore", "call"}
 
 local function Draw()
     local total, list = 0, {}
@@ -201,6 +254,7 @@ function E:Spawn(kind)
     local e = MAKE[kind]()
     s.serial = s.serial + 1
     e.id, e.kind, e.at = s.serial, kind, KH.Now()
+    if e.def then e.def.id = "call:" .. e.id end
     s.open[#s.open + 1] = e
     return e
 end
@@ -212,6 +266,7 @@ end
 function E:Update()
     local s = Store()
     local now = KH.Now()
+    if KH.Adventure then KH.Adventure:Here() end            -- five minutes in a zone of the Forever: it is seen
     for i = #s.open, 1, -1 do
         local e = s.open[i]
         if now >= e.at + e.time then                       -- over: it goes away with its chance
@@ -247,6 +302,17 @@ local function Close(i)
     local s = Store()
     table.remove(s.open, i)
     s.done = s.done + 1
+end
+
+-- a group left for the call: it is answered
+function E:Answer(defId)
+    for i, e in ipairs(Store().open) do
+        if e.def and e.def.id == defId then
+            Close(i)
+            return true
+        end
+    end
+    return false
 end
 
 function E:Missed()

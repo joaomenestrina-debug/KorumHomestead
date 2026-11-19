@@ -159,6 +159,17 @@ MEASURE = """function(level, n)
                 ok, r = NS.Events:Trade(e.id, k)
                 value = value + t.m * Value(t.get) - t.n * Value(t.give)
             end
+        elseif e.kind == 'call' then
+            -- a call: what it pays over a dungeon of the same time, with the fullest group and the best chance
+            local party = NS.Inn:RoomList()
+            while #party > e.def.size do table.remove(party) end
+            local with = NS.Dungeons:Reward(e.def.id, party, 150)
+            local mult = e.def.mult
+            e.def.mult = nil
+            local plain = NS.Dungeons:Reward(e.def.id, party, 150)
+            e.def.mult = mult
+            coins = coins + math.max(0, with - plain)
+            ok = true
         else
             ok, r = NS.Events:Collect(e.id)
             coins = coins + Value(e.key)

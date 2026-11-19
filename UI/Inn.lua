@@ -1,8 +1,9 @@
 --[[
     Korum Homestead - the Inn: the followers and the dungeons (docs/masmorras.md §16)
 
-    Two tabs. Followers: a card for each one (portrait, quality, level, abilities, what it is doing); a click opens its
-    sheet (abilities, traits, the next quality, the Journal). Dungeons: the dungeons of WoW Forever by level, each with its
+    Four tabs. Followers: a card for each one in a room (portrait, quality, level, abilities, what it is doing); a click
+    opens its sheet (abilities, traits, the next quality, the Journal). Ranking: the whole roster by Power, who is in a
+    room and who waits in the Lodging, and the buttons that swap them. Book: combos and trophies. Dungeons: the dungeons of WoW Forever by level, each with its
     threats and the chance of the best free group now; a click opens the run: the threats (the countered ones dim), the
     group slots, the free followers with "Recommended" and how much each adds, the suggested group, the chance with where
     every point comes from, the reward and Send.
@@ -17,12 +18,14 @@ local Reason, Notice, Screen, Tip = P.Reason, P.Notice, P.Screen, P.Tip
 
 local ICONS = "Interface\\Icons\\"
 local TOP = 98                                  -- under the tabs
-local ROW_H, ROW_GAP = 48, 4
+local ROW_H, ROW_GAP = 44, 3                    -- seven rooms fit above the foot
 local DG_ROWS, DG_H = 7, 40
+local ROOMS = KH.Balance.ROOMS.max
 local QUALITY = {uncommon = {0.12, 1, 0}, rare = {0, 0.44, 0.87}, epic = {0.64, 0.21, 0.93}, legendary = {1, 0.5, 0}}
 P.QUALITY = QUALITY
 UI.innTab = "followers"
 UI.innPage = 1
+UI.innRank = 1
 
 local function Hex(c) return string.format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255) end
 local function QName(q, text) return Hex(QUALITY[q] or C.text) .. text .. "|r" end
@@ -51,13 +54,20 @@ local function ShowThreat(b, threat, dim)
     b:Show()
 end
 
+-- what an ability does, in words: the threats it counters, or the time it saves
+local function AbilityDoes(ab)
+    local def = KH.Balance.ABILITIES[ab]
+    if #def.counters == 0 and def.short then return T("abShort", math.floor(def.short * 100 + 0.5)) end
+    local names = {}
+    for i, th in ipairs(def.counters) do names[i] = T("th_" .. th) end
+    return T("abCounters", table.concat(names, ", "))
+end
+
 local function ShowAbility(b, ab)
     local def = KH.Balance.ABILITIES[ab]
     b.tex:SetTexture(ICONS .. def.icon)
     b.tex:SetAlpha(1)
-    local names = {}
-    for i, th in ipairs(def.counters) do names[i] = T("th_" .. th) end
-    b:SetScript("OnEnter", function(self) Tip(self, T("ab_" .. ab), {T("abCounters", table.concat(names, ", "))}) end)
+    b:SetScript("OnEnter", function(self) Tip(self, T("ab_" .. ab), {AbilityDoes(ab)}) end)
     b:Show()
 end
 
@@ -84,14 +94,15 @@ local function FollowerRow(parent, width)
     row.disc = row:CreateTexture(nil, "ARTWORK")
     row.disc:SetSize(40, 40)
     row.disc:SetPoint("LEFT", 6, 0)
+    row.disc:SetSize(38, 38)
     row.name = Kit.Text(row, 13, C.text)
-    row.name:SetPoint("TOPLEFT", 54, -7)
+    row.name:SetPoint("TOPLEFT", 54, -5)
     row.state = Kit.Text(row, 10, C.textSoft)
-    row.state:SetPoint("TOPLEFT", 54, -26)
+    row.state:SetPoint("TOPLEFT", 54, -23)
     row.state:SetWidth(230)
     row.state:SetWordWrap(false)
     row.bar = Kit.Bar(row, 160, 3)
-    row.bar:SetPoint("TOPLEFT", 54, -40)
+    row.bar:SetPoint("TOPLEFT", 54, -37)
     row.icons = {}
     for k = 1, 2 do
         local b = IconButton(row, 24)
@@ -124,27 +135,29 @@ local function BuildInn(win)
     local W = s.width
     local In, Dg = KH.Inn, KH.Dungeons
 
-    s.tabs = Kit.Segmented(s.frame, 360, {{value = "followers", label = T("innTabFollowers")},
-        {value = "dungeons", label = T("innTabDungeons")}, {value = "book", label = T("innTabBook")}},
+    s.tabs = Kit.Segmented(s.frame, 440, {{value = "followers", label = T("innTabFollowers")},
+        {value = "dungeons", label = T("innTabDungeons")}, {value = "ranking", label = T("innTabRanking")},
+        {value = "book", label = T("innTabBook")}},
         function() return UI.innTab end,
-        function(v) UI.innTab = v; UI.innFollower, UI.innDungeon = nil, nil; UI:Refresh() end)
+        function(v) UI.innTab = v; UI.innFollower, UI.innDungeon, UI.innSwap = nil, nil, nil; UI:Refresh() end)
     s.tabs:SetPoint("TOPLEFT", 0, -58)
     s.back = Kit.Button(s.frame, 130, 28, "", function()
+        local d = UI.innDungeon and Dg.Get(UI.innDungeon)
         UI.innFollower, UI.innDungeon, UI.innParty = nil, nil, nil
-        UI:Refresh()
+        if d and d.call then UI:Show("visitors") else UI:Refresh() end
     end)
     s.back:SetPoint("TOPLEFT", 0, -58)
-    s.tabHint = Kit.Text(s.frame, 11, C.textSoft)
-    s.tabHint:SetPoint("TOPLEFT", 376, -66)
-    s.tabHint:SetWidth(W - 376)
-    s.tabHint:SetWordWrap(false)
+    s.tabHint = Kit.Text(s.frame, 10, C.textSoft)
+    s.tabHint:SetPoint("LEFT", s.tabs, "RIGHT", 14, 0)
+    s.tabHint:SetWidth(W - 454)
+    s.tabHint:SetWordWrap(true)
 
     -- the followers tab
     local list = CreateFrame("Frame", nil, s.frame)
     list:SetAllPoints(s.frame)
     s.list = list
     s.rows = {}
-    for i = 1, In.MAX do
+    for i = 1, ROOMS do
         local row = FollowerRow(list, W)
         row:SetPoint("TOPLEFT", 0, -TOP - (i - 1) * (ROW_H + ROW_GAP))
         row:SetScript("OnClick", function() UI.innFollower = row.fid; UI:Refresh() end)
@@ -203,6 +216,66 @@ local function BuildInn(win)
     s.next:SetPoint("BOTTOMLEFT", 38, 4)
     s.page = Kit.Text(dl, 11, C.textSoft)
     s.page:SetPoint("BOTTOMLEFT", 80, 12)
+
+    -- the ranking: the whole roster by Power, with the room or the Lodging of each one
+    local rank = CreateFrame("Frame", nil, s.frame)
+    rank:SetAllPoints(s.frame)
+    s.rank = rank
+    s.rrows = {}
+    for i = 1, DG_ROWS do
+        local row = CreateFrame("Button", nil, rank)
+        row:SetSize(W, DG_H)
+        row:SetPoint("TOPLEFT", 0, -TOP - (i - 1) * (DG_H + 4))
+        row.surface, row.outline = Kit.Rounded(row, 10, 1, 1, 1, 0.045, 0.06)
+        row.pos = Kit.Text(row, 12, C.textMuted, "CENTER")
+        row.pos:SetPoint("LEFT", 6, 0)
+        row.pos:SetWidth(24)
+        row.disc = row:CreateTexture(nil, "ARTWORK")
+        row.disc:SetSize(32, 32)
+        row.disc:SetPoint("LEFT", 34, 0)
+        row.name = Kit.Text(row, 12, C.text)
+        row.name:SetPoint("TOPLEFT", 76, -5)
+        row.name:SetWidth(250)
+        row.name:SetWordWrap(false)
+        row.meta = Kit.Text(row, 10, C.textSoft)
+        row.meta:SetPoint("TOPLEFT", 76, -22)
+        row.meta:SetWidth(250)
+        row.meta:SetWordWrap(false)
+        row.power = Kit.Text(row, 12, C.gold)
+        row.power:SetPoint("LEFT", 336, 0)
+        row.where = Kit.Text(row, 10, C.textSoft)
+        row.where:SetPoint("LEFT", 430, 0)
+        row.button = Kit.Button(row, 124, 26, "", function()
+            local fid = row.fid
+            if UI.innSwap then
+                if fid == UI.innSwap then
+                    UI.innSwap = nil
+                else
+                    local ok, why = In:Swap(fid, UI.innSwap)
+                    if not ok then Notice(Reason(why)) end
+                    UI.innSwap = nil
+                end
+            elseif In:InRoom(fid) then
+                local ok, why = In:Move(fid, false)
+                if not ok then Notice(Reason(why)) end
+            elseif In:FreeRooms() > 0 then
+                local ok, why = In:Move(fid, true)
+                if not ok then Notice(Reason(why)) end
+            else
+                UI.innSwap = fid                -- no free room: pick who leaves
+            end
+            UI:Refresh()
+        end)
+        row.button:SetPoint("RIGHT", -10, 0)
+        row:SetScript("OnClick", function() if row.fid then UI.innFollower, UI.innSwap = row.fid, nil; UI:Refresh() end end)
+        s.rrows[i] = row
+    end
+    s.rprev = Kit.Button(rank, 32, 28, "<", function() UI.innRank = math.max(1, UI.innRank - 1); UI:Refresh() end)
+    s.rprev:SetPoint("BOTTOMLEFT", 0, 4)
+    s.rnext = Kit.Button(rank, 32, 28, ">", function() UI.innRank = UI.innRank + 1; UI:Refresh() end)
+    s.rnext:SetPoint("BOTTOMLEFT", 38, 4)
+    s.rpage = Kit.Text(rank, 11, C.textSoft)
+    s.rpage:SetPoint("BOTTOMLEFT", 80, 12)
 
     -- the book: combos and trophies
     local book = CreateFrame("Frame", nil, s.frame)
@@ -267,13 +340,13 @@ local function BuildInn(win)
     run.freeHead = Kit.Text(run, 11, C.textMuted)
     run.freeHead:SetPoint("TOPLEFT", 0, -154)
     run.free = {}
-    for k = 1, In.MAX do
+    for k = 1, ROOMS do
         local r = CreateFrame("Button", nil, run)
-        r:SetSize(380, 30)
-        r:SetPoint("TOPLEFT", 0, -172 - (k - 1) * 32)
+        r:SetSize(380, 25)
+        r:SetPoint("TOPLEFT", 0, -172 - (k - 1) * 27)
         r.surface, r.outline = Kit.Rounded(r, 9, 1, 1, 1, 0.04, 0.05)
         r.disc = r:CreateTexture(nil, "ARTWORK")
-        r.disc:SetSize(26, 26)
+        r.disc:SetSize(22, 22)
         r.disc:SetPoint("LEFT", 4, 0)
         r.name = Kit.Text(r, 11, C.text)
         r.name:SetPoint("LEFT", 38, 0)
@@ -312,6 +385,10 @@ local function BuildInn(win)
     run.combo:SetPoint("TOPLEFT", 400, -292)
     run.combo:SetWidth(W - 400)
     run.combo:SetWordWrap(true)
+    run.lodge = Kit.Text(run, 10, C.gold)                   -- someone in the Lodging would help more
+    run.lodge:SetPoint("TOPLEFT", 400, -322)
+    run.lodge:SetWidth(W - 400)
+    run.lodge:SetWordWrap(true)
     run.opts = {}
     local function Cycle(kind)
         local goods = {false}
@@ -350,9 +427,10 @@ local function BuildInn(win)
     end)
     run.suggest:SetPoint("BOTTOMLEFT", 0, 0)
     run.send = Kit.Button(run, 220, 36, "", function()
+        local name = Dg.Name(UI.innDungeon)                 -- a call leaves the list when the group leaves
         local ok, why, n = Dg:Send(UI.innDungeon, UI.innParty or {}, UI.innOpts)
         if ok then
-            Notice(T("dgSent", T("dg_" .. UI.innDungeon)))
+            Notice(T("dgSent", name))
             UI.innDungeon, UI.innParty, UI.innOpts = nil, nil, nil
             UI.innTab = "followers"
         else
@@ -377,6 +455,10 @@ local function BuildInn(win)
     sheet.bar:SetPoint("TOPLEFT", 84, -144)
     sheet.state = Kit.Text(sheet, 11, C.textSoft)
     sheet.state:SetPoint("TOPLEFT", 84, -154)
+    sheet.where = Kit.Text(sheet, 10, C.textSoft)           -- where it came from, and its room or the Lodging
+    sheet.where:SetPoint("TOPLEFT", 340, -100)
+    sheet.where:SetWidth(W - 340)
+    sheet.where:SetWordWrap(true)
     sheet.abs = {}
     for k = 1, 2 do
         local b = IconButton(sheet, 26)
@@ -462,6 +544,43 @@ local function BuildInn(win)
     end)
     sheet.chat:SetPoint("BOTTOMRIGHT", 0, 0)
 
+    -- someone new arrived: a card with who it is and where it came from, until the player greets it
+    local arrive = CreateFrame("Frame", nil, s.frame)
+    arrive:SetAllPoints(s.frame)
+    arrive:SetFrameLevel(s.frame:GetFrameLevel() + 30)
+    arrive:EnableMouse(true)
+    arrive.fill = arrive:CreateTexture(nil, "BACKGROUND")
+    arrive.fill:SetAllPoints(arrive)
+    arrive.fill:SetColorTexture(0, 0, 0, 0.62)
+    local acard = CreateFrame("Frame", nil, arrive)
+    acard:SetSize(460, 290)
+    acard:SetPoint("CENTER", 0, 10)
+    acard.surface, acard.outline = Kit.Rounded(acard, 18, 0.07, 0.085, 0.095, 0.99, 0.14)
+    acard.disc = acard:CreateTexture(nil, "ARTWORK")
+    acard.disc:SetSize(104, 104)
+    acard.disc:SetPoint("TOP", 0, -18)
+    acard.title = Kit.Text(acard, 18, C.text, "CENTER")
+    acard.title:SetPoint("TOP", 0, -130)
+    acard.title:SetWidth(420)
+    acard.title:SetWordWrap(false)
+    acard.lines = {}
+    for i = 1, 3 do
+        local line = Kit.Text(acard, 11, C.textSoft, "CENTER")
+        line:SetPoint("TOP", 0, -160 - (i - 1) * 22)
+        line:SetWidth(420)
+        line:SetWordWrap(false)
+        acard.lines[i] = line
+    end
+    acard.ok = Kit.Button(acard, 180, 34, "", function()
+        In:Greeted(arrive.fid)
+        UI:Refresh()
+    end)
+    acard.ok:SetPoint("BOTTOM", 0, 16)
+    acard.ok:SetStyle("primary")
+    arrive.card = acard
+    arrive:Hide()
+    s.arrive = arrive
+
     local function RefreshList()
         local back, away = In:BackCount(), In:AwayCount()
         if back > 0 then
@@ -471,7 +590,7 @@ local function BuildInn(win)
         else
             s.head:SetText(T("innH")); s.sub:SetText(T("innS"))
         end
-        local ids = In:List()
+        local ids = In:RoomList()
         for i, row in ipairs(s.rows) do
             local fid = ids[i]
             row:SetShown(fid ~= nil)
@@ -483,14 +602,63 @@ local function BuildInn(win)
                 row.right:SetText(q and ok and ("|cff40d9c4" .. T("folCanPromote", T("q_" .. q)) .. "|r") or T("folOpen"))
             end
         end
-        local nextDef = KH.Balance.FOLLOWERS[#ids + 1]
+        local nextDef = KH.Balance.FOLLOWERS[V:Level("inn") + 1]
+        if nextDef and nextDef.from then nextDef = nil end      -- the six of the village come with the Inn
+        local lodged = In:Count() - #ids
         s.action:Show()
         s.action:SetLabel(T("collectAll"))
         s.action:SetEnabledState(back > 0)
         s.action:SetStyle(back > 0 and "primary" or "quiet")
         local merit, epic = In:Insignias()
-        s.note:SetText(T("innNote", V:Good("fish"), merit, epic)
-            .. (nextDef and ("   |cff757a87" .. T("innNext", FName(nextDef.id), #ids + 1) .. "|r") or ""))
+        Kit.Fit(s.note, T("innNote", V:Good("fish"), merit, epic)
+            .. (lodged > 0 and (" · " .. T("innLodged", lodged)) or "")
+            .. (nextDef and ("   |cff757a87" .. T("innNext", FName(nextDef.id), V:Level("inn") + 1) .. "|r") or ""), W - 240)
+    end
+
+    local function RefreshRanking()
+        local list = In:Ranking()
+        s.head:SetText(T("rankH"))
+        s.sub:SetText(T("rankS", #list, In:Total(), #In:RoomList(), In:Rooms()))
+        local pages = math.max(1, math.ceil(#list / DG_ROWS))
+        if UI.innRank > pages then UI.innRank = pages end
+        if UI.innSwap and (not In:Has(UI.innSwap) or In:InRoom(UI.innSwap)) then UI.innSwap = nil end
+        local first = (UI.innRank - 1) * DG_ROWS
+        for i, row in ipairs(s.rrows) do
+            local r = list[first + i]
+            row:SetShown(r ~= nil)
+            row.fid = r and r.id
+            if r then
+                local f = In:Get(r.id)
+                row.pos:SetText(tostring(first + i))
+                row.disc:SetTexture(Portrait(r.id))
+                Kit.Fit(row.name, QName(f.quality, FName(r.id)) .. "  |cffa8adb8" .. T("folLevel", f.level) .. "|r", 250)
+                Kit.Fit(row.meta, T("q_" .. f.quality) .. " · " .. StateText(r.id), 250)
+                row.power:SetText(T("rankPower", r.power))
+                row.where:SetText(r.room and ("|cff40d9c4" .. T("rankRoom") .. "|r") or T("rankLodge"))
+                local home = In:State(r.id) == "home" or In:State(r.id) == "hurt"
+                local label, show
+                if UI.innSwap then
+                    if r.id == UI.innSwap then label, show = T("rankCancel"), true
+                    elseif r.room then label, show = T("rankSwap"), home end
+                elseif r.room then
+                    label, show = T("rankToLodge"), home
+                else
+                    label, show = T("rankToRoom"), home
+                end
+                row.button:SetShown(show and true or false)
+                if show then
+                    row.button:SetLabel(label)
+                    row.button:SetStyle((UI.innSwap and r.id ~= UI.innSwap or not r.room) and "primary" or "quiet")
+                end
+                local lit = r.id == UI.innSwap
+                row.outline:SetColor(lit and C.accent[1] or 1, lit and C.accent[2] or 1, lit and C.accent[3] or 1, lit and 0.55 or 0.06)
+            end
+        end
+        s.rpage:SetText(UI.innRank .. " / " .. pages)
+        s.rprev:SetEnabledState(UI.innRank > 1)
+        s.rnext:SetEnabledState(UI.innRank < pages)
+        s.action:Hide()
+        s.note:SetText("")
     end
 
     local function RefreshDungeons()
@@ -539,11 +707,13 @@ local function BuildInn(win)
         local party = UI.innParty or {}
         for i = #party, 1, -1 do if not Dg:Free(party[i]) then table.remove(party, i) end end
         UI.innParty = party
-        s.head:SetText(T("dg_" .. id)); s.sub:SetText(T(d.size == 1 and "runS1" or "runS", d.size))
+        s.head:SetText(Dg.Name(d))
+        if d.call then s.sub:SetText(T(d.size == 1 and "callS1" or "callS", d.size))
+        else s.sub:SetText(T(d.size == 1 and "runS1" or "runS", d.size)) end
         run.meta:SetText(T(d.size == 1 and "dgMeta1" or "dgMeta", d.level, d.size, KH.Duration(Dg:Duration(id, party))) .. "  ·  " .. T("env_" .. d.env)
             .. (Dg:Daily() == id and ("  ·  |cff40d9c4" .. T("dgDaily") .. "|r") or ""))
         local opts = UI.innOpts or {}
-        if d.raid then opts.boss = nil end
+        if d.raid or d.call then opts.boss = nil end
         for _, key in ipairs({"potion", "food"}) do
             if opts[key] and V:Good(opts[key]) < 1 then opts[key] = nil end
         end
@@ -591,7 +761,7 @@ local function BuildInn(win)
             r.fid = rec and rec.id
             if rec then
                 r.disc:SetTexture(Portrait(rec.id))
-                r.name:SetText(QName(In:Get(rec.id).quality, FName(rec.id)) .. " |cffa8adb8" .. In:Get(rec.id).level .. "|r")
+                Kit.Fit(r.name, QName(In:Get(rec.id).quality, FName(rec.id)) .. " |cffa8adb8" .. In:Get(rec.id).level .. "|r", 110)
                 r:SetAlpha(rec.free and 1 or 0.45)
                 if not rec.free then
                     local state, left = In:State(rec.id)
@@ -601,8 +771,8 @@ local function BuildInn(win)
                 else
                     local names = {}
                     for i, th in ipairs(rec.counters) do names[i] = T("th_" .. th) end
-                    if rec.gain > 0 and #names > 0 then r.tag:SetText(T("runRec", table.concat(names, ", ")))
-                    elseif rec.gain > 0 then r.tag:SetText(T("runRecPlain"))
+                    if rec.gain > 0 and #names > 0 then Kit.Fit(r.tag, T("runRec", table.concat(names, ", ")), 170)
+                    elseif rec.gain > 0 then Kit.Fit(r.tag, T("runRecPlain"), 170)
                     else r.tag:SetText("") end
                     if rec.gain > 0 then r.gain:SetText("|cff59d973+" .. rec.gain .. "%|r")
                     elseif rec.gain < 0 then r.gain:SetText("|cffff7a6b" .. rec.gain .. "%|r")
@@ -640,7 +810,9 @@ local function BuildInn(win)
         run.opts[1]:SetLabel(T("runPotion", opts.potion and T("good_" .. opts.potion) or T("runNone")))
         run.opts[2]:SetLabel(T("runFood", opts.food and T("good_" .. opts.food) or T("runNone")))
         run.opts[3]:SetLabel(T("runBoss", opts.boss and T("runBossOn") or T("runBossOff")))
-        run.opts[3]:SetShown(not d.raid)
+        run.opts[3]:SetShown(not d.raid and not d.call)
+        local who, gain = Dg:LodgeHint(id, party, opts)
+        run.lodge:SetText(who and T("runLodge", FName(who), gain) or "")
         if d.raid and Dg:RaidLeft(id) > 0 then
             run.reward:SetText(T("dgRaid") .. " · " .. T("dgRaidLeft", KH.Duration(Dg:RaidLeft(id))))
         elseif #party > 0 then
@@ -670,13 +842,13 @@ local function BuildInn(win)
         sheet.level:SetText(max and T("folMax", f.level) or T("folXP", f.level, KH.Number(f.xp), KH.Number(need)))
         sheet.bar:Set(max and 1 or f.xp / need)
         sheet.state:SetText(StateText(fid) .. "   |cff757a87" .. T("folRuns", f.runs or 0) .. "|r")
+        local where = T(In:InRoom(fid) and "sheetRoom" or "sheetLodge")
+        sheet.where:SetText(In.Def(fid).from and T("sheetFrom", T("from_" .. fid), where) or where)
         local abs = In:Abilities(fid)
         for k, b in ipairs(sheet.abs) do
             if abs[k] then
                 ShowAbility(b, abs[k])
-                local names = {}
-                for i, th in ipairs(KH.Balance.ABILITIES[abs[k]].counters) do names[i] = T("th_" .. th) end
-                b.text:SetText(T("ab_" .. abs[k]) .. "  |cffa8adb8" .. T("abCounters", table.concat(names, ", ")) .. "|r")
+                Kit.Fit(b.text, T("ab_" .. abs[k]) .. "  |cffa8adb8" .. AbilityDoes(abs[k]) .. "|r", 290)
             else
                 b:Hide(); b.text:SetText("")
             end
@@ -693,18 +865,18 @@ local function BuildInn(win)
         for _, g in ipairs(sheet.gear) do
             local gid = f.gear and f.gear[g.slot]
             if gid then
-                g.tex:SetTexture(D.Icon(KH.Workshop.Recipe(gid).item)); g.tex:SetAlpha(1)
+                g.tex:SetTexture(D.Icon(In.Gear(gid).item)); g.tex:SetAlpha(1)
                 g:SetScript("OnEnter", function(self) Tip(self, T("good_" .. gid), {T("gearHint")}) end)
-                g.text:SetText(T("good_" .. gid) .. " |cff59d973" .. T("gearPower", KH.Workshop.Recipe(gid).power) .. "|r")
+                Kit.Fit(g.text, T("good_" .. gid) .. " |cff59d973" .. T("gearPower", In.Gear(gid).power) .. "|r", 222)
             else
                 g.tex:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark"); g.tex:SetAlpha(0.3)
                 g:SetScript("OnEnter", function(self) Tip(self, T("slot_" .. g.slot), {T("gearHint")}) end)
-                g.text:SetText(T("slot_" .. g.slot) .. ": |cff757a87" .. T("gearNone") .. "|r")
+                Kit.Fit(g.text, T("slot_" .. g.slot) .. ": |cff757a87" .. T("gearNone") .. "|r", 222)
             end
             g:Show()
             local best = In:BestGear(fid, g.slot)
             g.button:SetShown(best ~= nil or gid ~= nil)
-            g.button:SetLabel(best and T("gearEquip", T("gearPower", KH.Workshop.Recipe(best).power)) or T("gearOff"))
+            g.button:SetLabel(best and T("gearEquip", T("gearPower", In.Gear(best).power)) or T("gearOff"))
             g.button:SetStyle(best and "primary" or "quiet")
         end
         local q, ok = In:NextQuality(fid)
@@ -736,7 +908,7 @@ local function BuildInn(win)
             end
         end
         local cost = In:RespecCost(fid)
-        sheet.respec[1]:SetShown(f.ability ~= nil)
+        sheet.respec[1]:SetShown(f.ability ~= nil and def.rare ~= nil)
         sheet.respec[1]:SetLabel(T("respecAbility", KH.Number(cost)))
         sheet.respec[2]:SetShown(f.trait ~= nil)
         sheet.respec[2]:SetLabel(T("respecTrait", KH.Number(cost)))
@@ -794,15 +966,22 @@ local function BuildInn(win)
         elseif UI.innFollower and In:Has(UI.innFollower) then view = "sheet"
         elseif UI.innDungeon and Dg.Get(UI.innDungeon) and Dg:Open(UI.innDungeon) then view = "run"
         elseif UI.innTab == "dungeons" then view = "dungeons"
+        elseif UI.innTab == "ranking" then view = "ranking"
         elseif UI.innTab == "book" then view = "book" end
         local inner = view == "sheet" or view == "run"
         self.tabs:SetShown(view ~= "none" and not inner)
         self.back:SetShown(inner)
         self.back:SetLabel(view == "sheet" and T("backFollowers") or T("backDungeons"))
+        if view == "run" and Dg.Get(UI.innDungeon).call then self.back:SetLabel(T("backCalls")) end
         if inner then self.tabs:Hide() end
-        self.tabHint:SetShown(view == "list" or view == "dungeons")
+        self.tabHint:SetShown(view == "list" or view == "dungeons" or view == "ranking")
         self.book:SetShown(view == "book")
-        self.tabHint:SetText(view == "dungeons" and T("dgHint") or T("innHint"))
+        self.rank:SetShown(view == "ranking")
+        if view == "ranking" then
+            self.tabHint:SetText(UI.innSwap and ("|cffffd24d" .. T("rankSwapH", FName(UI.innSwap)) .. "|r") or T("rankHint"))
+        else
+            self.tabHint:SetText(view == "dungeons" and T("dgHint") or T("innHint"))
+        end
         self.list:SetShown(view == "list")
         self.dlist:SetShown(view == "dungeons")
         self.run:SetShown(view == "run")
@@ -813,8 +992,23 @@ local function BuildInn(win)
         elseif view == "list" then RefreshList()
         elseif view == "dungeons" then RefreshDungeons()
         elseif view == "run" then RefreshRun()
+        elseif view == "ranking" then RefreshRanking()
         elseif view == "book" then RefreshBook()
         else RefreshSheet() end
+        -- someone new: the arrival card, over whatever is open
+        local fid = level > 0 and In:Arrivals()[1]
+        while fid and not In:Has(fid) do In:Greeted(fid); fid = In:Arrivals()[1] end
+        self.arrive:SetShown(fid ~= nil and fid ~= false)
+        if fid then
+            local card, f = self.arrive.card, In:Get(fid)
+            self.arrive.fid = fid
+            card.disc:SetTexture(Portrait(fid))
+            Kit.Fit(card.title, T("arrH", QName(f.quality, FName(fid))), 420)
+            Kit.Fit(card.lines[1], QName(f.quality, T("q_" .. f.quality)) .. " · " .. T("fcl_" .. fid), 420)
+            Kit.Fit(card.lines[2], T("sheetFrom", T("from_" .. fid), T("folLevel", f.level)), 420)
+            Kit.Fit(card.lines[3], T(In:InRoom(fid) and "arrRoom" or "arrLodge", FName(fid)), 420)
+            card.ok:SetLabel(T("arrOk"))
+        end
     end
     return s
 end

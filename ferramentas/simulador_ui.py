@@ -405,6 +405,17 @@ def homestead(out):
     scene("11g-estalagem-opcoes", "ptBR", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll(); NS.db.goods.heal = 2; NS.db.goods.stew = 1; NS.db.dungeons.combos = {crossfire = true}; NS.Inn:Get('sela').ability = 'fireball'; NS.UI.innDungeon = 'scarlet'; NS.UI.innParty = {'mira', 'sela', 'elda'}; NS.UI.innOpts = {potion = 'heal', food = 'stew', boss = true}")
     scene("11h-estalagem-mestre", "ptBR", mid, "inn", before_view=inn + "; NS.Inn:Get('garrick').level = 30; NS.UI.innFollower = 'garrick'")
     scene("11e-inn-english", "enUS", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll(); NS.UI.innDungeon = 'scarlet'; NS.UI.innParty = NS.Dungeons:Suggest('scarlet')")
+    found = ("; for _, id in ipairs({'hoderik', 'lyra', 'corvo', 'ilyanna'}) do NS.Inn:Welcome(id, 12); NS.Inn:Greeted(id) end; "
+             "NS.Inn:Get('ilyanna').level = 30")
+    scene("11i-estalagem-ranking", "ptBR", mid, "inn", before_view=inn + found + "; NS.UI.innTab = 'ranking'")
+    scene("11j-estalagem-chegada", "ptBR", mid, "inn", before_view=inn + "; NS.Inn:Welcome('aldric', 3)")
+    scene("11k-estalagem-ficha-nova", "ptBR", mid, "inn", before_view=inn + found + "; NS.UI.innFollower = 'ilyanna'")
+    call = ("; local e = NS.Events:Spawn('call'); e.call, e.place = 'rescue', 'alcaz'; local d = e.def; "
+            "d.call, d.place, d.threats, d.size, d.hours, d.level, d.mult, d.env = 'rescue', 'alcaz', {'horde', 'magic'}, 3, 1.5, 10, 1.5, 'fortress'")
+    scene("17e-chamado", "ptBR", mid, "visitors", before_view=inn + "; NS.Dungeons:CollectAll()" + call + "; NS.Events:Spawn('merchant')")
+    scene("17f-chamado-grupo", "ptBR", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll()" + call +
+          "; NS.UI.innDungeon = e.def.id; NS.UI.innParty = NS.Dungeons:Suggest(e.def.id)")
+    scene("17g-call-english", "enUS", mid, "visitors", before_view=inn + "; NS.Dungeons:CollectAll()" + call)
     scene("16-ajustes", "ptBR", mid, "settings")
     visitors = ("NS.db.level = 30; NS.db.buildings.workshop = 3; NS.Orders:Ensure(); NS.Events:Spawn('urgent'); "
                 "local e = NS.Events:Spawn('caravan'); local t = e.trades[1]; "

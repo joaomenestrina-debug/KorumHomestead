@@ -9,7 +9,13 @@
         killing a boss of a dungeon                 the followers are inspired there: +B.DUNGEON.inspired chance for the
                                                     next B.DUNGEON.inspiredRuns runs; killing again renews, never adds up;
                                                     the dungeon gets the "You were here" mark
-        killing a raid boss                         an Epic insignia, once a week per raid
+        killing a raid boss                         an Epic insignia, once a week per raid, and more chance of a new
+                                                    follower on the next raid of the followers
+        staying in a zone of the Forever            after B.ADVENTURE.zoneStay seconds there, in a row, the place is seen
+                                                    (once per account, forever): its calls come more often. The place the
+                                                    character is in comes first when the next call is drawn, at most once
+                                                    every zoneGap seconds per zone and reactGap seconds for all of them.
+                                                    Entering a zone never makes an event by itself.
 
     The setting "The village follows your adventure" turns all of it off. The times are kept in the save of the account
     (adventure.lastQueue, adventure.raidAt), by the clock, so a /reload changes nothing.
@@ -19,6 +25,9 @@
         Adventure:OnQueue()             the queue changed (opens the village when a wait starts)
         Adventure:OnBoss(success)       a boss fight ended in the current instance
         Adventure:CurrentDungeon()      the id of the dungeon the character is in, or nil
+        Adventure:Zone()                the place of the calls whose zone the character is in, or nil
+        Adventure:Here()                that place once the character stayed long enough (and marks it seen)
+        Adventure:CallPlace()           that place when it may come first in the next call (and stamps the waits)
 ]]
 
 local addonName, KH = ...
@@ -27,7 +36,7 @@ local B = KH.Balance
 local A = {}
 KH.Adventure = A
 
-B.ADVENTURE = {queueGap = 600, bossGap = 60}
+B.ADVENTURE = {queueGap = 600, bossGap = 60, zoneStay = 300, zoneGap = 7200, reactGap = 1800}
 
 local function Save()
     local db = KH.db
@@ -37,6 +46,8 @@ local function Save()
     a.inspired = a.inspired or {}
     a.visited = a.visited or {}
     a.raidAt = a.raidAt or {}
+    a.zones = a.zones or {}
+    a.zoneAt = a.zoneAt or {}
     return a
 end
 
@@ -105,6 +116,7 @@ function A:OnBoss(success)
         if KH.Now() - (a.raidAt[id] or 0) >= B.RAID.every then
             a.raidAt[id] = KH.Now()
             KH.db.dungeons.epic = (KH.db.dungeons.epic or 0) + 1
+            a.raidLuck = true                               -- more chance of a new follower on their next raid
             KH:Notify(KH.T("advRaid"))
         end
     else
@@ -113,6 +125,47 @@ function A:OnBoss(success)
     return id
 end
 
+-- the place of the calls whose zone the character is in: by the name of the zone, in English or in Portuguese
+function A:Zone()
+    local zone = (_G.GetRealZoneText and GetRealZoneText()) or (_G.GetZoneText and GetZoneText())
+    if not zone or zone == "" then return nil end
+    local want = zone:lower()
+    for _, place in ipairs(B.PLACE_ORDER) do
+        for _, lang in ipairs({"enUS", "ptBR"}) do
+            local n = KH.L[lang]["zn_" .. place]
+            if n and n:lower() == want then return place end
+        end
+    end
+    return nil
+end
+
+-- the clock of the stay starts again at every zone and at every loading screen; it is not saved
+local stay = {}
+function A:OnZone()
+    stay.place, stay.since = self:Zone(), KH.Now()
+end
+
+function A:Here()
+    if not self:On() then return nil end
+    local place = self:Zone()
+    if place ~= stay.place then stay.place, stay.since = place, KH.Now() end
+    if not place or KH.Now() - (stay.since or KH.Now()) < B.ADVENTURE.zoneStay then return nil end
+    Save().zones[place] = true
+    return place
+end
+
+function A:CallPlace()
+    local place = self:Here()
+    if not place then return nil end
+    local a, now = Save(), KH.Now()
+    if now - (a.zoneAt[place] or 0) < B.ADVENTURE.zoneGap then return nil end
+    if now - (a.lastReact or 0) < B.ADVENTURE.reactGap then return nil end
+    a.zoneAt[place], a.lastReact = now, now
+    return place
+end
+
+KH:On("ZONE_CHANGED_NEW_AREA", function() A:OnZone() end)
+KH:On("PLAYER_ENTERING_WORLD", function() A:OnZone() end)
 KH:On("LFG_UPDATE", function() A:OnQueue() end)
 KH:On("LFG_QUEUE_STATUS_UPDATE", function() A:OnQueue() end)
 KH:On("UPDATE_BATTLEFIELD_STATUS", function() A:OnQueue() end)

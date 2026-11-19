@@ -159,7 +159,12 @@ B.GOODS = {
     darkiron = {sell = 720, item = 11370, rare = "ore"},     -- Dark Iron Ore
     arcane = {sell = 960, item = 12363, rare = "ore"},       -- Arcane Crystal
     core = {sell = 900, item = 17010},                       -- the Core of the raids (Fiery Core): equipment of level 7
+    -- pieces with a name (docs/masmorras.md §8): equipment above the Workshop's, from the raids. Real items of the
+    -- Forever tied to Onyxia: the blade tempered in her fire and the cloak made of her scales.
+    quelserrar = {sell = 2400, item = 18348, gear = {slot = "weapon", power = 9}},
+    onyxcloak = {sell = 2400, item = 15138, gear = {slot = "armor", power = 9}},
 }
+B.NAMED = {onyxia = {"quelserrar", "onyxcloak"}}
 B.RARE_ORDER = {"lobster", "eel", "firefin", "truesilver", "darkiron", "arcane"}
 
 -- Random events (docs/eventos.md, approved on 17/11). Only with the game open; at most maxOpen at once; the deadline runs
@@ -174,7 +179,7 @@ B.RARE_ORDER = {"lobster", "eel", "firefin", "truesilver", "darkiron", "arcane"}
 --                   they ask or buy fewer units (the price stays double)
 B.EVENTS = {
     gapMin = 2700, gapMax = 7200, maxOpen = 2, capMinutes = 20,
-    weights = {urgent = 30, merchant = 25, caravan = 20, fish = 12.5, ore = 12.5},
+    weights = {urgent = 30, merchant = 25, caravan = 20, fish = 12.5, ore = 12.5, call = 40},
     urgent = {time = 2700, qtyFactor = 1.5, payFactor = 2, xpFactor = 3},
     merchant = {time = 7200, priceFactor = 2, max = 20},
     caravan = {time = 10800, trades = 3, gainMin = 1.1, gainMax = 1.3},
@@ -275,6 +280,28 @@ B.ABILITIES = {
     courage = {counters = {"fear"}, icon = "spell_holy_restoration"},
     distract = {counters = {"traps"}, icon = "ability_rogue_distract"},
     dissonant = {counters = {"magic"}, icon = "spell_holy_silence"},
+    -- the followers that are found (S5): two abilities each; a Legendary has one that counters two threats
+    gust = {counters = {"horde"}, icon = "spell_nature_cyclone"},
+    lightstep = {counters = {"traps"}, icon = "ability_rogue_sprint"},
+    totem = {counters = {"poison"}, icon = "spell_nature_poisoncleansingtotem"},
+    earthshield = {counters = {"boss"}, icon = "spell_nature_stoneskintotem"},
+    unholy = {counters = {"undead"}, icon = "spell_holy_flashheal"},
+    devotion = {counters = {"armored"}, icon = "spell_holy_devotionaura"},
+    ruinlore = {counters = {"traps"}, icon = "inv_misc_map_01"},
+    oldlore = {counters = {"magic"}, icon = "inv_misc_book_09"},
+    voodoo = {counters = {"fear"}, icon = "spell_shadow_unholyfrenzy"},
+    barbed = {counters = {"horde"}, icon = "ability_impalingbolt"},
+    greatcounter = {counters = {"magic"}, icon = "spell_nature_wispsplode"},
+    teleport = {counters = {}, short = 0.20, icon = "spell_arcane_blink"},
+    rejuv = {counters = {"poison"}, icon = "spell_nature_rejuvenation"},
+    bear = {counters = {"boss"}, icon = "ability_racial_bearform"},
+    stealth = {counters = {"traps"}, icon = "ability_stealth"},
+    cheapshot = {counters = {"boss"}, icon = "ability_cheapshot"},
+    frosttrap = {counters = {"horde"}, icon = "spell_frost_chainsofice"},
+    serene = {counters = {"fear"}, icon = "spell_nature_drowsy"},
+    zephras = {counters = {"horde", "magic"}, icon = "spell_nature_callstorm"},
+    bastion = {counters = {"boss", "armored"}, icon = "inv_shield_05"},
+    ancestral = {counters = {"undead", "fear"}, icon = "spell_holy_prayerofhealing"},
 }
 
 -- Traits: the first comes with the follower, the second is picked at Epic (one of the follower's `epic`).
@@ -312,6 +339,83 @@ B.FOLLOWERS = {
         epic = {{"lucky"}, {"likes", "crypt"}}},
     {id = "bram", portrait = 6, rarity = "uncommon", start = "courage", rare = {"distract", "dissonant"}, trait = "company",
         epic = {{"swift"}, {"partner", "mira"}}},
+    -- The ones that are found (docs/masmorras.md §3.5; the names and the looks: docs/tarefas/A8.md). They come Rare, Epic
+    -- or Legendary, with their abilities already (`second`), and only from their place: `from` = {dungeon = id} a drop of
+    -- that dungeon, {raid = id} of that raid, {rescue = place} someone saved in a rescue call there. `legendary` marks
+    -- the rare one of a place that has another. Provisional places (approved on 19/11) until their own content comes
+    -- out: Tazu (Darkspear Island), Faelan and Shalendra (Mount Hyjal), Elandor (Dalaran), Ilyanna (Hyjal Summit),
+    -- Hargrim (Barrow Deeps).
+    {id = "lyra", portrait = 7, rarity = "rare", start = "gust", second = "lightstep", trait = "quick",
+        epic = {{"swift"}, {"partner", "ilyanna"}}, from = {rescue = "zephras"}},
+    {id = "hoderik", portrait = 8, rarity = "rare", start = "totem", second = "earthshield", trait = {"likes", "fortress"},
+        epic = {{"tough"}, {"partner", "hargrim"}}, from = {dungeon = "thanes"}},
+    {id = "aldric", portrait = 9, rarity = "rare", start = "unholy", second = "devotion", trait = {"likes", "crypt"},
+        epic = {{"tough"}, {"likes", "ruins"}}, from = {dungeon = "lordaeron"}},
+    {id = "fizzwick", portrait = 10, rarity = "rare", start = "ruinlore", second = "oldlore", trait = "curious",
+        epic = {{"lucky"}, {"likes", "ruins"}}, from = {dungeon = "excavation"}},
+    {id = "tazu", portrait = 11, rarity = "rare", start = "voodoo", second = "barbed", trait = "forest",
+        epic = {{"swift"}, {"quick"}}, from = {rescue = "drowned"}},
+    {id = "elandor", portrait = 12, rarity = "epic", start = "greatcounter", second = "teleport", trait = "wise",
+        epic = {{"lucky"}, {"partner", "sela"}}, from = {rescue = "alcaz"}},
+    {id = "faelan", portrait = 13, rarity = "epic", start = "rejuv", second = "bear", trait = "forest",
+        epic = {{"tough"}, {"partner", "shalendra"}}, from = {rescue = "blackmaw"}},
+    {id = "corvo", portrait = 14, rarity = "epic", start = "stealth", second = "cheapshot", trait = "lucky",
+        epic = {{"swift"}, {"likes", "fortress"}}, from = {rescue = "alcaz"}},
+    {id = "brakka", portrait = 15, rarity = "epic", start = "frosttrap", second = "serene", trait = "company",
+        epic = {{"tough"}, {"likes", "cave"}}, from = {rescue = "blackmaw"}},
+    {id = "ilyanna", portrait = 16, rarity = "legendary", start = "zephras", trait = "wise",
+        epic = {{"swift"}, {"lucky"}}, from = {raid = "onyxia"}},
+    {id = "hargrim", portrait = 17, rarity = "legendary", start = "bastion", trait = "ironhands",
+        epic = {{"tough"}, {"likes", "fortress"}}, from = {dungeon = "thanes", legendary = true}},
+    {id = "shalendra", portrait = 18, rarity = "legendary", start = "ancestral", trait = "tough",
+        epic = {{"lucky"}, {"likes", "crypt"}}, from = {rescue = "blackmaw", legendary = true}},
+}
+
+-- How the new followers come (docs/masmorras.md §3.5)
+--   dungeon     the chance on a success, by the level of the dungeon (only where someone is from)
+--   legendaryShare  where a Legendary lives beside another follower, this share of the finds is the Legendary
+--   raidLegendary   the chance of the Legendary of a raid on a success; raidLuck = what killing a raid boss with the
+--                   character adds to it, once (the Adventure)
+--   rescue      the chance that who was saved in a rescue call stays
+--   guarantee   after this many dungeons with nobody new, the next success brings a Rare
+B.NEWCOMER = {dungeon = {{upTo = 10, chance = 0.01}, {upTo = 20, chance = 0.02}, {upTo = 30, chance = 0.03}},
+    legendaryShare = 0.10, raidLegendary = 0.02, raidLuck = 0.10, rescue = 0.25, guarantee = 40}
+
+-- Power: one number for a follower, for the Ranking (level, quality and equipment)
+B.POWER = {level = 10, gear = 5, quality = {uncommon = 0, rare = 40, epic = 80, legendary = 150}}
+
+-- The rooms of the Inn: one per level. Who is in a room goes out and gives its bonus at home; the others wait in the
+-- Lodging (a roster of up to `roster`).
+B.ROOMS = {max = 7, roster = 20}
+
+-- The places of the calls (docs/historia-forever.md: only what the Forever's Wowhead confirms). threats = what is
+-- there; `dungeon` = it is also a dungeon of the list (a reconnaissance spies it).
+B.PLACES = {
+    zephras = {threats = {"magic", "horde", "fear"}, env = "natural"},
+    thanes = {threats = {"armored", "magic", "horde"}, env = "fortress", dungeon = true},
+    lordaeron = {threats = {"undead", "poison", "fear"}, env = "ruins", dungeon = true},
+    excavation = {threats = {"horde", "traps", "magic"}, env = "ruins", dungeon = true},
+    drowned = {threats = {"undead", "magic", "horde"}, env = "ruins", dungeon = true},
+    kroldok = {threats = {"horde", "boss", "magic"}, env = "fortress", dungeon = true},
+    alcaz = {threats = {"horde", "magic", "boss"}, env = "fortress", dungeon = true},
+    blackmaw = {threats = {"horde", "fear", "magic"}, env = "cave", dungeon = true},
+}
+B.PLACE_ORDER = {"zephras", "thanes", "lordaeron", "excavation", "drowned", "kroldok", "alcaz", "blackmaw"}
+
+-- The calls (docs/masmorras.md §10): events for the followers, in the engine of the visitors.
+--   size = {least, most} followers     hours = {least, most}     time = seconds to accept     threats = how many
+--   mult  the reward beside a dungeon of the same time (0: no coins)   merit  chance of a Merit insignia
+--   scout  chance points the dungeon spied gets on its next run
+--   levelDown  a call is made for up to this many levels under the best follower in the rooms
+--   visited  how much more often a place the character has been to calls
+B.CALLS = {
+    order = {"defense", "attack", "escort", "rescue", "recon"},
+    defense = {size = {1, 3}, hours = {0.5, 1.5}, time = 2700, threats = 2, mult = 1.5},
+    attack = {size = {2, 3}, hours = {1, 2}, time = 7200, threats = 3, mult = 2, merit = 0.15},
+    escort = {size = {1, 2}, hours = {1, 1}, time = 7200, threats = 1, mult = 1.5},
+    rescue = {size = {2, 3}, hours = {1, 2}, time = 10800, threats = 2, mult = 1.5},
+    recon = {size = {1, 1}, hours = {0.5, 0.5}, time = 7200, threats = 1, mult = 0, scout = 10},
+    levelDown = 3, visited = 3,
 }
 
 -- The dungeons of WoW Forever that its Wowhead already has (rule of 19/11: what it does not have does not exist yet).
@@ -397,6 +501,7 @@ B.DUNGEON = {
     trophyMin = 0.05, trophyMax = 0.20, bossTrophy = 1.5, bossShort = 0.25,
     potion = 10, foodXP = 0.20, foodHurt = 0.5, inspired = 15, inspiredRuns = 3,
     miraTrophy = 0.05, garrickHurt = 0.10, veteran = 10, mentorXP = 0.10,
+    named = 0.10,                       -- a raid: the chance of a piece with a name
 }
 
 -- The raids: once a week each (counted from when it was done); a success brings a Core and an Epic insignia

@@ -1,7 +1,9 @@
 --[[
     Korum Homestead - the followers and the dungeons (docs/masmorras.md)
 
-    The Inn shelters the followers (one more per Inn level). They go to the dungeons of WoW Forever. Each dungeon has
+    The Inn shelters the followers: the six of the village come one per Inn level, the others are found in the dungeons,
+    the raids and the rescue calls of their places (docs/masmorras.md §3.5). Each Inn level is a room; who is in a room
+    goes out and gives its bonus at home, the others wait in the Lodging. They go to the dungeons of WoW Forever. Each dungeon has
     threats; each follower has abilities that counter them. The chance of a run comes from the threats left uncountered,
     the levels, the group size, the traits, the equipment, the combos and the potion, and is shown before sending.
     Nobody dies: a failure brings half the reward and maybe a follower hurt for a while.
@@ -9,7 +11,13 @@
     Everything about a run is decided when it is sent (the roll, the reward, who gets hurt, what drops) and shown when the
     group comes back, so closing the game changes nothing. `opts` = {potion = good, food = good, boss = true}.
 
-        Inn:Count() / Inn:List() / Inn:Has(id) / Inn:Get(id) / Inn.Def(id)
+        Inn:Count() / Inn:List() / Inn:Has(id) / Inn:Get(id) / Inn.Def(id) / Inn:Total()
+        Inn:Rooms() / Inn:RoomList() / Inn:InRoom(id) / Inn:FreeRooms()
+        Inn:Move(id, toRoom) / Inn:Swap(inRoom, lodged)     both at home
+        Inn:Power(id) / Inn:Ranking()        the roster by Power
+        Inn:Welcome(id, level)               someone found arrives: "new", or the insignia a repeated one becomes
+        Inn:Arrivals() / Inn:Greeted(id)     who arrived and was not greeted yet (the arrival card)
+        Inn.Gear(goodId)                     {slot, power, item} of a piece (the Workshop's or one with a name)
         Inn:State(id)                       "home" | "away" | "back" | "hurt", seconds left
         Inn:Abilities(id) / Inn:Traits(id)  what it has now
         Inn:AddXP(id, n)                    levels gained
@@ -54,21 +62,67 @@ local function Opt(opts, k) return opts and opts[k] end
 -- ----------------------------------------------------------------------------
 I.DEFS, I.BY_ID = B.FOLLOWERS, {}
 for i, f in ipairs(B.FOLLOWERS) do I.BY_ID[f.id] = f; f.index = i end
-I.MAX = #B.FOLLOWERS
 
 function I.Def(id) return I.BY_ID[id] end
+function I:Total() return #I.DEFS end
 
-function I:Count() return math.min(I.MAX, V:Level("inn")) end
+local function Found()
+    local db = KH.db
+    db.found = db.found or {}
+    return db.found
+end
+local function Lodged()
+    local db = KH.db
+    db.lodged = db.lodged or {}
+    return db.lodged
+end
 
+-- the six of the village come with the Inn, one per level; the others when they are found
+function I:Has(id)
+    local def = I.Def(id)
+    if not def then return false end
+    if not def.from then return def.index <= V:Level("inn") end
+    return Found()[id] ~= nil
+end
+
+-- the roster: the six first, then the found ones in the order they arrived
 function I:List()
-    local out = {}
-    for i = 1, self:Count() do out[i] = I.DEFS[i].id end
+    local out, late = {}, {}
+    local found = Found()
+    for _, def in ipairs(I.DEFS) do
+        if not def.from then
+            if def.index <= V:Level("inn") then out[#out + 1] = def.id end
+        elseif found[def.id] then
+            late[#late + 1] = def.id
+        end
+    end
+    table.sort(late, function(a, b)
+        if found[a] ~= found[b] then return found[a] < found[b] end
+        return I.Def(a).index < I.Def(b).index
+    end)
+    for _, id in ipairs(late) do out[#out + 1] = id end
     return out
 end
 
-function I:Has(id)
-    local def = I.Def(id)
-    return def ~= nil and def.index <= self:Count()
+function I:Count() return #self:List() end
+
+function I:Rooms() return math.min(B.ROOMS.max, V:Level("inn")) end
+function I:InRoom(id) return self:Has(id) and not Lodged()[id] end
+
+function I:RoomList()
+    local out = {}
+    for _, id in ipairs(self:List()) do
+        if not Lodged()[id] then out[#out + 1] = id end
+    end
+    return out
+end
+
+function I:FreeRooms() return self:Rooms() - #self:RoomList() end
+
+-- never more followers in rooms than rooms: the last to arrive wait in the Lodging
+function I:Tidy()
+    local rooms = self:RoomList()
+    for k = #rooms, self:Rooms() + 1, -1 do Lodged()[rooms[k]] = true end
 end
 
 function I:Get(id)
@@ -76,7 +130,8 @@ function I:Get(id)
     db.followers = db.followers or {}
     local f = db.followers[id]
     if not f then
-        f = {level = 1, xp = 0, quality = I.Def(id).rarity, changes = 0, runs = 0}
+        local def = I.Def(id)
+        f = {level = 1, xp = 0, quality = def.rarity, ability = def.second, changes = 0, runs = 0}
         db.followers[id] = f
     end
     return f
@@ -92,7 +147,7 @@ end
 -- {{name, arg}, ...}
 function I:Traits(id)
     local def, f = I.Def(id), self:Get(id)
-    local out = {{def.trait}}
+    local out = {type(def.trait) == "table" and def.trait or {def.trait}}
     if f.trait then out[2] = def.epic[f.trait] end
     return out
 end
@@ -142,7 +197,7 @@ end
 function I:NextQuality(id)
     local f = self:Get(id)
     local merit, epic = self:Insignias()
-    if not f.ability then
+    if not f.ability and I.Def(id).rare then
         local ok = f.quality ~= "uncommon" or (f.level >= B.FOLLOWER.rareLevel and merit > 0)
         return "rare", ok
     end
@@ -178,7 +233,7 @@ function I:Respec(id, what)
     if self:State(id) ~= "home" and self:State(id) ~= "hurt" then return false, "away" end
     local cost = self:RespecCost(id)
     if KH.db.coins < cost then return false, "coins" end
-    if what == "ability" and f.ability then
+    if what == "ability" and f.ability and def.rare then
         f.ability = f.ability == def.rare[1] and def.rare[2] or def.rare[1]
     elseif what == "trait" and f.trait then
         f.trait = 3 - f.trait
@@ -190,6 +245,14 @@ function I:Respec(id, what)
     return true
 end
 
+-- a piece of equipment: the Workshop's (a "gear" recipe) or one with a name (a good with `gear`)
+function I.Gear(gid)
+    local r = KH.Workshop.Recipe(gid)
+    if r then return r.trade == "gear" and r or nil end
+    local g = B.GOODS[gid]
+    if g and g.gear then return {id = gid, slot = g.gear.slot, power = g.gear.power, item = g.item} end
+end
+
 -- the chance points of the equipment of a follower (Iron hands: each piece one level more)
 function I:GearPower(id)
     local f = self:Get(id)
@@ -197,7 +260,7 @@ function I:GearPower(id)
     for _, t in ipairs(self:Traits(id)) do extra = extra + (B.TRAITS[t[1]].gear or 0) end
     local sum = 0
     for _, gid in pairs(f.gear or {}) do
-        local r = KH.Workshop.Recipe(gid)
+        local r = I.Gear(gid)
         if r then sum = sum + r.power + extra end
     end
     return sum
@@ -205,8 +268,8 @@ end
 
 -- puts a piece from the Barn on the follower; the one it had goes back to the Barn
 function I:Equip(id, gid)
-    local r = KH.Workshop.Recipe(gid)
-    if not r or r.trade ~= "gear" then return false, "nothing" end
+    local r = I.Gear(gid)
+    if not r then return false, "nothing" end
     if V:Good(gid) < 1 then return false, "noGear" end
     local f = self:Get(id)
     f.gear = f.gear or {}
@@ -231,10 +294,13 @@ end
 function I:BestGear(id, slot)
     local f = self:Get(id)
     local now = f.gear and f.gear[slot]
-    local power = now and KH.Workshop.Recipe(now).power or 0
+    local power = now and I.Gear(now).power or 0
     local best
     for _, r in ipairs(KH.Workshop.RECIPES) do
         if r.trade == "gear" and r.slot == slot and V:Good(r.id) > 0 and r.power > power then best, power = r.id, r.power end
+    end
+    for gid, g in pairs(B.GOODS) do
+        if g.gear and g.gear.slot == slot and V:Good(gid) > 0 and g.gear.power > power then best, power = gid, g.gear.power end
     end
     return best
 end
@@ -248,23 +314,114 @@ function I:Master(id, pick)
     return true
 end
 
+-- moves a follower at home between a room and the Lodging
+function I:Move(id, toRoom)
+    if not self:Has(id) then return false, "nothing" end
+    local state = self:State(id)
+    if state ~= "home" and state ~= "hurt" then return false, "away" end
+    if toRoom then
+        if not Lodged()[id] then return false, "nothing" end
+        if self:FreeRooms() <= 0 then return false, "noRoom" end
+        Lodged()[id] = nil
+    else
+        if Lodged()[id] then return false, "nothing" end
+        Lodged()[id] = true
+    end
+    return true
+end
+
+-- the one in the Lodging takes the room of the other, both at home
+function I:Swap(inRoom, lodged)
+    if not (self:InRoom(inRoom) and self:Has(lodged) and Lodged()[lodged]) then return false, "nothing" end
+    for _, id in ipairs({inRoom, lodged}) do
+        local state = self:State(id)
+        if state ~= "home" and state ~= "hurt" then return false, "away" end
+    end
+    Lodged()[inRoom] = true
+    Lodged()[lodged] = nil
+    return true
+end
+
+function I:Power(id)
+    local f, P = self:Get(id), B.POWER
+    local gear = 0
+    for _, gid in pairs(f.gear or {}) do
+        local g = I.Gear(gid)
+        if g then gear = gear + g.power end
+    end
+    return f.level * P.level + (P.quality[f.quality] or 0) + gear * P.gear
+end
+
+-- the roster by Power, the strongest first: {{id, power, room}, ...}
+function I:Ranking()
+    local out = {}
+    for _, id in ipairs(self:List()) do out[#out + 1] = {id = id, power = self:Power(id), room = self:InRoom(id)} end
+    table.sort(out, function(a, b)
+        if a.power ~= b.power then return a.power > b.power end
+        return I.Def(a.id).index < I.Def(b.id).index
+    end)
+    return out
+end
+
+-- someone found arrives: a new follower takes a free room (or waits in the Lodging) and comes at `level`; one the
+-- village already has becomes an insignia (Merit for a Rare, Epic for the others). Returns "new", "merit" or "epic".
+function I:Welcome(id, level)
+    local def = I.Def(id)
+    local db = KH.db
+    if self:Has(id) then
+        local kind = def.rarity == "rare" and "merit" or "epic"
+        db.dungeons[kind] = (db.dungeons[kind] or 0) + 1
+        return kind
+    end
+    local full = self:FreeRooms() <= 0
+    Found()[id] = KH.Now()
+    local f = self:Get(id)
+    f.level = math.max(f.level, math.min(B.FOLLOWER.maxLevel, level or 1))
+    if full then Lodged()[id] = true end
+    db.arrivals = db.arrivals or {}
+    db.arrivals[#db.arrivals + 1] = id
+    KH.Journal:Mark(id, "arrived")
+    return "new"
+end
+
+function I:Arrivals() return KH.db.arrivals or {} end
+function I:Greeted(id)
+    local list = KH.db.arrivals or {}
+    for i = #list, 1, -1 do if list[i] == id then table.remove(list, i) end end
+end
+
 -- ----------------------------------------------------------------------------
 -- The dungeons
 -- ----------------------------------------------------------------------------
 Dg.LIST, Dg.BY_ID = B.DUNGEONS, {}
 for i, d in ipairs(B.DUNGEONS) do Dg.BY_ID[d.id] = d; d.index = i end
 
-function Dg.Get(id) return Dg.BY_ID[id] end
+-- a dungeon of the list, or the place of a call that is open (Events.lua: its event carries the same fields)
+function Dg.Get(id)
+    local d = Dg.BY_ID[id]
+    if d or type(id) ~= "string" or id:sub(1, 5) ~= "call:" then return d end
+    for _, e in ipairs(KH.Events:Open()) do
+        if e.def and e.def.id == id then return e.def end
+    end
+end
+
+-- what a dungeon, a call or a kept run is called
+function Dg.Name(d)
+    if type(d) == "string" then d = Dg.Get(d) or {id = d} end
+    if d.call then return KH.T("callName", KH.T("call_" .. d.call), KH.T("pl_" .. d.place)) end
+    return KH.T("dg_" .. d.id)
+end
 
 function Dg:Best()
     local best = 0
-    for _, id in ipairs(I:List()) do best = math.max(best, I:Get(id).level) end
+    for _, id in ipairs(I:RoomList()) do best = math.max(best, I:Get(id).level) end
     return best
 end
 
 function Dg:Open(id)
     local d = Dg.Get(id)
-    return d ~= nil and I:Count() > 0 and self:Best() + R.openAhead >= d.level
+    if d and d.call then return #I:RoomList() > 0 end
+    return d ~= nil and #I:RoomList() > 0 and self:Best() + R.openAhead >= d.level
 end
 
 function Dg:OpenList()
@@ -315,7 +472,7 @@ function Dg:Known(comboId) return (KH.db.dungeons.combos or {})[comboId] == true
 function Dg:Threats(id, opts)
     local d = Dg.Get(id)
     local list = {unpack(d.threats)}
-    if Opt(opts, "boss") and not d.raid then list[#list + 1] = "boss" end
+    if Opt(opts, "boss") and not d.raid and not d.call then list[#list + 1] = "boss" end
     return list
 end
 
@@ -328,7 +485,7 @@ function Dg:Chance(id, party, opts)
         local found
         for _, fid in ipairs(party) do
             for k, ab in ipairs(I:Abilities(fid)) do
-                local key = fid .. k
+                local key = fid .. k .. threat           -- an ability answers each of its threats once
                 if not found and not used[key] and Has(B.ABILITIES[ab].counters, threat) then
                     found = {threat, fid, ab}
                     used[key] = true
@@ -375,6 +532,7 @@ function Dg:Chance(id, party, opts)
     if Opt(opts, "potion") and #party > 0 then Add("potion", R.potion) end
     local insp = ((KH.db.adventure or {}).inspired or {})[id]
     if insp and insp > 0 and #party > 0 then Add("inspired", R.inspired) end
+    if (KH.db.dungeons.scouted or {})[id] and #party > 0 then Add("scout", B.CALLS.recon.scout) end
     return total, parts, counters, open
 end
 
@@ -385,7 +543,7 @@ function Dg.Odds(total)
 end
 
 function Dg:Free(fid)
-    return I:Has(fid) and I:State(fid) == "home"
+    return I:InRoom(fid) and I:State(fid) == "home"
 end
 
 function Dg:Recommended(id, party, opts)
@@ -393,7 +551,7 @@ function Dg:Recommended(id, party, opts)
     local d = Dg.Get(id)
     local base = self:Chance(id, party, opts)
     local out = {}
-    for _, fid in ipairs(I:List()) do
+    for _, fid in ipairs(I:RoomList()) do
         if not Has(party, fid) then
             local with = {unpack(party)}
             with[#with + 1] = fid
@@ -411,12 +569,41 @@ function Dg:Recommended(id, party, opts)
     return out
 end
 
+-- someone at home in the Lodging who would add more than anyone free in the rooms: the id, what it adds and the threats
+-- it would answer (the screen says "bring it to a room")
+function Dg:LodgeHint(id, party, opts)
+    party = party or {}
+    local d = Dg.Get(id)
+    if #party >= d.size then return nil end
+    local base = self:Chance(id, party, opts)
+    local function Gain(fid)
+        local with = {unpack(party)}
+        with[#with + 1] = fid
+        local total, _, counters = self:Chance(id, with, opts)
+        local mine = {}
+        for _, c in ipairs(counters) do if c[2] == fid then mine[#mine + 1] = c[1] end end
+        return total - base, mine
+    end
+    local best = 0
+    for _, fid in ipairs(I:RoomList()) do
+        if not Has(party, fid) and self:Free(fid) then best = math.max(best, (Gain(fid))) end
+    end
+    local who, gain, counters
+    for _, fid in ipairs(I:List()) do
+        if not I:InRoom(fid) and I:State(fid) == "home" then
+            local g, mine = Gain(fid)
+            if g > best and (not gain or g > gain) then who, gain, counters = fid, g, mine end
+        end
+    end
+    return who, gain, counters
+end
+
 -- the group with the best chance among the free followers (a tie goes to the smaller group, then to the lower average
 -- level, so the strong stay free for higher dungeons)
 function Dg:Suggest(id, opts)
     local d = Dg.Get(id)
     local free = {}
-    for _, fid in ipairs(I:List()) do if self:Free(fid) then free[#free + 1] = fid end end
+    for _, fid in ipairs(I:RoomList()) do if self:Free(fid) then free[#free + 1] = fid end end
     local best, bestTotal, bestLevel = {}, -1e9, 1e9
     local pick = {}
     local function Try(start)
@@ -447,9 +634,12 @@ function Dg:Duration(id, party, opts)
             local tr = B.TRAITS[t[1]]
             if tr.short then cut = math.max(cut, tr.short) end
         end
+        for _, ab in ipairs(I:Abilities(fid)) do
+            if B.ABILITIES[ab].short then cut = math.max(cut, B.ABILITIES[ab].short) end
+        end
     end
     for _, c in ipairs(self:Combos(party)) do if c.short then cut = math.max(cut, c.short) end end
-    local long = (Opt(opts, "boss") and not Dg.Get(id).raid) and (1 + R.bossShort) or 1
+    local long = (Opt(opts, "boss") and not Dg.Get(id).raid and not Dg.Get(id).call) and (1 + R.bossShort) or 1
     return Round(Dg.Get(id).hours * 3600 * (1 - cut) * long)
 end
 
@@ -475,6 +665,12 @@ function Dg:Reward(id, party, total, day, opts)
         if c.coins then coins = Round(coins * (1 + c.coins)) end
     end
     if Opt(opts, "food") then group = group + R.foodXP end
+    if d.mult then
+        -- a call pays beside a dungeon of the same time; what it adds stays under the cap of the events
+        local cap = B.GardenIncome(db.level, V:Plots()) * B.EVENTS.capMinutes / 60
+        coins = d.mult == 0 and 0 or Round(coins + math.min(coins * (d.mult - 1), cap))
+        vxp = Round(vxp * math.max(1, d.mult))
+    end
     local daily = (self:Daily(day) == id) and R.daily or 0
     local fxp = {}
     for _, fid in ipairs(party) do
@@ -507,8 +703,35 @@ function Dg:TrophyChance(id, party, opts)
     end
     local ch = R.trophyMin + (R.trophyMax - R.trophyMin) * (d.level - 1) / 29
     if Opt(opts, "boss") then ch = ch * R.bossTrophy end
-    if I:Has("mira") and not Has(party, "mira") and I:State("mira") == "home" then ch = ch + R.miraTrophy end
+    if I:InRoom("mira") and not Has(party, "mira") and I:State("mira") == "home" then ch = ch + R.miraTrophy end
     return math.min(1, ch * RareBonus(party))
+end
+
+-- who may come from a place: `kind` = "dungeon", "raid" or "rescue". Where a Legendary lives beside another follower it
+-- is the rare one; among the others, one the village does not have yet comes first.
+local function Newcomer(kind, place)
+    local plain, legend = {}, {}
+    for _, def in ipairs(I.DEFS) do
+        if def.from and def.from[kind] == place then
+            local list = def.from.legendary and legend or plain
+            list[#list + 1] = def.id
+        end
+    end
+    local pool = plain
+    if #legend > 0 and (#plain == 0 or Roll() < B.NEWCOMER.legendaryShare) then pool = legend end
+    if #pool == 0 then return nil end
+    local fresh = {}
+    for _, fid in ipairs(pool) do if not I:Has(fid) then fresh[#fresh + 1] = fid end end
+    if #fresh > 0 then pool = fresh end
+    return pool[math.min(#pool, math.floor(Roll() * #pool) + 1)]
+end
+
+-- the chance of a new follower on a success of a dungeon of that level
+function Dg.NewcomerChance(level)
+    for _, step in ipairs(B.NEWCOMER.dungeon) do
+        if level <= step.upTo then return step.chance end
+    end
+    return 0
 end
 
 function Dg:Send(id, party, opts)
@@ -537,22 +760,56 @@ function Dg:Send(id, party, opts)
     local ok = Roll() * 100 < odds
     local coins, vxp, fxp = self:Reward(id, party, total, nil, opts)
     local hurt, drops, combos = {}, {}, {}
+    local newcomer, named, caravan, scout
     for _, c in ipairs(self:Combos(party)) do combos[#combos + 1] = c.id end
+    db.adventure = db.adventure or {}
+    local N = B.NEWCOMER
+    if not d.raid and not d.call then db.dungeons.dry = (db.dungeons.dry or 0) + 1 end
     if ok then
         local rare = RareBonus(party)
         if d.raid then
             drops[#drops + 1] = "epic"
             drops[#drops + 1] = "core"
+        elseif d.call then
+            local c = B.CALLS[d.call]
+            if c.merit and Roll() < c.merit * rare then drops[#drops + 1] = "merit" end
         elseif d.level >= R.epic.from and Roll() < R.epic.chance * rare then drops[#drops + 1] = "epic"
         elseif d.level >= R.merit.from and Roll() < R.merit.chance * rare then drops[#drops + 1] = "merit" end
         if Roll() < self:TrophyChance(id, party, opts) then drops[#drops + 1] = "trophy" end
+        -- someone new, only from where they are from (docs/masmorras.md §3.5)
+        if d.raid then
+            local luck = db.adventure.raidLuck and N.raidLuck or 0
+            if Roll() < (N.raidLegendary + luck) * rare then newcomer = Newcomer("raid", id) end
+            local pieces = B.NAMED[id]
+            if pieces and Roll() < R.named * rare then named = pieces[math.min(#pieces, math.floor(Roll() * #pieces) + 1)] end
+        elseif d.call then
+            if d.call == "rescue" and Roll() < N.rescue * rare then newcomer = Newcomer("rescue", d.place) end
+            if d.call == "escort" then caravan = true end
+            if d.call == "recon" and B.PLACES[d.place].dungeon then scout = d.place end
+        else
+            if Roll() < Dg.NewcomerChance(d.level) * rare then newcomer = Newcomer("dungeon", id) end
+            if not newcomer and db.dungeons.dry >= N.guarantee then
+                -- the guarantee: a Rare the village does not have, of this dungeon first; with all of them, an insignia
+                local here, any
+                for _, def in ipairs(I.DEFS) do
+                    if def.from and def.rarity == "rare" and not I:Has(def.id) then
+                        any = any or def.id
+                        if def.from.dungeon == id then here = here or def.id end
+                    end
+                end
+                newcomer = here or any
+                if not newcomer then drops[#drops + 1] = "merit" end
+                db.dungeons.dry = 0
+            end
+        end
+        if newcomer then db.dungeons.dry = 0 end
     else
         coins, vxp = Round(coins / 2), Round(vxp / 2)
         for fid, x in pairs(fxp) do fxp[fid] = Round(x / 2) end
         local noHurt = false
         for _, c in ipairs(self:Combos(party)) do if c.noHurt then noHurt = true end end
         local risk = R.injury * (Opt(opts, "food") and R.foodHurt or 1)
-        if I:Has("garrick") and not Has(party, "garrick") and I:State("garrick") == "home" then risk = risk - R.garrickHurt end
+        if I:InRoom("garrick") and not Has(party, "garrick") and I:State("garrick") == "home" then risk = risk - R.garrickHurt end
         for _, fid in ipairs(party) do
             local tough = noHurt
             for _, t in ipairs(I:Traits(fid)) do if B.TRAITS[t[1]].neverInjured then tough = true end end
@@ -563,15 +820,25 @@ function Dg:Send(id, party, opts)
         db.dungeons.raids = db.dungeons.raids or {}
         db.dungeons.raids[id] = KH.Now()                -- tried this week, success or not
     end
-    db.adventure = db.adventure or {}
+    if d.raid then db.adventure.raidLuck = nil end       -- the luck of the character's raid kill is for one raid
     db.adventure.inspired = db.adventure.inspired or {}
     local insp = db.adventure.inspired[id]
     if insp and insp > 0 then db.adventure.inspired[id] = insp - 1 end
+    if db.dungeons.scouted then db.dungeons.scouted[id] = nil end       -- what the scouts saw is for one run
     db.dungeons.serial = (db.dungeons.serial or 0) + 1
     db.trips = db.trips or {}
-    db.trips[#db.trips + 1] = {n = db.dungeons.serial, dungeon = id, at = KH.Now(), time = self:Duration(id, party, opts),
+    local time = self:Duration(id, party, opts)
+    local trip = {n = db.dungeons.serial, at = KH.Now(), time = time,
         party = {unpack(party)}, total = total, ok = ok, coins = coins, vxp = vxp, fxp = fxp, hurt = hurt, drops = drops,
-        counters = counters, open = open, combos = combos, boss = Opt(opts, "boss") or nil}
+        counters = counters, open = open, combos = combos, boss = Opt(opts, "boss") or nil,
+        newcomer = newcomer, newLevel = newcomer and d.level or nil, named = named, caravan = caravan, scout = scout}
+    if d.call then
+        trip.call = {kind = d.call, place = d.place}      -- the call is answered: its event leaves the Visitors
+        KH.Events:Answer(id)
+    else
+        trip.dungeon = id
+    end
+    db.trips[#db.trips + 1] = trip
     return true
 end
 
@@ -614,10 +881,15 @@ function Dg:Collect(n)
     end
     d.combos = d.combos or {}
     for _, c in ipairs(trip.combos or {}) do d.combos[c] = true end
-    if trip.dungeon then
-        d.runs = (d.runs or 0) + 1
-        KH.Journal:Add(trip)
+    if trip.newcomer then trip.welcome = I:Welcome(trip.newcomer, trip.newLevel) end
+    if trip.named then db.goods[trip.named] = V:Good(trip.named) + 1 end
+    if trip.scout then
+        d.scouted = d.scouted or {}
+        d.scouted[trip.scout] = true
     end
+    if trip.caravan and KH.Events then KH.Events:Spawn("caravan") end   -- the caravan escorted passes by the village
+    if trip.dungeon then d.runs = (d.runs or 0) + 1 end
+    if trip.dungeon or trip.call then KH.Journal:Add(trip) end
     return trip, ups
 end
 
@@ -679,6 +951,8 @@ KH:On("PLAYER_LOGIN", function()
     local db = KH.db
     db.dungeons = db.dungeons or {}
     db.trips = db.trips or {}
+    db.found, db.lodged, db.arrivals = db.found or {}, db.lodged or {}, db.arrivals or {}
+    I:Tidy()
     for _, trip in ipairs(db.trips) do
         if Dg:TripState(trip) == "back" then announced[trip.n] = true end
     end

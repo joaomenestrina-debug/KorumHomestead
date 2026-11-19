@@ -66,6 +66,8 @@ local function BuildVisitors(win)
         -- one answer (urgent, merchant, find) ...
         card.item = ItemLine(card, 26)
         card.item:SetPoint("TOPLEFT", 96, -82)
+        card.item:SetWidth(470)                       -- the whole line of the card: nothing shares it
+        card.item.text:SetWidth(438)
         card.reward = Kit.Text(card, 11, C.gold)
         card.reward:SetPoint("TOPLEFT", 96, -116)
         card.reward:SetWidth(W - 96 - 200)
@@ -104,6 +106,11 @@ local function BuildVisitors(win)
     function s:Act(card)
         local e = card.event
         if not e then return end
+        if e.kind == "call" then                         -- the Inn builds the group, as for a dungeon
+            UI.innFollower, UI.innDungeon, UI.innParty, UI.innOpts = nil, e.def.id, nil, nil
+            UI:Show("inn")
+            return
+        end
         local ok, r
         if e.kind == "urgent" then
             ok, r = KH.Events:Deliver(e.id)
@@ -144,8 +151,29 @@ local function BuildVisitors(win)
         local kind = e.kind
         -- who came; a rare find shows the place where it turned up (the item itself is on the line below)
         card.portrait:SetTexture(PORTRAIT[kind] and (VDIR .. PORTRAIT[kind]) or BuildingArt(kind == "fish" and "pond" or "mine"))
-        card.title:SetText(T("evTitle_" .. kind))
+        card.title:SetText(kind == "call" and KH.Dungeons.Name(e.def) or T("evTitle_" .. kind))
         card.left:SetText(T("evLeft", KH.Duration(KH.Events:Left(e))))
+        if kind == "call" then
+            -- a call: the place and who asks, what it takes, the best group now
+            local Dg, d = KH.Dungeons, e.def
+            card.portrait:SetTexture(VDIR .. "visitor_messenger")
+            card.item:Show(); card.reward:Show(); card.button:Show()
+            for _, row in ipairs(card.trades) do row:Hide() end
+            card.desc:SetText(T("plw_" .. d.place) .. " " .. T("calld_" .. d.call))
+            card.item.icon:SetTexture("Interface\\Icons\\" .. KH.Balance.THREATS[d.threats[1]])
+            local names = {}
+            for i, th in ipairs(d.threats) do names[i] = T("th_" .. th) end
+            Kit.Fit(card.item.text, T(d.size == 1 and "dgMeta1" or "dgMeta", d.level, d.size, KH.Duration(d.hours * 3600))
+                .. " · " .. table.concat(names, ", "), 438)
+            local party, total = Dg:Suggest(d.id)
+            local odds = #party > 0 and Dg.Odds(total)
+            card.reward:SetText(T("callBest", odds and (math.floor(odds + 0.5) .. "%") or T("callNoGroup")))
+            card.button:SetLabel(T("callGo"))
+            card.button:SetStyle("primary")
+            card.button:SetEnabledState(true)
+            card.outline:SetColor(C.accent[1], C.accent[2], C.accent[3], 0.45)
+            return
+        end
         card.item:SetShown(kind ~= "caravan")
         card.reward:SetShown(kind ~= "caravan")
         card.button:SetShown(kind ~= "caravan")

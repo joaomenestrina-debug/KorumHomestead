@@ -196,6 +196,7 @@ function UI:AlertLines()
     local out = {}
     for _, e in ipairs(KH.Events:Open()) do                -- a visitor waits: it goes away when its time is over
         local name = e.key and UI.VisitorName and UI.VisitorName(e.key) or ""
+        if e.def then name = KH.Dungeons.Name(e.def) end      -- a call: what it is and where
         out[#out + 1] = {T("alertEv_" .. e.kind, name, KH.Duration(KH.Events:Left(e))), "visitors"}
     end
     if KH.Daily:CanDeliver() then out[#out + 1] = {T("alertDaily"), "orders"} end

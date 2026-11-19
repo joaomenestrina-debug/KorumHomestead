@@ -220,15 +220,15 @@ class Journal(Base):
 
 class Economy(Base):
     def test_dungeons_stay_under_half_of_the_garden(self):
-        """Six followers always out, always at 150%: the coins of the dungeons stay under 50% of what the Garden makes."""
+        """Seven rooms always out, always at 150%: the coins of the dungeons stay under 50% of what the Garden makes."""
         for level in (30, 45, 60):
-            self.lua.execute(f"NS.db.level = {level}; NS.db.buildings.garden = 7; NS.db.buildings.inn = 6")
+            self.lua.execute(f"NS.db.level = {level}; NS.db.buildings.garden = 7; NS.db.buildings.inn = 7")
             garden = self.ev(f"NS.Balance.GardenIncome({level}, NS.Village:Plots())")
             per_hour = self.lua.eval("""(function()
                 local best = 0
                 for _, d in ipairs(NS.Balance.DUNGEONS) do
                     local c = NS.Dungeons:Reward(d.id, {'mira', 'tobin', 'elda'}, 150)
-                    best = math.max(best, c / d.hours * 2)          -- two groups of three
+                    best = math.max(best, c / d.hours * 7 / 3)      -- the seven rooms, always out
                 end
                 return best end)()""")
             self.assertLess(per_hour, 0.5 * garden, level)

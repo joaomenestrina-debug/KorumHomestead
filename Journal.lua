@@ -34,13 +34,14 @@ end
 function J:Add(trip)
     local db = KH.db
     db.journal = db.journal or {}
-    local entry = {at = trip.at + trip.time, d = trip.dungeon, ok = trip.ok, party = trip.party, by = trip.counters,
-        open = trip.open, hurt = trip.hurt, drops = trip.drops, combos = trip.combos, total = trip.total}
+    local entry = {at = trip.at + trip.time, d = trip.dungeon, call = trip.call, ok = trip.ok, party = trip.party,
+        by = trip.counters, open = trip.open, hurt = trip.hurt, drops = trip.drops, combos = trip.combos, total = trip.total,
+        new = trip.newcomer, welcome = trip.welcome, named = trip.named, caravan = trip.caravan, scout = trip.scout}
     table.insert(db.journal, entry)
     while #db.journal > B.JOURNAL.keep do table.remove(db.journal, 1) end
     for _, fid in ipairs(trip.party) do
         local f = KH.Inn:Get(fid)
-        if not (f.marks and f.marks.first) then self:Mark(fid, "first", trip.dungeon) end
+        if trip.dungeon and not (f.marks and f.marks.first) then self:Mark(fid, "first", trip.dungeon) end
     end
     return entry
 end
@@ -52,8 +53,12 @@ function J:Mark(fid, what, arg)
 end
 
 function J:Lines(e)
-    local place = T("dg_" .. e.d)
-    local first = T(#e.party == 1 and "j_went1" or "j_wentN", Names(e.party), place)
+    local first
+    if e.call then
+        first = T(#e.party == 1 and "j_call1" or "j_callN", Names(e.party), T("j_call_" .. e.call.kind), T("pl_" .. e.call.place))
+    else
+        first = T(#e.party == 1 and "j_went1" or "j_wentN", Names(e.party), T("dg_" .. e.d))
+    end
     local by = e.by or {}
     for k = 1, math.min(2, #by) do
         local c = by[k]
@@ -68,6 +73,12 @@ function J:Lines(e)
         second = second .. " " .. (drop == "trophy" and T("j_drop_trophy", KH.Data.Name(KH.Balance.TROPHIES[e.d]) or "")
             or T("j_drop_" .. drop))
     end
+    if e.new then
+        second = second .. " " .. T(e.welcome == "new" and "j_new" or "j_again", T("fol_" .. e.new))
+    end
+    if e.named then second = second .. " " .. T("j_named", T("good_" .. e.named)) end
+    if e.caravan then second = second .. " " .. T("j_caravan") end
+    if e.scout then second = second .. " " .. T("j_scout", T("dg_" .. e.scout)) end
     return {first, second}
 end
 

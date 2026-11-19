@@ -21,7 +21,7 @@ LOGO = ROOT / "Media" / "logo.tga"
 BUILDINGS = ["hall", "garden", "barn", "market", "mine", "pond", "workshop", "inn"]
 # the goods (ore, fish, potions, meals, tools) use the icons of items of the game, not drawings
 NAMES = (["map", "works", "lot", "logo"]
-         + [f"{b}{t}" for b in BUILDINGS for t in (1, 2, 3)] + [f"follower{i}" for i in range(1, 7)]
+         + [f"{b}{t}" for b in BUILDINGS for t in (1, 2, 3)] + [f"follower{i}" for i in range(1, 19)]
          # the random events (arte_v4): the visitors' cart on the map and the three visitors
          + ["cart", "visitor_merchant", "visitor_caravan", "visitor_messenger"]
          # the Feast of Winter Veil (arte_v6, A7): the snowy map and three decorations
@@ -31,7 +31,7 @@ KEEP_WHOLE = {"map", "map_winter", "works"}
 OLD_GRID = {"logo": "arte_v3"}
 # the width each high-resolution drawing goes into the game at (the rest: 256)
 SIZE = {"map": 1024, "map_winter": 1024, "logo": 64, "visitor_merchant": 128, "visitor_caravan": 128, "visitor_messenger": 128,
-        **{f"follower{i}": 128 for i in range(1, 7)}}           # one piece by nature: nothing is a stray pixel there
+        **{f"follower{i}": 128 for i in range(1, 19)}}           # one piece by nature: nothing is a stray pixel there
 
 
 def pieces(alpha):

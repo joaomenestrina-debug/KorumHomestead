@@ -240,6 +240,47 @@ def extras(out):
               f"NS.db.adventure.inspired = {{{d} = 3}}")
         scene(f"grupo-{d}-fraco", "inn", levels(1) + f"NS.UI.innDungeon = '{d}'; NS.UI.innParty = {{'bram'}}")
 
+    # S5: the ones that are found, the rooms and the Lodging, the Ranking, the arrival card, the calls
+    NEW = ("lyra", "hoderik", "aldric", "fizzwick", "tazu", "elandor", "faelan", "corvo", "brakka", "ilyanna", "hargrim",
+           "shalendra")
+    found = ("for _, def in ipairs(NS.Balance.FOLLOWERS) do if def.from then NS.Inn:Welcome(def.id, 30); "
+             "NS.Inn:Greeted(def.id) end end; NS.db.dungeons.merit = 99; NS.db.dungeons.epic = 99; "
+             "for _, fid in ipairs(NS.Inn:List()) do NS.Inn:Get(fid).level = 30 end; ")
+    for k, fid in enumerate(NEW):
+        scene(f"ficha-{fid}-chegou", "inn", found + f"NS.UI.innFollower = '{fid}'")
+        scene(f"ficha-{fid}-mestre", "inn", found + f"NS.db.goods.quelserrar = 1; NS.db.goods.onyxcloak = 1; "
+              f"NS.Inn:Equip('{fid}', 'quelserrar'); NS.Inn:Equip('{fid}', 'onyxcloak'); NS.Inn:Promote('{fid}', 2); "
+              f"NS.Inn:Promote('{fid}', 2); NS.Inn:Master('{fid}', '{('veteran', 'mentor')[k % 2]}'); NS.UI.innFollower = '{fid}'")
+        scene(f"chegada-{fid}", "inn", f"NS.Inn:Welcome('{fid}', 30)")
+        scene(f"chegada-{fid}-cheio", "inn", found.replace(f"NS.Inn:Greeted(def.id)", f"if def.id ~= '{fid}' then NS.Inn:Greeted(def.id) end"))
+    scene("estalagem-sete-quartos", "inn", found)
+    for page in (1, 2, 3):
+        scene(f"ranking-{page}", "inn", found + f"NS.UI.innTab = 'ranking'; NS.UI.innRank = {page}")
+    scene("ranking-troca", "inn", found + "NS.UI.innTab = 'ranking'; NS.UI.innSwap = 'shalendra'; NS.UI.innRank = 3")
+    scene("ranking-seis", "inn", "NS.UI.innTab = 'ranking'")
+    scene("grupo-sete-livres", "inn", found + "NS.UI.innDungeon = 'stratholme'; NS.UI.innParty = {}")
+    scene("grupo-do-alojamento", "inn", found + "NS.UI.innDungeon = 'scholomance'; NS.UI.innParty = {'mira'}")
+    scene("grupo-raide-sete", "inn", found + "NS.UI.innDungeon = 'onyxia'; NS.UI.innParty = NS.Dungeons:Suggest('onyxia')")
+    places = ("zephras", "thanes", "lordaeron", "excavation", "drowned", "kroldok", "alcaz", "blackmaw")
+    for kind in ("defense", "attack", "escort", "rescue", "recon"):
+        for place in places:
+            call = (f"local e = NS.Events:Spawn('call'); e.call, e.place = '{kind}', '{place}'; local d = e.def; "
+                    f"d.call, d.place, d.threats, d.size, d.hours, d.level, d.mult, d.env = '{kind}', '{place}', "
+                    f"NS.Balance.PLACES.{place}.threats, 3, 1.5, 30, NS.Balance.CALLS.{kind}.mult, NS.Balance.PLACES.{place}.env; ")
+            scene(f"chamado-{kind}-{place}", "visitors", found + call + "NS.Events:Spawn('caravan')")
+            scene(f"chamado-{kind}-{place}-grupo", "inn", found + call + "NS.UI.innDungeon = e.def.id; "
+                  "NS.UI.innParty = NS.Dungeons:Suggest(e.def.id)")
+    # what the Journal tells of a call, of someone new, of a piece with a name
+    scene("diario-chamado", "inn", found + "local e = NS.Events:Spawn('call'); e.def.call, e.def.place, e.def.size = 'rescue', 'blackmaw', 3; "
+          "NS.Rand = function() return 1 end; assert(NS.Dungeons:Send(e.def.id, {'mira', 'tobin', 'elda'})); "
+          "assert(NS.Dungeons:Send('onyxia', {'garrick', 'sela', 'bram', 'lyra'})); NS.Rand = nil; "
+          "for _, trip in ipairs(NS.db.trips) do trip.at = NS.Now() - 999999 end; NS.Dungeons:CollectAll(); "
+          "NS.db.arrivals = {}; NS.UI.innFollower = 'mira'")
+    scene("diario-raide", "inn", found + "NS.Rand = function() return 1 end; "
+          "assert(NS.Dungeons:Send('onyxia', {'garrick', 'sela', 'bram', 'lyra'})); NS.Rand = nil; "
+          "for _, trip in ipairs(NS.db.trips) do trip.at = NS.Now() - 999999 end; NS.Dungeons:CollectAll(); "
+          "NS.db.arrivals = {}; NS.UI.innFollower = 'garrick'")
+
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
