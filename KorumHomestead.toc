@@ -5,7 +5,7 @@
 ## Notes: A little idle village for the moments of waiting: grow herbs, build, craft, send followers on missions. Independent addon.
 ## Notes-ptBR: Uma pequena vila para os momentos de espera: plante ervas, construa, fabrique e mande seguidores em missões. Addon independente.
 ## Author: Korum
-## Version: 2.1.0-alpha5
+## Version: 2.1.0-alpha6
 ## SavedVariables: KorumHomesteadDB
 ## Category: Korum
 
