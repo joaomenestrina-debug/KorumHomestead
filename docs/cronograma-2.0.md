@@ -6,6 +6,10 @@ quê e quando**.
 - **Início:** terça, 17/11/2026
 - **2.0.0 publicada:** terça, 05/01/2027
 - **2.1 (social):** segunda, 25/01/2027
+> **Mudança de 18/11.** A 2.0.0 saiu em 17/11 e a 2.1 (visitantes) em alpha em 18/11. Da S3 em diante vale
+> [`masmorras.md`](masmorras.md) §15: S3 e S4 (masmorras, níveis, equipamento, combos, raides) → **2.2**; S5
+> (raridade, seguidores novos, chamados) → **2.3**. As tabelas da S3 em diante abaixo são o plano antigo.
+
 - **Ritmo:** sprints de uma semana (segunda a domingo), um alpha no CurseForge no fim de cada sprint de fase.
 
 
