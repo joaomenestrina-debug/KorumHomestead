@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 19/11/2026, por Korum (A8 aprovado; mapa do A7 pedido de novo).*
+*Última atualização: 19/11/2026, por Korum (A7 e A8 aprovados e na `main`).*
 
 ---
 
@@ -18,7 +18,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
 | **Arte A6** | Aprovada e no jogo, a partir de `arquivo/arte_v5/*@hd.png`, reduzida para perto do tamanho de tela (prédios 256, retratos 128, mapa 1024×512); o logo segue o antigo em pixel (ícones pequenos: simples, poucas cores) |
 | **T2.8** | Textos EN/ptBR de eventos revisados; PR aguardando revisão |
-| **A7** | Véu de Inverno (PR #21): as três decorações aprovadas em 19/11; o **mapa de inverno volta para o Codex** (neve de verdade, lagos com borda congelada, cachoeira meio congelada, sem flores abertas: `docs/tarefas/A7.md`, revisão 1) |
+| **A7** | Véu de Inverno **aprovado em 19/11** e na `main` (`arquivo/arte_v6/`: `map_winter`, `winter_tree`, `snowman`, `gifts`); Claude importa para o jogo com a troca de mapa durante a festa (até 16/12) |
 | **A8** | Doze retratos dos novos seguidores **aprovados em 19/11** e na `main` (`arquivo/arte_v6/follower7..18@hd.png`); Claude importa para o jogo na S5, quando o código usar |
 
 ### Sprint 1: andamento (alpha1 em 29/11)
@@ -69,8 +69,8 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** conferir no jogo os fatos de `docs/historia-forever.md` (quem está em cada masmorra nova, o conflito de cada zona, os nomes ptBR). Jogar a alpha3 e relatar o que aparecer. A S3 (F3, Personagem) fica para a data do cronograma (07/12), por decisão de 18/11.
-- **Codex:** **A7**: refazer só o `map_winter@hd.png` (revisão 1 em `docs/tarefas/A7.md`), no mesmo PR #21, prazo 11/12; as decorações já estão aprovadas. **A8** aprovado e integrado. Não escrever código.
-- **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11; `v2.1.0-alpha3` também, só para tirar o `/kh debug` e o `/kh evento` do zip (entre `--@debug@`, o empacotador comenta). Especificação das masmorras e seguidores escrita em 18/11 (`docs/masmorras.md`, com `docs/historia-forever.md`). Aprovada em 18/11; a Aventura (a vila reage ao que o personagem faz) e o Diário dos seguidores entraram depois (§12 e §13). Tag `v2.1.0-alpha4` criada em 19/11 (logo no minimapa, dica e número iguais aos do ícone, caminho do topo no inglês). Comando do T3.0 pronto: `/kh debug` e depois `/kh eventos` (`Probe.lua`, só na cópia do repositório). Briefings A7 e A8 escritos em 19/11. Próximo: o dono testa o T3.0 numa masmorra, numa fila e numa troca de zona, ; importar o A7 quando o mapa novo for aprovado; correções da alpha.
+- **Codex:** **A7** e **A8** aprovados e integrados em 19/11; nenhuma tarefa de arte aberta. Não escrever código.
+- **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11; `v2.1.0-alpha3` também, só para tirar o `/kh debug` e o `/kh evento` do zip (entre `--@debug@`, o empacotador comenta). Especificação das masmorras e seguidores escrita em 18/11 (`docs/masmorras.md`, com `docs/historia-forever.md`). Aprovada em 18/11; a Aventura (a vila reage ao que o personagem faz) e o Diário dos seguidores entraram depois (§12 e §13). Tag `v2.1.0-alpha4` criada em 19/11 (logo no minimapa, dica e número iguais aos do ícone, caminho do topo no inglês). Comando do T3.0 pronto: `/kh debug` e depois `/kh eventos` (`Probe.lua`, só na cópia do repositório). Briefings A7 e A8 escritos em 19/11. Próximo: o dono testa o T3.0 numa masmorra, numa fila e numa troca de zona; importar o A7 no jogo (mapa de inverno e decorações durante o Véu de Inverno, até 16/12); correções da alpha.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
 
