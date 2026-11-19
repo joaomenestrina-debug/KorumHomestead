@@ -2,10 +2,11 @@
 
 *18/11/2026, por Claude. Ideias do dono: mandar os seguidores para masmorras, equipá-los, subir de nível e combinar
 habilidades, na linha das missões de seguidores do WoW, "mas melhorado se possível"; mostrar a chance e os recomendados
-ao escolher o grupo; chamados de defesa, ataque e outros; seguidores com raridade, novos seguidores e drops raros; e
-**tudo sempre ligado à história do WoW Forever**. **Aprovada pelo dono em 18/11, com as decisões da §16 como
+ao escolher o grupo; chamados de defesa, ataque e outros; seguidores com raridade, novos seguidores e drops raros;
+**tudo sempre ligado à história do WoW Forever**; e, pedidas depois da aprovação, a vila que acompanha a aventura do
+personagem e o Diário dos seguidores com o calendário de festas (seções 12 e 13). **Aprovada pelo dono em 18/11, com as decisões da §18 como
 propostas.** Os
-números finais ficam em `Balance.lua` e são conferidos pelos testes da seção 13.*
+números finais ficam em `Balance.lua` e são conferidos pelos testes da seção 15.*
 
 A mecânica segue o gênero das missões de seguidores; a tela, os nomes, as habilidades e a arte são nossos. Os nomes e
 ícones de masmorras, itens e magias vêm do próprio jogo, como as ervas.
@@ -344,7 +345,57 @@ novos, as masmorras e também para os **visitantes que já existem**.
 - Quando o Forever lançar conteúdo novo, o addon acompanha numa atualização: masmorras, chamados e seguidores novos.
 
 
-## 12. Saves que já existem (schema 4)
+## 12. A vila acompanha sua aventura
+
+A vila continua um mundo à parte: **não mexe no personagem, na bolsa nem no ouro**. Mas ela **observa** o que o
+personagem faz no Forever e reage. O addon só lê eventos do jogo; nunca muda nada no personagem.
+
+| No jogo | Na vila |
+|---|---|
+| Entrou na **fila** de masmorra ou de campo de batalha (Darkspear Island) | a vila abre sozinha, mostrando o que está pronto e o que dá para fazer até chamarem (opção, ligada por padrão; nunca em combate) |
+| **Matou um chefe** de verdade | os seguidores ficam **inspirados** naquela masmorra: +15 pontos de chance nas próximas 3 idas; e o troféu dela abre no Quadro |
+| **Terminou a masmorra** inteira (o último chefe) | ela ganha a marca **"Você esteve aqui"** no Quadro, e as ameaças dela ficam conhecidas (seção 5): o jogo confirma o que tem lá dentro |
+| **Entrou numa zona do Forever** (Zephras Isle, Riverglades, Mount Hyjal...) | os chamados daquele lugar passam a aparecer, e o Diário pode citá-lo |
+| **Matou uma raide** | uma Insígnia Épica para os seguidores e +10% de chance de seguidor novo na próxima raide deles |
+
+- **Tudo é bônus.** Quem não faz masmorras com o personagem joga a vila inteira do mesmo jeito; os chamados de cada lugar
+  também aparecem, só mais devagar (um por vez, sorteado entre os lugares ainda não visitados).
+- A vila é da conta: qualquer personagem que mata um chefe inspira os seguidores.
+- O que se guarda: a lista de chefes, masmorras e zonas já vistos (nomes e números do jogo), nada mais.
+- Uma opção no Guia desliga tudo (a vila volta a ignorar o jogo).
+- **Antes de implementar:** um teste no jogo (T3.0) para ver quais eventos o cliente do Forever oferece: fim de chefe
+  (`ENCOUNTER_END`, `BOSS_KILL`), troca de zona (`ZONE_CHANGED_NEW_AREA`, `GetInstanceInfo`), fila (o que existir no
+  Forever: `LFG_*`, `UPDATE_BATTLEFIELD_STATUS`) e calendário (`C_Calendar`). O que não existir cai fora da tabela,
+  sem quebrar o resto.
+
+## 13. O Diário dos seguidores e as festas do calendário
+
+### Diário
+
+- Quando um grupo volta de uma masmorra ou de um chamado, ele traz **uma ou duas linhas** contando o que aconteceu:
+  *"Garrick segurou o portão do Hall of Thanes enquanto Sela calava o conjurador. Tobin achou um machado antigo nos
+  escombros."*
+- As linhas são montadas com o que de fato aconteceu naquela ida: o lugar, as ameaças anuladas (por quem e com qual
+  habilidade), a que ficou sem resposta, o combo, o ferimento, o drop. Por isso quase toda volta é diferente.
+- Frases-modelo no `Locales.lua` (EN e ptBR), com variações para cada ameaça, habilidade, combo e drop; o lugar e o povo
+  só saem de `docs/historia-forever.md`.
+- **Onde aparece:**
+  - na volta, no cartão "Enquanto você esteve fora" e no aviso do ícone;
+  - na **ficha do seguidor**, como a biografia dele (as últimas 20 linhas, mais os marcos para sempre: primeira
+    masmorra, Raro, Épico, Título, primeiro Lendário encontrado);
+  - um botão **"Contar no chat"** que coloca a linha na caixa de texto do chat, para o jogador mandar se quiser (o addon
+    nunca manda nada sozinho).
+- Saves: as linhas guardam só os números da ida e são montadas na hora; o save cresce pouco.
+
+### Festas do calendário
+
+- A vila se enfeita nas festas do próprio jogo: decorações no mapa durante a festa, e o Diário e os visitantes falam
+  dela.
+- Começa com duas: **Festival do Véu de Inverno** (dezembro) e **Noturno** (outubro). As outras entram depois.
+- As datas vêm do calendário do jogo (`C_Calendar`); se o Forever não tiver, uma tabela de datas fixas.
+- A decoração de cada festa é arte nova (Codex, você aprova), por cima do mapa de hoje.
+
+ (schema 4)
 
 - Cada seguidor vira **nível = 2 × nível antigo − 1** (o antigo ia de 1 a 5; vira 1 a 9), qualidade Comum, com a
   habilidade e o traço iniciais e sem equipamento.
@@ -352,7 +403,7 @@ novos, as masmorras e também para os **visitantes que já existem**.
 - Os seis de hoje viram Incomuns e ficam nos quartos que a Estalagem já tem.
 - Nada mais muda. O teste de migração usa `tests/fixtures/save-1.0.1.lua` e um save da 2.1.
 
-## 13. Testes
+## 15. Testes
 
 - Chance: cada parte da seção 6 com um caso; acima de 100% vira bônus; grupo sugerido escolhe o melhor.
 - Combos: cada um aplica seu efeito; o livro registra a descoberta uma vez.
@@ -364,8 +415,10 @@ novos, as masmorras e também para os **visitantes que já existem**.
 - Seguidores novos: chances de drop, garantia depois de 40 masmorras, repetido vira insígnia, rol de no máximo 20.
 - Chamados: cada tipo, prazo e expiração; visitantes e chamados juntos abaixo do teto da economia.
 - História: todo chamado e todo seguidor novo aponta para um fato de `docs/historia-forever.md`.
+- Aventura: cada evento do jogo (fim de chefe, zona, fila) com o cliente simulado; a opção desligada ignora tudo.
+- Diário: toda combinação de ameaça, habilidade, combo e drop gera uma linha nos dois idiomas, sem chave faltando.
 
-## 14. Telas
+## 16. Telas
 
 - **Estalagem**, com quatro abas:
   - **Seguidores:** um cartão por seguidor com retrato (borda na cor da qualidade), nível e barra de XP, habilidades,
@@ -387,18 +440,20 @@ novos, as masmorras e também para os **visitantes que já existem**.
 - Cartão "como funciona" novo para o Quadro de Masmorras.
 - Tudo em EN e ptBR; Novidades da versão.
 
-## 15. Divisão em sprints
+## 17. Divisão em sprints
 
 ### S3 (07/12 a 13/12): masmorras, níveis e talentos → `v2.2.0-alpha1`
 
 | ID | Tarefa | Quem |
 |---|---|---|
-| T3.1 | Aprovar esta especificação | **Eu** |
+| T3.0 | **Antes de 07/12:** teste no jogo dos eventos do Forever (chefe, zona, fila, calendário) com um comando de depuração | Claude + **Eu** |
+| T3.1 | Aprovar esta especificação | **Eu** ✅ 18/11 |
 | T3.2 | Dados: seguidores, ameaças, habilidades, traços, masmorras em `Balance.lua`; migração schema 4 | Claude |
 | T3.3 | Motor: chance, envio, volta, recompensa, ferimento, nível e XP, qualidade e insígnias, talentos, masmorra do dia | Claude |
 | T3.4 | Grupo sugerido | Claude |
 | T3.5 | Telas: abas Seguidores e Masmorras, ficha do seguidor, linhas do "Enquanto você esteve fora" | Claude |
 | T3.6 | Testes de chance, economia e ritmo | Claude |
+| T3.6b | **Diário** dos seguidores (frases-modelo, ficha, "Contar no chat") | Claude |
 | T3.7 | Revisão dos textos EN/ptBR (e nomes das masmorras no cliente ptBR) | **Codex** |
 | T3.8 | Teste no jogo | **Eu** |
 | T3.9 | Correções, Novidades e tag | Claude |
@@ -411,6 +466,8 @@ novos, as masmorras e também para os **visitantes que já existem**.
 | T4.2 | Consumíveis (poção e comida) | Claude |
 | T4.3 | Combos e Livro de Combos; troféus | Claude |
 | T4.4 | Raides (semanal, Núcleo), Maestria e Título | Claude |
+| T4.4b | **Aventura**, parte 1: fila abre a vila, chefe inspira, masmorra feita confirma as ameaças | Claude |
+| T4.4c | **Festival do Véu de Inverno** na vila (para estar no ar durante a festa, que vai até 02/01) | Claude; arte: **Codex** a partir de 07/12 |
 | T4.5 | Testes (equipamento vale mais que as barras, combos, raides) | Claude |
 | T4.6 | Revisão dos textos EN/ptBR | **Codex** |
 | T4.7 | Teste no jogo | **Eu** |
@@ -426,6 +483,7 @@ novos, as masmorras e também para os **visitantes que já existem**.
 | T5.4 | Rol, quartos e Alojamento, raridade, Poder, Ranking; drops e garantia | Claude |
 | T5.5 | Chamados (os cinco tipos) no motor dos eventos | Claude |
 | T5.6 | Textos dos visitantes de hoje com origem no Forever | Claude |
+| T5.6b | **Aventura**, parte 2: zona visitada abre os chamados do lugar; raide feita dá insígnia | Claude |
 | T5.7 | Testes (drops, garantia, chamados, teto, história) | Claude |
 | T5.8 | Revisão dos textos EN/ptBR | **Codex** |
 | T5.9 | Teste no jogo | **Eu** |
@@ -433,7 +491,7 @@ novos, as masmorras e também para os **visitantes que já existem**.
 
 Depois da 2.3: coleção (os troféus entram nela), decorações, os quatro atributos do personagem e as temporadas.
 
-## 16. Decisões do dono (aprovadas em 18/11, como propostas)
+## 18. Decisões do dono (aprovadas em 18/11, como propostas)
 
 1. **Estalagem na Vila 30.** Hoje ela abre com a Sede 5. Manter (as masmorras são a camada de meio e fim de jogo) ou
    abrir mais cedo? **Mantida na Vila 30.**
@@ -443,3 +501,4 @@ Depois da 2.3: coleção (os troféus entram nela), decorações, os quatro atri
 5. **Os 12 seguidores novos** da seção 3.5: arquétipos, raridades e de onde vêm (12 retratos novos para o Codex).
 6. **Chances de drop** e garantia de 40 masmorras.
 7. **As masmorras novas do Forever** só entram no jogo quando suas ameaças forem confirmadas no jogo.
+8. **Aventura e Diário** (seções 12 e 13), pedidos em 18/11.
