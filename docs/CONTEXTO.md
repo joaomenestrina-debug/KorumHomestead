@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 18/11/2026, por Korum (especificação das masmorras e seguidores).*
+*Última atualização: 19/11/2026, por Korum (entrega dos retratos A8 para revisão).*
 
 ---
 
@@ -18,6 +18,8 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
 | **Arte A6** | Aprovada e no jogo, a partir de `arquivo/arte_v5/*@hd.png`, reduzida para perto do tamanho de tela (prédios 256, retratos 128, mapa 1024×512); o logo segue o antigo em pixel (ícones pequenos: simples, poucas cores) |
 | **T2.8** | Textos EN/ptBR de eventos revisados; PR aguardando revisão |
+| **A7** | Véu de Inverno entregue no PR #21; aguardando revisão do dono |
+| **A8** | Doze retratos dos novos seguidores em `arquivo/arte_v6/`; PR aguardando revisão do dono |
 
 ### Sprint 1: andamento (alpha1 em 29/11)
 
@@ -67,7 +69,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** conferir no jogo os fatos de `docs/historia-forever.md` (quem está em cada masmorra nova, o conflito de cada zona, os nomes ptBR). Jogar a alpha3 e relatar o que aparecer. A S3 (F3, Personagem) fica para a data do cronograma (07/12), por decisão de 18/11.
-- **Codex:** **A7** (Véu de Inverno: mapa com neve e três decorações, `docs/tarefas/A7.md`) pode começar já, prazo 11/12. **A8** (12 retratos novos, `docs/tarefas/A8.md`) aprovado em 19/11, pode começar, prazo 18/12. Não escrever código.
+- **Codex:** **A7** (Véu de Inverno, `docs/tarefas/A7.md`) entregue no PR #21, aguardando revisão. **A8** (12 retratos dos novos seguidores, `docs/tarefas/A8.md`) entregue no PR, aguardando revisão do dono. Não escrever código.
 - **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11; `v2.1.0-alpha3` também, só para tirar o `/kh debug` e o `/kh evento` do zip (entre `--@debug@`, o empacotador comenta). Especificação das masmorras e seguidores escrita em 18/11 (`docs/masmorras.md`, com `docs/historia-forever.md`). Aprovada em 18/11; a Aventura (a vila reage ao que o personagem faz) e o Diário dos seguidores entraram depois (§12 e §13). Tag `v2.1.0-alpha4` criada em 19/11 (logo no minimapa, dica e número iguais aos do ícone, caminho do topo no inglês). Comando do T3.0 pronto: `/kh debug` e depois `/kh eventos` (`Probe.lua`, só na cópia do repositório). Briefings A7 e A8 escritos em 19/11. Próximo: o dono testa o T3.0 numa masmorra, numa fila e numa troca de zona, e aprova a lista do A8; o briefing dos retratos e da decoração do Véu de Inverno para o Codex; correções da alpha.
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
