@@ -146,7 +146,7 @@ function UI:Create()
     home:SetScript("OnClick", function() Kit.ClickSound(); UI:Show("village") end)
     self.home = home
     self.here = Kit.Text(row, 13, C.text)
-    self.here:SetPoint("LEFT", home, "RIGHT", 0, 0)
+    self.here:SetPoint("LEFT", home.label, "RIGHT", 0, 0)   -- after the word itself: its real width in any language
 end
 
 UI.ZOOM_MIN, UI.ZOOM_MAX = 0.6, 1.5

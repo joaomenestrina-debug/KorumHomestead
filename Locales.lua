@@ -240,6 +240,8 @@ L.enUS = {
     news1_11 = "Suggestions follow the Market: the Workshop marks what is being asked, the Garden says which seed is needed, and the Hall marks the best upgrade.",
     news1_12 = "The window has a zoom at the top, from 60% to 150%.",
     news4_1 = "The minimap button shows the village logo, the same as the icon on the screen.",
+    news4_2 = "The minimap button counts and lists the same as the icon on the screen: visitors and the time they stay, plots ready, orders you can deliver and followers back.",
+    news4_3 = "The path at the top of the window no longer runs into \"Village\" in English.",
     news3_2 = "The rare Firefin Snapper of the Pond shows its own name and price (it was taking the ones of the Mud Snapper of the Workshop).",
     news3_1 = "At high levels the urgent orders and the merchants ask for or buy fewer units of late herbs and Workshop items: each one stays a bonus next to the Garden. The price is still double.",
     news2_1 = "Visitors arrive while you play: messengers with urgent orders, merchants, caravans, rare fish in the Pond and rare veins in the Mine.",
@@ -256,7 +258,7 @@ L.enUS = {
     why_coins = "Not enough coins.", why_level = "Your Herbalism is too low for this seed.", why_notEmpty = "That plot is not empty.",
     why_noPlant = "Pick a seed first.", why_maxPlots = "No more plots to buy.", why_noOrder = "No order here.", why_missing = "Not enough in the barn.",
     why_order = "Buy the plots in order: the next one first.",
-    tooltipTitle = "Korum Homestead", tooltipReady = "%d plot(s) ready", tooltipNone = "Nothing ready yet", tooltipClick = "Click to open",
+    tooltipTitle = "Korum Homestead", tooltipNone = "Nothing ready yet", tooltipClick = "Click to open",
 }
 L.ptBR = {
     tabGarden = "Jardim", tabBarn = "Celeiro", tabOrders = "Encomendas", tabSettings = "Ajustes",
@@ -481,6 +483,8 @@ L.ptBR = {
     news1_11 = "As sugestões seguem o Mercado: a Oficina marca o que está sendo pedido, a Horta diz qual semente falta e a Sede marca a melhor obra.",
     news1_12 = "A janela tem um zoom no topo, de 60% a 150%.",
     news4_1 = "O botão do minimapa mostra o logo da vila, o mesmo do ícone na tela.",
+    news4_2 = "O botão do minimapa conta e mostra o mesmo que o ícone na tela: visitantes e quanto tempo ficam, canteiros prontos, encomendas para entregar e seguidores de volta.",
+    news4_3 = "O caminho no topo da janela não encosta mais em \"Village\" no inglês.",
     news3_2 = "O Pargo Pinafogo raro da Lagoa mostra o próprio nome e preço (estava usando os do Pargo-do-lodo da Oficina).",
     news3_1 = "Nos níveis altos, os pedidos urgentes e os mercadores pedem ou compram menos unidades de ervas tardias e itens da Oficina: cada um continua sendo um extra ao lado da Horta. O preço continua o dobro.",
     news2_1 = "Visitantes chegam enquanto você joga: mensageiros com pedidos urgentes, mercadores, caravanas, peixes raros na Lagoa e veios raros na Mina.",
@@ -496,7 +500,7 @@ L.ptBR = {
     why_coins = "Moedas insuficientes.", why_level = "O seu Herbalismo é baixo para esta semente.", why_notEmpty = "Esse canteiro não está vazio.",
     why_noPlant = "Escolha uma semente primeiro.", why_maxPlots = "Não há mais canteiros para comprar.", why_noOrder = "Sem encomenda aqui.", why_missing = "Falta no celeiro.",
     why_order = "Compre os canteiros em ordem: o próximo primeiro.",
-    tooltipTitle = "Korum Homestead", tooltipReady = "%d canteiro(s) pronto(s)", tooltipNone = "Nada pronto ainda", tooltipClick = "Clique para abrir",
+    tooltipTitle = "Korum Homestead", tooltipNone = "Nada pronto ainda", tooltipClick = "Clique para abrir",
 }
 KH.L = L
 

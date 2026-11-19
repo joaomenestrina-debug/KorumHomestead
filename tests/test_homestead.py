@@ -837,6 +837,24 @@ class Homestead(unittest.TestCase):
         self.lua.execute("KorumHomesteadMinimap:GetScript('OnClick')()")
         self.assertTrue(self.ev("KorumHomesteadFrame:IsShown()"))
 
+    def test_the_minimap_button_tells_the_same_as_the_icon_on_the_screen(self):
+        """The number counts what the icon counts, and the tooltip lists everything that waits, visitors included."""
+        self.lua.execute("""
+            NS.db.level = 30; NS.db.buildings.workshop = 3
+            NS.Farm:PlantAll(2447); NOW = NOW + 100
+            NS.Events:Spawn('merchant')
+            TIP = {}
+            function GameTooltip:AddLine(text) TIP[#TIP + 1] = text end
+            NS.UI:Tick()
+        """)
+        self.assertEqual(self.ev("KorumHomesteadMinimap.badge:GetText()"), str(self.ev("NS.UI:WaitingCount()")))
+        self.lua.execute("KorumHomesteadMinimap:GetScript('OnEnter')(KorumHomesteadMinimap)")
+        tip = list(self.lua.eval("TIP").values())
+        alerts = [line[1] for line in self.lua.eval("NS.UI:AlertLines()").values()]
+        self.assertGreaterEqual(len(alerts), 2)                # the merchant and the plots
+        for line in alerts:
+            self.assertIn(line, tip)
+
     NOTES = """
         NOTES = {}
         local notify = NS.Notify
@@ -958,6 +976,44 @@ class Homestead(unittest.TestCase):
         self.lua.execute("NS.db.debug = nil; SlashCmdList.KORUMHOMESTEAD('debug')")
         self.assertFalse(self.ev("NS.db.debug"))
         self.assertFalse(self.ev("KorumHomesteadFrame:IsShown()")) # ... or closes it
+
+    def test_the_probe_writes_down_the_game_events_and_is_not_in_the_zip(self):
+        """T3.0: /kh eventos (with debug on) writes the events of the game and which functions exist; the packager comments
+        out all of Probe.lua."""
+        self.lua.execute("""
+            local Frame = getmetatable(UIParent)
+            KNOWN = {ENCOUNTER_END = true, ZONE_CHANGED_NEW_AREA = true}
+            local register = Frame.RegisterEvent
+            function Frame:RegisterEvent(event)
+                if KNOWN[event] == nil and self.probeTest then error("Attempt to register unknown event") end
+                return register(self, event)
+            end
+            function GetRealZoneText() return "Ironforge" end
+            function GetInstanceInfo() return "Hall of Thanes", "party", 1 end
+            local create = CreateFrame
+            function CreateFrame(...) local f = create(...); f.probeTest = true; return f end
+        """)
+        self.lua.execute("SlashCmdList.KORUMHOMESTEAD('eventos')")
+        self.assertIsNone(self.ev("NS.db.probe"))                 # without debug it does nothing
+        self.lua.execute("SlashCmdList.KORUMHOMESTEAD('debug'); SlashCmdList.KORUMHOMESTEAD('eventos')")
+        self.assertTrue(self.ev("NS.db.probe.on"))
+        log = " | ".join(self.lua.eval("NS.db.probe.log").values())
+        self.assertIn("APIs ok: GetInstanceInfo, GetRealZoneText", log)
+        self.assertIn("events ok: ENCOUNTER_END, ZONE_CHANGED_NEW_AREA", log)
+        self.assertIn("events missing: ENCOUNTER_START", log)
+        self.assertIn("here: zone=Ironforge", log)
+        self.assertIn("instance={Hall of Thanes, party, 1}", log)
+        n = self.ev("#NS.db.probe.log")
+        self.lua.execute("SlashCmdList.KORUMHOMESTEAD('eventos')")
+        self.assertFalse(self.ev("NS.db.probe.on"))
+        self.assertEqual(self.ev("#NS.db.probe.log"), n)        # turning off keeps what was written
+        self.lua.execute("SlashCmdList.KORUMHOMESTEAD('eventos limpar')")
+        self.assertEqual(self.ev("#NS.db.probe.log"), 0)
+        probe = (HOME / "Probe.lua").read_text(encoding="utf-8")
+        packed = probe.replace("--@debug@", "--[===[@debug@").replace("--@end-debug@", "--@end-debug@]===]")
+        self.lua.globals().PACKED = packed
+        self.lua.execute("NS.Probe = nil; assert(loadstring(PACKED))('KorumHomestead', NS)")
+        self.assertIsNone(self.ev("NS.Probe"))                     # nothing of it runs in the zip
 
     def test_it_is_independent_of_the_other_addons(self):
         for toc in HOME.glob("*.toc"):

@@ -162,20 +162,8 @@ function UI:CreateBubble()
     b:SetScript("OnEnter", function(self)
         self.hover = true
         if not GameTooltip then return end
-        local ready, deliverable = Waiting()
-        local work, left = KH.Village:Work()
         GameTooltip:SetOwner(self, "ANCHOR_TOP")
-        GameTooltip:AddLine("Korum Homestead", 0.25, 0.85, 0.80)
-        if ready > 0 then GameTooltip:AddLine(T(ready == 1 and "headReadyOne" or "headReadyMany", ready), 1, 1, 1) end
-        if deliverable > 0 then GameTooltip:AddLine(T(deliverable == 1 and "vilDeliverOneH" or "vilDeliverH", deliverable), 1, 1, 1) end
-        if not KH.Daily:Done() then
-            local streak = KH.Daily:Streak()
-            GameTooltip:AddLine(streak > 0 and T("dailyTipStreak", streak) or T("dailyTip"), 0.25, 0.85, 0.80)
-        end
-        if work then GameTooltip:AddLine(T("workLine", T("b_" .. work.id), KH.Village:Level(work.id) + 1, KH.Duration(left)), 0.8, 0.8, 0.8) end
-        if ready == 0 and deliverable == 0 and not work then GameTooltip:AddLine(T("tooltipNone"), 0.8, 0.8, 0.8) end
-        GameTooltip:AddLine(T("bubbleHow"), 0.6, 0.6, 0.6)
-        GameTooltip:Show()
+        UI:Summary(GameTooltip, "bubbleHow")
     end)
     b:SetScript("OnLeave", function(self) self.hover = false; if GameTooltip then GameTooltip:Hide() end end)
     -- it breathes while something waits
@@ -221,6 +209,29 @@ function UI:AlertLines()
     return out
 end
 
+-- the same summary on the icon on the screen and on the minimap button: everything that waits, the order of the day and
+-- the building being built; then how to use the one being pointed at
+function UI:Summary(tip, how)
+    tip:AddLine("Korum Homestead", 0.25, 0.85, 0.80)
+    local lines = self:AlertLines()
+    for _, line in ipairs(lines) do tip:AddLine(line[1], 1, 1, 1) end
+    if not KH.Daily:Done() then
+        local streak = KH.Daily:Streak()
+        tip:AddLine(streak > 0 and T("dailyTipStreak", streak) or T("dailyTip"), 0.25, 0.85, 0.80)
+    end
+    local work, left = KH.Village:Work()
+    if work then tip:AddLine(T("workLine", T("b_" .. work.id), KH.Village:Level(work.id) + 1, KH.Duration(left)), 0.8, 0.8, 0.8) end
+    if #lines == 0 and not work then tip:AddLine(T("tooltipNone"), 0.8, 0.8, 0.8) end
+    tip:AddLine(T(how), 0.6, 0.6, 0.6)
+    tip:Show()
+end
+
+-- what the number on the icon and on the minimap button counts: plots ready, orders that can be delivered, followers back
+function UI:WaitingCount()
+    local ready, deliverable = Waiting()
+    return ready + deliverable + KH.Inn:BackCount()
+end
+
 function UI:UpdateAlert()
     local b = bubble
     if not b or not b.alert then return end
@@ -240,7 +251,6 @@ function UI:UpdateAlert()
 end
 
 -- ----------------------------------------------------------------------------
--- The button on the minimap, with the count of ready plots
+-- The button on the minimap, with the same count and summary as the icon on the screen
 -- ----------------------------------------------------------------------------
 
-UI.P.Waiting = Waiting

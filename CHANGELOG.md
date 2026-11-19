@@ -2,6 +2,8 @@
 
 ## 2.1.0-alpha4
 - The minimap button shows the village logo, the same as the icon on the screen.
+- The minimap button counts and lists the same as the icon on the screen: visitors and the time they stay, plots ready, orders you can deliver and followers back.
+- The path at the top of the window no longer runs into "Village" in English.
 
 ## 2.1.0-alpha2
 The visitors stay a bonus at every level, and their texts were reviewed.

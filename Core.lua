@@ -167,6 +167,8 @@ SlashCmdList["KORUMHOMESTEAD"] = function(msg)
         local e = KH.Events:Spawn()                    -- a visitor now, without waiting (only with debug on)
         KH:Notify(KH.T("ev_new_" .. e.kind))
         if KH.UI then KH.UI:Refresh() end
+    elseif (msg:match("^eventos") or msg:match("^events")) and KH.db.debug and KH.Probe then
+        KH.Probe:Toggle(msg:match("%s+(%S+)$"))       -- the probe of the game's events (Probe.lua, T3.0)
     --@end-debug@
     elseif msg == "help" or msg == "ajuda" then
         KH:Print(KH.T("help"))

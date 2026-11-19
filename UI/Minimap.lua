@@ -7,7 +7,6 @@ local Reason, Notice, Screen = P.Reason, P.Notice, P.Screen
 local GoodTex, SetIcon = P.GoodTex, P.SetIcon
 local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingName, P.Tip
 
-local Waiting = P.Waiting
 local button
 local function PlaceButton()
     if not button then return end
@@ -17,11 +16,10 @@ local function PlaceButton()
 end
 
 function UI:UpdateBadge()
-    local ready, deliverable = Waiting()
+    local n = UI:WaitingCount()
     local bubble = UI.bubble
-    if button then button.badge:SetText(ready > 0 and tostring(ready) or "") end
+    if button then button.badge:SetText(n > 0 and tostring(n) or "") end
     if bubble then
-        local n = ready + deliverable + KH.Inn:BackCount()
         bubble.waiting = n > 0
         bubble.badge:SetShown(n > 0)
         bubble.badge.text:SetText(tostring(n))
@@ -67,11 +65,7 @@ function UI:CreateMinimap()
     b:SetScript("OnClick", function() UI:Toggle() end)
     b:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:AddLine(T("tooltipTitle"), 0.4, 0.85, 0.82)
-        local n = KH.Farm:ReadyCount()
-        GameTooltip:AddLine(n > 0 and T("tooltipReady", n) or T("tooltipNone"), 1, 1, 1)
-        GameTooltip:AddLine(T("tooltipClick"), 0.6, 0.6, 0.6)
-        GameTooltip:Show()
+        UI:Summary(GameTooltip, "tooltipClick")
     end)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     button = b

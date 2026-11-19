@@ -21,6 +21,7 @@ Daily.lua
 Village.lua
 Works.lua
 Events.lua
+Probe.lua
 Advice.lua
 Away.lua
 UI/Common.lua
