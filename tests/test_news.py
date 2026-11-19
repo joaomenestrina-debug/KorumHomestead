@@ -97,3 +97,22 @@ class Scrolling(Base):
         self.assertFalse(self.ev(s + ".pool[1].title:IsShown()"))         # the top went out of sight
         self.lua.execute("NS.UI:ShowNews(false)")
         self.assertEqual(self.ev(s + ".off"), 0)                          # opening again starts from the top
+
+
+class OneTitlePerVersion(Base):
+    SAVED = SAVE_101
+
+    def test_the_entries_of_one_version_show_under_one_title(self):
+        self.lua.execute("RunTimers()")
+        self.assertEqual(self.shown(), "news")
+        s = "NS.UI.screens.news"
+        titles = [self.ev(f"{s}.pool[{i}].title:GetText()") for i in range(1, self.ev(s + ".shown") + 1)
+                  if self.ev(f"{s}.items[{i}].head")]
+        versions = []
+        for i in range(self.ev("#NS.NEWS"), 0, -1):
+            v = self.ev(f"NS.NEWS[{i}].version")
+            if not versions or versions[-1] != v:
+                versions.append(v)
+        self.assertEqual(titles, [self.ev(f"NS.T('newsVersion', '{v}')") for v in versions])
+        self.assertEqual(len(titles), len(set(titles)))
+        self.assertEqual(self.ev(s + ".pool[1].tag:GetText()"), "New")

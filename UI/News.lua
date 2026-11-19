@@ -124,15 +124,20 @@ local function BuildNews(win)
         self.items = {}
         for e = #KH.NEWS, 1, -1 do
             local entry = KH.NEWS[e]
-            n = n + 1
-            local head = Line(n)
-            head.dot:Hide(); head.text:Hide()
-            head.title:SetText(T("newsVersion", entry.version))
-            head.tag:ClearAllPoints()
-            head.tag:SetPoint("LEFT", head.title, "RIGHT", 10, 0)
-            head.tag:SetText(entry.id > since and T("newsNew") or "")
-            self.items[n] = {head = true, y = y, h = 18}
-            y = y - 24
+            local newer = KH.NEWS[e + 1]
+            if newer and newer.version == entry.version then
+                y = y + 12                                  -- the same version as the entry above: one title for both
+            else
+                n = n + 1
+                local head = Line(n)
+                head.dot:Hide(); head.text:Hide()
+                head.title:SetText(T("newsVersion", entry.version))
+                head.tag:ClearAllPoints()
+                head.tag:SetPoint("LEFT", head.title, "RIGHT", 10, 0)
+                head.tag:SetText(entry.id > since and T("newsNew") or "")
+                self.items[n] = {head = true, y = y, h = 18}
+                y = y - 24
+            end
             for _, text in ipairs(KH.NewsLines(entry.id)) do
                 n = n + 1
                 local row = Line(n)

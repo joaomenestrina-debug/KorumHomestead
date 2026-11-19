@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.1.0
+Visitors come to the village, the art was redrawn, and the village dresses for Winter Veil. Your village is carried over: nothing you have is lost.
+
+**Visitors**
+- Now and then, while you play, someone comes: a messenger with an urgent order, a generous merchant, a trading caravan, a rare fish in the Pond or a rare vein in the Mine.
+- A cart on the village map glows while someone is there; a click opens the Visitors screen, with what each one wants, how long they stay and the answer (deliver, sell, trade, collect).
+- The alert beside the icon on the screen and the minimap button say who came and how long they stay. If the time runs out, the chance goes with them; nothing you have is taken.
+- At high levels the urgent orders and the merchants ask for fewer units of late herbs and Workshop items, so each visit stays a bonus next to the Garden; the price is still double.
+
+**Winter Veil**
+- During the Feast of Winter Veil (15 December to 2 January) the village is covered in snow, with a decorated pine, a snowman and a sled full of presents.
+
+**Art**
+- The map, every building at each level, the followers and the visitors were redrawn in high resolution.
+- The minimap button shows the village logo, the same as the icon on the screen.
+
+**Other changes**
+- Market orders, urgent orders and merchants ask only for Workshop items you can see and make on its screen.
+- A sparkle at the top of the window opens "What's new" whenever you want; the screen scrolls.
+- The Barn shows the space of the herbs, the ore and the fish apart; the Mine and the Pond show their own stock, and the Hall recommends a bigger Barn when ore or fish are filling it.
+- The minimap button counts and lists the same as the icon on the screen: visitors, plots ready, orders you can deliver and followers back.
+
 ## 2.1.0-alpha6
 - The Market orders, the urgent orders and the merchants ask only for Workshop items you can see and make on its screen: no more orders for a recipe the Workshop no longer shows.
 - The sled full of presents of Winter Veil is bigger, the size of the visitors' cart.
