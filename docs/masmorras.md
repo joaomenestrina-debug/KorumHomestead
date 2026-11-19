@@ -367,6 +367,24 @@ personagem faz no Forever e reage. O addon só lê eventos do jogo; nunca muda n
 - A vila é da conta: qualquer personagem que mata um chefe inspira os seguidores.
 - O que se guarda: a lista de chefes, masmorras e zonas já vistos (nomes e números do jogo), nada mais.
 - Uma opção no Guia desliga tudo (a vila volta a ignorar o jogo).
+
+### Trocar de zona não gera eventos (pedido do dono, 19/11)
+
+Ninguém deve ganhar nada entrando e saindo de zonas de propósito. Por isso:
+
+- **A zona só conta depois de 5 minutos nela**, seguidos e fora da tela de carregamento. Quem só passa voando, pega um
+  portal ou atravessa a zona não marca nada. Se sair antes, o relógio zera.
+- **Entrar numa zona nunca cria um evento na hora.** Ela só entra na lista de lugares vistos (uma vez por conta, para
+  sempre); os chamados continuam saindo no ritmo normal dos visitantes (no máximo 2 abertos).
+- **O lugar onde o personagem está tem prioridade no sorteio do próximo chamado**, mas cada zona dá essa prioridade
+  **no máximo uma vez a cada 2 horas**. Voltar à mesma zona antes disso não muda nada, e trocar entre várias zonas
+  também não, porque o sorteio só acontece no tempo normal.
+- Depois de qualquer reação da vila a uma zona, as outras zonas esperam **30 minutos** (recarga geral).
+- Os mesmos cuidados valem para o resto da tabela: a fila abre a vila **no máximo uma vez a cada 10 minutos**; a
+  inspiração de chefe **não acumula** (matar o mesmo chefe de novo renova as 3 idas, não soma pontos); a marca e o
+  troféu de masmorra são uma vez só.
+- Os tempos ficam no save da conta (`adventure.zoneAt`, `adventure.lastReact`), contados pelo relógio do servidor, então
+  sair do jogo ou recarregar a interface não zera nada.
 - **Antes de implementar:** um teste no jogo (T3.0) para ver quais eventos o cliente do Forever oferece: fim de chefe
   (`ENCOUNTER_END`, `BOSS_KILL`), troca de zona (`ZONE_CHANGED_NEW_AREA`, `GetInstanceInfo`), fila (o que existir no
   Forever: `LFG_*`, `UPDATE_BATTLEFIELD_STATUS`) e calendário (`C_Calendar`). O que não existir cai fora da tabela,
@@ -422,6 +440,9 @@ personagem faz no Forever e reage. O addon só lê eventos do jogo; nunca muda n
 - Chamados: cada tipo, prazo e expiração; visitantes e chamados juntos abaixo do teto da economia.
 - História: todo chamado e todo seguidor novo aponta para um fato de `docs/historia-forever.md`.
 - Aventura: cada evento do jogo (fim de chefe, zona, fila) com o cliente simulado; a opção desligada ignora tudo.
+- Aventura sem abuso: zona com menos de 5 min não conta; entrar e sair de zonas várias vezes não cria chamado nem muda
+  o sorteio; a recarga de 2 h por zona e a de 30 min geral sobrevivem a um `/reload`; a fila não abre a vila duas vezes
+  em 10 min; a inspiração de chefe não acumula.
 - Diário: toda combinação de ameaça, habilidade, combo e drop gera uma linha nos dois idiomas, sem chave faltando.
 
 ## 16. Telas
