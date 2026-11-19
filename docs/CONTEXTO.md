@@ -12,7 +12,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | | |
 |---|---|
 | **Versão publicada** | **2.0.0** no CurseForge (Release, 17/11) — é a que os jogadores usam. A **2.1** (eventos aleatórios + arte A6) saiu como **`v2.1.0-alpha1`**, **`v2.1.0-alpha2`** e **`v2.1.0-alpha3`** em 18/11 (Alpha no CurseForge; a alpha3 tira o `/kh debug` do zip) |
-| **Em desenvolvimento** | **2.2 e 2.3: masmorras e seguidores** (especificação **aprovada em 18/11** em [masmorras.md](masmorras.md); fatos do Forever em [historia-forever.md](historia-forever.md)). Plano antigo em [plano-2.0.md](plano-2.0.md) e [cronograma-2.0.md](cronograma-2.0.md) |
+| **Em desenvolvimento** | **2.2 e 2.3: masmorras e seguidores** (especificação **aprovada em 18/11** em [masmorras.md](masmorras.md); fatos do Forever em [historia-forever.md](historia-forever.md)). Cronograma em [cronograma-2.0.md](cronograma-2.0.md) (reescrito em 18/11); plano antigo em [plano-2.0.md](plano-2.0.md) |
 | **Sprint atual** | **S2 — Eventos aleatórios**: motor, telas e arte na `v2.1.0-alpha1`; T2.10 (economia) feita em 18/11; T2.8 (textos) integrada; **`v2.1.0-alpha2`** publicada em 18/11 |
 | **Próximo marco** | S3 abre em **07/12** (`v2.2.0-alpha1` em 13/12) |
 | **`main`** | jogável, testes verdes; instalada no WoW Forever de teste |
