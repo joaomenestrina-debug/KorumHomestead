@@ -397,6 +397,8 @@ personagem faz no Forever e reage. O addon só lê eventos do jogo; nunca muda n
 
  (schema 4)
 
+## 14. Saves que já existem (schema 4)
+
 - Cada seguidor vira **nível = 2 × nível antigo − 1** (o antigo ia de 1 a 5; vira 1 a 9), qualidade Comum, com a
   habilidade e o traço iniciais e sem equipamento.
 - Seguidor em missão antiga: volta no horário marcado e recebe a recompensa antiga, como se nada tivesse mudado.
