@@ -4,8 +4,12 @@ Regra do dono (18/11/2026): **todo evento do addon tem relação com a história
 novos, masmorras e visitantes). Este arquivo é a única fonte desses textos: um evento só cita lugar, povo ou conflito que
 está aqui.
 
-**Estados:** ✅ confirmado no jogo pelo dono · 📢 anúncio oficial da Blizzard · 🔎 só guia ou notícia (pista, ainda não
-fonte: não vai para texto de evento até subir de estado).
+**Estados:** ✅ confirmado no jogo pelo dono ou no **Wowhead do Forever** · 📢 anúncio oficial da Blizzard · 🔎 só guia
+ou notícia (pista, ainda não fonte: não vai para texto de evento até subir de estado).
+
+**Fonte de consulta (decisão do dono, 19/11):** qualquer informação do jogo pode ser buscada em
+**https://www.wowhead.com/forever/pt** (dados tirados do próprio jogo, com os nomes do cliente ptBR). O site monta as
+páginas com JavaScript: abrir no navegador, não pelo texto cru.
 
 *Primeira versão: 18/11/2026, por Claude, a partir de notícias e guias publicados depois da BlizzCon 2026. Tudo começa
 em 🔎 até o dono conferir no jogo.*
