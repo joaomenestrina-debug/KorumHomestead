@@ -8,7 +8,7 @@ Everything runs by the clock, so **your village keeps working while the game is 
 
 It is a minigame of its own: it never touches your character, your bags or your gold, and it needs no other addon.
 
-<p align="center"><img src="docs/1-village.png" width="720" alt="The village"></p>
+<p align="center"><img src="docs/pagina/en/1-village.png" width="720" alt="The village"></p>
 
 ## Features
 
@@ -23,8 +23,8 @@ It is a minigame of its own: it never touches your character, your bags or your 
 
 | | |
 |---|---|
-| ![Garden](docs/2-garden.png) | ![Workshop](docs/3-workshop.png) |
-| ![Inn](docs/4-inn.png) | ![How it works](docs/6-how-it-works.png) |
+| ![Garden](docs/pagina/en/3-garden.png) | ![Workshop](docs/pagina/en/4-workshop.png) |
+| ![Inn](docs/pagina/en/5-inn.png) | ![Visitors](docs/pagina/en/2-visitors.png) |
 
 ## Install
 
