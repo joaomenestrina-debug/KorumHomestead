@@ -7,8 +7,10 @@ local Reason, Notice, Screen = P.Reason, P.Notice, P.Screen
 local GoodTex, SetIcon = P.GoodTex, P.SetIcon
 local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingName, P.Tip
 
-local RECIPE_H, RECIPE_GAP, QUEUE_ROWS = 56, 6, 5
+-- the recipes are three cards side by side (owner, 20/11), so the queue under them has room for more lines
+local RECIPE_H, RECIPE_GAP, QUEUE_ROWS = 142, 10, 6
 local RECIPE_TOP = 98                          -- under the line of trades
+local NEED_LINES = 3                           -- one line for each thing a recipe takes
 UI.trade = "alchemy"
 
 local function BuildWorkshop(win)
@@ -24,37 +26,52 @@ local function BuildWorkshop(win)
     s.tradeHint:SetPoint("LEFT", s.trades, "RIGHT", 16, 0)
     s.tradeHint:SetWidth(s.width - 440 - 16)          -- what is left beside the tabs; a long hint takes two lines
     s.tradeHint:SetWordWrap(true)
+    local CW = math.floor((W - (Wk.ROWS - 1) * RECIPE_GAP) / Wk.ROWS)
+    local TW = CW - 24
     for i = 1, Wk.ROWS do
         local row = CreateFrame("Frame", nil, s.frame)
-        row:SetSize(W, RECIPE_H)
-        row:SetPoint("TOPLEFT", 0, -RECIPE_TOP - (i - 1) * (RECIPE_H + RECIPE_GAP))
+        row:SetSize(CW, RECIPE_H)
+        row:SetPoint("TOPLEFT", (i - 1) * (CW + RECIPE_GAP), -RECIPE_TOP)
         row.surface, row.outline = Kit.Rounded(row, 12, 1, 1, 1, 0.045, 0.06)
         row.icon = row:CreateTexture(nil, "ARTWORK")
-        row.icon:SetSize(40, 40)
-        row.icon:SetPoint("LEFT", 14, 0)
-        row.name = Kit.Text(row, 13, C.text)
-        row.name:SetPoint("TOPLEFT", 68, -9)
-        row.needs = Kit.Text(row, 10, C.textSoft)
-        row.needs:SetPoint("TOPLEFT", 68, -29)
-        row.needs:SetWidth(W - 68 - 190)
-        row.needs:SetWordWrap(false)
-        row.button = Kit.Button(row, 156, 32, "", function()
+        row.icon:SetSize(34, 34)
+        row.icon:SetPoint("TOPLEFT", 12, -12)
+        row.name = Kit.Text(row, 12, C.text)
+        row.name:SetPoint("TOPLEFT", 54, -12)
+        row.name:SetWidth(CW - 66)
+        row.name:SetWordWrap(false)
+        row.meta = Kit.Text(row, 10, C.textMuted)                -- how long and what it is worth
+        row.meta:SetPoint("TOPLEFT", 54, -30)
+        row.meta:SetWidth(CW - 66)
+        row.meta:SetWordWrap(false)
+        row.tag = Kit.Text(row, 10, C.accent)                    -- "Recommended": the craft worth the most now
+        row.tag:SetPoint("TOPLEFT", 12, -54)
+        row.tag:SetWidth(TW)
+        row.tag:SetWordWrap(false)
+        row.needs = {}
+        for k = 1, NEED_LINES do
+            local line = Kit.Text(row, 10, C.textSoft)
+            line:SetPoint("TOPLEFT", 12, -70 - (k - 1) * 15)
+            line:SetWidth(TW)
+            line:SetWordWrap(false)
+            row.needs[k] = line
+        end
+        row.button = Kit.Button(row, TW, 28, "", function()
             local ok, why, n = Wk:Craft(row.id)
             if not ok then Notice(Reason(why)) end
             UI:Refresh()
         end)
-        row.button:SetPoint("RIGHT", -14, 0)
-        row.tag = Kit.Text(row, 10, C.accent)                -- "Recommended": the craft worth the most now
-        row.tag:SetPoint("LEFT", row.name, "RIGHT", 10, 0)
+        row.button:SetPoint("BOTTOM", 0, 10)
         s.rows[i] = row
     end
+    local QUEUE_TOP = RECIPE_TOP + RECIPE_H + 14
     s.queueHead = Kit.Text(s.frame, 11, C.textMuted)
-    s.queueHead:SetPoint("TOPLEFT", 0, -RECIPE_TOP - 3 * (RECIPE_H + RECIPE_GAP) - 4)
+    s.queueHead:SetPoint("TOPLEFT", 0, -QUEUE_TOP)
     s.queue = {}
     for i = 1, QUEUE_ROWS do
         local row = CreateFrame("Frame", nil, s.frame)
         row:SetSize(W, 26)
-        row:SetPoint("TOPLEFT", 0, -RECIPE_TOP - 3 * (RECIPE_H + RECIPE_GAP) - 24 - (i - 1) * 28)
+        row:SetPoint("TOPLEFT", 0, -QUEUE_TOP - 20 - (i - 1) * 28)
         row.icon = row:CreateTexture(nil, "ARTWORK")
         row.icon:SetSize(22, 22)
         row.icon:SetPoint("LEFT", 0, 0)
@@ -93,22 +110,28 @@ local function BuildWorkshop(win)
             row.id = r.id
             row.icon:SetTexture(GoodTex(r.id))
             local unlocked = level >= r.level
-            row.name:SetText(T("good_" .. r.id) .. "   |cff757a87" .. KH.Duration(r.time) .. "  ·  " .. T("worth", KH.Number(V:GoodSell(r.id))) .. "|r")
-            local parts = {}
-            for _, input in ipairs(r.inputs) do
-                local have = Wk.Stock(input[1])
-                local label = type(input[1]) == "string" and T("good_" .. input[1]) or D.Name(input[1])
-                parts[#parts + 1] = string.format("|cff%s%d|r/%d × %s", have >= input[2] and "59d973" or "ff6a5c", have, input[2], label)
+            Kit.Fit(row.name, T("good_" .. r.id), CW - 66, 10)
+            Kit.Fit(row.meta, KH.Duration(r.time) .. "  ·  " .. T("worth", KH.Number(V:GoodSell(r.id))), CW - 66)
+            for k, line in ipairs(row.needs) do
+                local input = r.inputs[k]
+                if not unlocked then
+                    line:SetText(k == 1 and T("short_recipe", r.level) or "")
+                elseif input then
+                    local have = Wk.Stock(input[1])
+                    local label = type(input[1]) == "string" and T("good_" .. input[1]) or D.Name(input[1])
+                    Kit.Fit(line, string.format("|cff%s%d|r/%d × %s", have >= input[2] and "59d973" or "ff6a5c", have, input[2], label), TW)
+                else
+                    line:SetText("")
+                end
             end
-            row.needs:SetText(unlocked and table.concat(parts, "   ") or T("short_recipe", r.level))
             row.icon:SetAlpha(unlocked and 1 or 0.3)
             local ok, why, n = Wk:CanCraft(row.id)
-            row.tag:SetText(row.id == best and T(why == "order" and "recommendedOrder" or "recommended") or "")
+            Kit.Fit(row.tag, row.id == best and T(why == "order" and "recommendedOrder" or "recommended") or "", TW)
             if ok then
                 row.button:SetLabel(T("craft"))
                 row.button:SetStyle(row.id == best and "primary" or "quiet")
             else
-                row.button:SetLabel(T("short_" .. why, n))
+                row.button:SetLabel(T("short_" .. why, n))       -- a label longer than the button shrinks (Kit.Fit)
                 row.button:SetStyle("quiet")
             end
             row.button:SetEnabledState(ok)

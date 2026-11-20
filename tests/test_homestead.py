@@ -232,9 +232,9 @@ class Homestead(unittest.TestCase):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.goods.fish = 5; NS.db.tutorial.done = true")
         self.open("workshop")
         rows = "NS.UI.screens.workshop.rows"
-        self.assertEqual(self.ev(rows + "[1].name:GetText()").split("   ")[0], self.ev("NS.T('good_heal')"))
+        self.assertEqual(self.ev(rows + "[1].name:GetText()"), self.ev("NS.T('good_heal')"))
         self.lua.execute("NS.UI.trade = 'cooking'; NS.UI:Refresh()")
-        self.assertEqual(self.ev(rows + "[1].name:GetText()").split("   ")[0], self.ev("NS.T('good_stew')"))
+        self.assertEqual(self.ev(rows + "[1].name:GetText()"), self.ev("NS.T('good_stew')"))
         self.press(rows + "[1].button")
         self.assertEqual(self.ev("NS.Village:Good('fish')"), 1)
         self.assertEqual(self.ev("#NS.db.queue"), 1)
