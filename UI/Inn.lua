@@ -84,6 +84,8 @@ local function StateText(fid)
     if state == "away" then return T("folAway", KH.Duration(left))
     elseif state == "back" then return "|cff59d973" .. T("folBack") .. "|r"
     elseif state == "hurt" then return "|cffff7a6b" .. T("folHurt", KH.Duration(left)) .. "|r" end
+    local place = KH.Inn:Working(fid)
+    if place then return T("folWork", P.BuildingName(place)) end
     return T("folHome")
 end
 
@@ -765,8 +767,12 @@ local function BuildInn(win)
                 r:SetAlpha(rec.free and 1 or 0.45)
                 if not rec.free then
                     local state, left = In:State(rec.id)
-                    r.tag:SetText("|cff757a87" .. T(state == "hurt" and "runHurt" or (state == "back" and "runBack" or "runBusy"),
-                        KH.Duration(left)) .. "|r")
+                    if state == "home" and In:Working(rec.id) then
+                        Kit.Fit(r.tag, "|cff757a87" .. T("folWork", P.BuildingName(In:Working(rec.id))) .. "|r", 170)
+                    else
+                        r.tag:SetText("|cff757a87" .. T(state == "hurt" and "runHurt" or (state == "back" and "runBack" or "runBusy"),
+                            KH.Duration(left)) .. "|r")
+                    end
                     r.gain:SetText("")
                 else
                     local names = {}
@@ -852,7 +858,9 @@ local function BuildInn(win)
         sheet.bar:Set(max and 1 or f.xp / need)
         sheet.state:SetText(StateText(fid) .. "   |cff757a87" .. T("folRuns", f.runs or 0) .. "|r")
         local where = T(In:InRoom(fid) and "sheetRoom" or "sheetLodge")
-        sheet.where:SetText(In.Def(fid).from and T("sheetFrom", T("from_" .. fid), where) or where)
+        if In.Def(fid).from then where = T("sheetFrom", T("from_" .. fid), where) end
+        if In.Def(fid).job then where = where .. "\n|cff40d9c4" .. T("job_" .. In.Def(fid).job) .. "|r: " .. T("jobd_" .. In.Def(fid).job) end
+        sheet.where:SetText(where)
         local abs = In:Abilities(fid)
         for k, b in ipairs(sheet.abs) do
             if abs[k] then

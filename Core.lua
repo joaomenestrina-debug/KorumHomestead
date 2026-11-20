@@ -35,6 +35,7 @@ KH.defaults = {
     followers = {},        -- the Inn's, by id: {level, xp, quality, ability, trait, changes, runs, hurt, marks} (Dungeons.lua)
     found = {},            -- the followers that were found: id -> when (the six of the village come with the Inn)
     lodged = {},           -- id -> true: waits in the Lodging (everyone else of the roster is in a room)
+    jobs = {},             -- mine, pond -> the follower that works there (Inn:Work)
     arrivals = {},         -- ids of who arrived and was not greeted yet (the arrival card)
     trips = {},            -- groups in a dungeon: {n, dungeon, at, time, party, total, ok, coins, vxp, fxp, hurt, drop, ...}
     dungeons = {serial = 0, merit = 0, epic = 0, runs = 0},   -- insignias and counters of the dungeons

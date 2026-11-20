@@ -261,6 +261,15 @@ def extras(out):
     scene("grupo-sete-livres", "inn", found + "NS.UI.innDungeon = 'stratholme'; NS.UI.innParty = {}")
     scene("grupo-do-alojamento", "inn", found + "NS.UI.innDungeon = 'scholomance'; NS.UI.innParty = {'mira'}")
     scene("grupo-raide-sete", "inn", found + "NS.UI.innDungeon = 'onyxia'; NS.UI.innParty = NS.Dungeons:Suggest('onyxia')")
+    # the work at the Mine and at the Pond: nobody, anyone, who has the trade; and what the Inn says of who works
+    for place, pro, other in (("mine", "hargrim", "shalendra"), ("pond", "brakka", "ilyanna")):
+        scene(f"trabalho-{place}-vazio", place, found)
+        scene(f"trabalho-{place}-oficio", place, found + f"NS.Inn:Work('{pro}', '{place}')")
+        scene(f"trabalho-{place}-qualquer", place, found + f"NS.Inn:Work('{other}', '{place}')")
+        scene(f"trabalho-{place}-ficha", "inn", found + f"NS.Inn:Work('{pro}', '{place}'); NS.UI.innFollower = '{pro}'")
+    scene("trabalho-estalagem", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond')")
+    scene("trabalho-grupo", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond'); NS.UI.innDungeon = 'stratholme'")
+    scene("trabalho-ranking", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond'); NS.UI.innTab = 'ranking'; NS.UI.innRank = 2")
     places = ("zephras", "thanes", "lordaeron", "excavation", "drowned", "kroldok", "alcaz", "blackmaw")
     for kind in ("defense", "attack", "escort", "rescue", "recon"):
         for place in places:

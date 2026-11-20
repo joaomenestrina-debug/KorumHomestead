@@ -122,11 +122,13 @@ function V:Good(good)
     return (KH.db.goods and KH.db.goods[good]) or 0
 end
 
--- units an hour of the building at this level (or at the level it has)
+-- units an hour of the building at this level; at the level it has, with who works there (Inn:WorkBonus)
 function V:Rate(id, level)
     local good = V.MAKES[id]
     if not good then return 0 end
-    return V.GOODS[good].perHour * (level or self:Level(id))
+    if level then return V.GOODS[good].perHour * level end
+    local bonus = KH.Inn and KH.Inn:WorkBonus(id) or 0
+    return V.GOODS[good].perHour * self:Level(id) * (1 + bonus)
 end
 
 function V:Produce()

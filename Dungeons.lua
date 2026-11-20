@@ -18,6 +18,8 @@
         Inn:Welcome(id, level)               someone found arrives: "new", or the insignia a repeated one becomes
         Inn:Arrivals() / Inn:Greeted(id)     who arrived and was not greeted yet (the arrival card)
         Inn.Gear(goodId)                     {slot, power, item} of a piece (the Workshop's or one with a name)
+        Inn:Work(id, place) / Inn:Rest(place)   a follower at home works at the Mine or the Pond, or stops
+        Inn:Worker(place) / Inn:Working(id) / Inn:WorkBonus(place) / Inn:Workers(place)   who, where, how much, who could
         Inn:State(id)                       "home" | "away" | "back" | "hurt", seconds left
         Inn:Abilities(id) / Inn:Traits(id)  what it has now
         Inn:AddXP(id, n)                    levels gained
@@ -384,6 +386,74 @@ function I:Welcome(id, level)
     return "new"
 end
 
+-- Work: one follower at home at the Mine and one at the Pond (B.JOBS). What the building made up to now is counted at the
+-- old pace before anyone comes or goes.
+local function Jobs()
+    local db = KH.db
+    db.jobs = db.jobs or {}
+    return db.jobs
+end
+
+function I:Worker(place)
+    local fid = Jobs()[place]
+    if fid and self:Has(fid) then return fid end
+    return nil
+end
+
+function I:Working(id)
+    for _, place in ipairs(B.JOBS.order) do
+        if Jobs()[place] == id and self:Has(id) then return place end
+    end
+    return nil
+end
+
+function I.JobBonus(id, place)
+    return I.Def(id).job == B.JOBS[place] and B.JOBS.skilled or B.JOBS.any
+end
+
+function I:WorkBonus(place)
+    local fid = B.JOBS[place] and self:Worker(place)
+    return fid and I.JobBonus(fid, place) or 0
+end
+
+function I:Work(id, place)
+    if not B.JOBS[place] or V:Level(place) < 1 then return false, "nothing" end
+    if not self:Has(id) then return false, "nothing" end
+    local state = self:State(id)
+    if state ~= "home" and state ~= "hurt" then return false, "away" end
+    V:Produce()
+    for _, other in ipairs(B.JOBS.order) do
+        if Jobs()[other] == id then Jobs()[other] = nil end
+    end
+    Jobs()[place] = id
+    return true
+end
+
+function I:Rest(place)
+    if not Jobs()[place] then return false end
+    V:Produce()
+    Jobs()[place] = nil
+    return true
+end
+
+-- who could work there now (at home, not working elsewhere), the best first: who has the trade, then who waits in the
+-- Lodging (so the rooms keep who goes out)
+function I:Workers(place)
+    local out = {}
+    for _, id in ipairs(self:List()) do
+        local state = self:State(id)
+        if (state == "home" or state == "hurt") and not self:Working(id) then
+            out[#out + 1] = {id = id, bonus = I.JobBonus(id, place), room = self:InRoom(id)}
+        end
+    end
+    table.sort(out, function(a, b)
+        if a.bonus ~= b.bonus then return a.bonus > b.bonus end
+        if a.room ~= b.room then return not a.room end
+        return I.Def(a.id).index < I.Def(b.id).index
+    end)
+    return out
+end
+
 function I:Arrivals() return KH.db.arrivals or {} end
 function I:Greeted(id)
     local list = KH.db.arrivals or {}
@@ -551,7 +621,7 @@ function Dg.Odds(total)
 end
 
 function Dg:Free(fid)
-    return I:InRoom(fid) and I:State(fid) == "home"
+    return I:InRoom(fid) and I:State(fid) == "home" and not I:Working(fid)
 end
 
 function Dg:Recommended(id, party, opts)
@@ -599,7 +669,7 @@ function Dg:LodgeHint(id, party, opts)
     end
     local who, gain, counters
     for _, fid in ipairs(I:List()) do
-        if not I:InRoom(fid) and I:State(fid) == "home" then
+        if not I:InRoom(fid) and I:State(fid) == "home" and not I:Working(fid) then
             local g, mine = Gain(fid)
             if g > best and (not gain or g > gain) then who, gain, counters = fid, g, mine end
         end

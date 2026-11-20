@@ -20,10 +20,14 @@ local function Effect(id, level)
 end
 P.Effect = Effect
 
--- The Mine and the Pond: they work by themselves, so this screen only says what they make and where it goes
+-- The Mine and the Pond: they work by themselves; the screen says what they make and where it goes, and gives the one
+-- place of work of the building to a follower at home (Inn:Work): anyone adds a little, who has the trade adds more
+local WORK_ROWS = 5
 local function BuildSource(id)
     return function(win)
         local s = Screen(win, id)
+        local W = s.width
+        local In = KH.Inn
         s.sub:SetWordWrap(true)                     -- the description of the place can take two lines
         s.rate = Kit.Text(s.frame, 18, C.text)
         s.rate:SetPoint("TOPLEFT", 0, -90)
@@ -32,13 +36,101 @@ local function BuildSource(id)
         s.action = Kit.Button(s.frame, 220, 36, T("openBarn"), function() UI:Show("barn") end)
         s.action:SetPoint("BOTTOMRIGHT", 0, 0)
         s.action:SetStyle("primary")
+
+        local work = CreateFrame("Frame", nil, s.frame)
+        work:SetAllPoints(s.frame)
+        s.work = work
+        work.head = Kit.Text(work, 11, C.textMuted)
+        work.head:SetPoint("TOPLEFT", 0, -158)
+        work.disc = work:CreateTexture(nil, "ARTWORK")
+        work.disc:SetSize(36, 36)
+        work.disc:SetPoint("TOPLEFT", 0, -178)
+        work.now = Kit.Text(work, 12, C.text)
+        work.now:SetPoint("LEFT", work.disc, "RIGHT", 10, 0)
+        work.now:SetWidth(W - 46 - 130)
+        work.now:SetWordWrap(true)
+        work.stop = Kit.Button(work, 110, 28, "", function()
+            In:Rest(id)
+            UI:Refresh()
+        end)
+        work.stop:SetPoint("TOPRIGHT", 0, -182)
+        work.pick = Kit.Text(work, 11, C.textMuted)
+        work.pick:SetPoint("TOPLEFT", 0, -230)
+        work.pick:SetWidth(W)
+        work.pick:SetWordWrap(false)
+        work.rows = {}
+        for k = 1, WORK_ROWS do
+            local r = CreateFrame("Button", nil, work)
+            r:SetSize(W, 30)
+            r:SetPoint("TOPLEFT", 0, -250 - (k - 1) * 33)
+            r.surface, r.outline = Kit.Rounded(r, 9, 1, 1, 1, 0.04, 0.05)
+            r.disc = r:CreateTexture(nil, "ARTWORK")
+            r.disc:SetSize(26, 26)
+            r.disc:SetPoint("LEFT", 4, 0)
+            r.name = Kit.Text(r, 11, C.text)
+            r.name:SetPoint("LEFT", 40, 0)
+            r.name:SetWidth(200)
+            r.name:SetWordWrap(false)
+            r.tag = Kit.Text(r, 10, C.textSoft)
+            r.tag:SetPoint("LEFT", 250, 0)
+            r.tag:SetWidth(280)
+            r.tag:SetWordWrap(false)
+            r.gain = Kit.Text(r, 11, C.text, "RIGHT")
+            r.gain:SetPoint("RIGHT", -12, 0)
+            r:SetScript("OnClick", function()
+                if r.fid then
+                    Kit.ClickSound()
+                    local ok, why = In:Work(r.fid, id)
+                    if not ok then Notice(Reason(why)) end
+                    UI:Refresh()
+                end
+            end)
+            work.rows[k] = r
+        end
+
         function s:Refresh()
             local level = V:Level(id)
             self.head:SetText(BuildingName(id))
             self.sub:SetText(T("b_" .. id .. "D"))
-            self.rate:SetText(level > 0 and T("fx_" .. id, V:Rate(id)) or "")
+            self.rate:SetText(level > 0 and T("fx_" .. id, math.floor(V:Rate(id) + 0.5)) or "")
             self.have:SetText(level > 0 and T("storedHere", V:Good(V.MAKES[id]), V:BarnCap()) or "")
             self.action:SetShown(level > 0)
+            local J = KH.Balance.JOBS
+            local job = T("job_" .. J[id])
+            local any, skilled = math.floor(J.any * 100 + 0.5), math.floor(J.skilled * 100 + 0.5)
+            local list = level > 0 and In:Workers(id) or {}
+            local fid = level > 0 and In:Worker(id)
+            self.work:SetShown(level > 0 and (fid ~= nil or #list > 0))
+            if not self.work:IsShown() then return end
+            work.head:SetText(T("workH"))
+            work.disc:SetShown(fid ~= nil)
+            work.stop:SetShown(fid ~= nil)
+            work.now:ClearAllPoints()
+            if fid then
+                work.disc:SetTexture(VDIR .. "follower" .. In.Def(fid).portrait)
+                work.now:SetPoint("LEFT", work.disc, "RIGHT", 10, 0)
+                work.now:SetText(T("workNow", T("fol_" .. fid), math.floor(In.JobBonus(fid, id) * 100 + 0.5)))
+                work.stop:SetLabel(T("workStop"))
+            else
+                work.now:SetPoint("TOPLEFT", 0, -182)
+                work.now:SetText("|cffa8adb8" .. T("workNone", any, job, skilled) .. "|r")
+            end
+            Kit.Fit(work.pick, #list > 0 and T("workPick") or "", W)
+            for k, r in ipairs(work.rows) do
+                local c = list[k]
+                r:SetShown(c ~= nil)
+                r.fid = c and c.id
+                if c then
+                    local f = In:Get(c.id)
+                    local q = P.QUALITY and P.QUALITY[f.quality]
+                    r.disc:SetTexture(VDIR .. "follower" .. In.Def(c.id).portrait)
+                    Kit.Fit(r.name, T("fol_" .. c.id) .. "  |cffa8adb8" .. T("folLevel", f.level) .. "|r", 200)
+                    if q then r.name:SetTextColor(q[1], q[2], q[3]) end
+                    local pro = In.Def(c.id).job == J[id]
+                    Kit.Fit(r.tag, (pro and ("|cff40d9c4" .. job .. "|r · ") or "") .. T(c.room and "sheetRoom" or "sheetLodge"), 280)
+                    r.gain:SetText((pro and "|cff59d973+" or "|cffa8adb8+") .. math.floor(c.bonus * 100 + 0.5) .. "%|r")
+                end
+            end
         end
         return s
     end

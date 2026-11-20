@@ -329,7 +329,7 @@ B.TRAITS = {
 B.FOLLOWERS = {
     {id = "mira", portrait = 1, rarity = "uncommon", start = "volley", rare = {"eagle", "aimed"}, trait = "forest",
         epic = {{"swift"}, {"lucky"}}},
-    {id = "tobin", portrait = 2, rarity = "uncommon", start = "hammer", rare = {"locks", "silver"}, trait = "ironhands",
+    {id = "tobin", job = "miner", portrait = 2, rarity = "uncommon", start = "hammer", rare = {"locks", "silver"}, trait = "ironhands",
         epic = {{"tough"}, {"likes", "fortress"}}},
     {id = "elda", portrait = 3, rarity = "uncommon", start = "herbs", rare = {"holy", "balm"}, trait = "wise",
         epic = {{"quick"}, {"likes", "cave"}}},
@@ -337,7 +337,7 @@ B.FOLLOWERS = {
         epic = {{"tough"}, {"partner", "elda"}}},
     {id = "sela", portrait = 5, rarity = "uncommon", start = "counter", rare = {"fireball", "blizzard"}, trait = "curious",
         epic = {{"lucky"}, {"likes", "crypt"}}},
-    {id = "bram", portrait = 6, rarity = "uncommon", start = "courage", rare = {"distract", "dissonant"}, trait = "company",
+    {id = "bram", job = "fisher", portrait = 6, rarity = "uncommon", start = "courage", rare = {"distract", "dissonant"}, trait = "company",
         epic = {{"swift"}, {"partner", "mira"}}},
     -- The ones that are found (docs/masmorras.md §3.5; the names and the looks: docs/tarefas/A8.md). They come Rare, Epic
     -- or Legendary, with their abilities already (`second`), and only from their place: `from` = {dungeon = id} a drop of
@@ -351,9 +351,9 @@ B.FOLLOWERS = {
         epic = {{"tough"}, {"partner", "hargrim"}}, from = {dungeon = "thanes"}},
     {id = "aldric", portrait = 9, rarity = "rare", start = "unholy", second = "devotion", trait = {"likes", "crypt"},
         epic = {{"tough"}, {"likes", "ruins"}}, from = {dungeon = "lordaeron"}},
-    {id = "fizzwick", portrait = 10, rarity = "rare", start = "ruinlore", second = "oldlore", trait = "curious",
+    {id = "fizzwick", job = "miner", portrait = 10, rarity = "rare", start = "ruinlore", second = "oldlore", trait = "curious",
         epic = {{"lucky"}, {"likes", "ruins"}}, from = {dungeon = "excavation"}},
-    {id = "tazu", portrait = 11, rarity = "rare", start = "voodoo", second = "barbed", trait = "forest",
+    {id = "tazu", job = "fisher", portrait = 11, rarity = "rare", start = "voodoo", second = "barbed", trait = "forest",
         epic = {{"swift"}, {"quick"}}, from = {rescue = "drowned"}},
     {id = "elandor", portrait = 12, rarity = "epic", start = "greatcounter", second = "teleport", trait = "wise",
         epic = {{"lucky"}, {"partner", "sela"}}, from = {rescue = "alcaz"}},
@@ -361,11 +361,11 @@ B.FOLLOWERS = {
         epic = {{"tough"}, {"partner", "shalendra"}}, from = {rescue = "blackmaw"}},
     {id = "corvo", portrait = 14, rarity = "epic", start = "stealth", second = "cheapshot", trait = "lucky",
         epic = {{"swift"}, {"likes", "fortress"}}, from = {rescue = "alcaz"}},
-    {id = "brakka", portrait = 15, rarity = "epic", start = "frosttrap", second = "serene", trait = "company",
+    {id = "brakka", job = "fisher", portrait = 15, rarity = "epic", start = "frosttrap", second = "serene", trait = "company",
         epic = {{"tough"}, {"likes", "cave"}}, from = {rescue = "blackmaw"}},
     {id = "ilyanna", portrait = 16, rarity = "legendary", start = "zephras", trait = "wise",
         epic = {{"swift"}, {"lucky"}}, from = {raid = "onyxia"}},
-    {id = "hargrim", portrait = 17, rarity = "legendary", start = "bastion", trait = "ironhands",
+    {id = "hargrim", job = "miner", portrait = 17, rarity = "legendary", start = "bastion", trait = "ironhands",
         epic = {{"tough"}, {"likes", "fortress"}}, from = {dungeon = "thanes", legendary = true}},
     {id = "shalendra", portrait = 18, rarity = "legendary", start = "ancestral", trait = "tough",
         epic = {{"lucky"}, {"likes", "crypt"}}, from = {rescue = "blackmaw", legendary = true}},
@@ -380,6 +380,11 @@ B.FOLLOWERS = {
 --   guarantee   after this many dungeons with nobody new, the next success brings a Rare
 B.NEWCOMER = {dungeon = {{upTo = 10, chance = 0.01}, {upTo = 20, chance = 0.02}, {upTo = 30, chance = 0.03}},
     legendaryShare = 0.10, raidLegendary = 0.02, raidLuck = 0.10, rescue = 0.25, guarantee = 40}
+
+-- Work (owner, 19/11): the Mine and the Pond have one place each for a follower at home. While it works there it does
+-- not go out; anyone adds `any` to what the building makes, who has the trade of the place (`job` of the follower) adds
+-- `skilled`.
+B.JOBS = {any = 0.10, skilled = 0.25, order = {"mine", "pond"}, mine = "miner", pond = "fisher"}
 
 -- Power: one number for a follower, for the Ranking (level, quality and equipment)
 B.POWER = {level = 10, gear = 5, quality = {uncommon = 0, rare = 40, epic = 80, legendary = 150}}

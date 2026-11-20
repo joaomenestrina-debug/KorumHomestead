@@ -353,6 +353,70 @@ class Zones(Base):
         self.assertIsNone(self.ev("NS.db.adventure.raidLuck"))
 
 
+class Work(Base):
+    def test_a_follower_at_the_mine_adds_10_and_a_miner_25(self):
+        self.inn(level=6)
+        self.lua.execute("NS.db.buildings.mine = 4; NS.db.buildings.pond = 4")
+        base = self.ev("NS.Village:Rate('mine')")
+        self.assertTrue(self.ev("(NS.Inn:Work('mira', 'mine'))"))
+        self.assertAlmostEqual(self.ev("NS.Village:Rate('mine')"), base * 1.10)
+        self.assertTrue(self.ev("(NS.Inn:Work('tobin', 'mine'))"))           # Tobin is a Miner; Mira leaves the place
+        self.assertAlmostEqual(self.ev("NS.Village:Rate('mine')"), base * 1.25)
+        self.assertIsNone(self.ev("NS.Inn:Working('mira')"))
+        self.assertAlmostEqual(self.ev("NS.Village:Rate('pond')"), self.ev("NS.Village:Rate('pond', 4)"))
+        # what a level would make (the Hall, the Guide) is the plain number
+        self.assertEqual(self.ev("NS.Village:Rate('mine', 4)"), base)
+
+    def test_who_works_does_not_go_out_and_one_follower_has_one_place(self):
+        self.inn(level=6, mira=5, bram=5)
+        self.lua.execute("NS.db.buildings.mine = 4; NS.db.buildings.pond = 4")
+        self.assertTrue(self.ev("(NS.Inn:Work('bram', 'pond'))"))
+        self.assertFalse(self.ev("NS.Dungeons:Free('bram')"))
+        self.assertNotIn("bram", self.ev("table.concat(NS.Dungeons:Suggest('deadmines'), ',')"))
+        self.assertEqual(tuple(self.lua.eval("function() return NS.Dungeons:Send('deadmines', {'bram'}) end")())[:2], (False, "busy"))
+        self.assertTrue(self.ev("(NS.Inn:Work('bram', 'mine'))"))
+        self.assertIsNone(self.ev("NS.Inn:Worker('pond')"))
+        self.assertTrue(self.ev("NS.Inn:Rest('mine')"))
+        self.assertTrue(self.ev("NS.Dungeons:Free('bram')"))
+
+    def test_someone_away_can_not_start_working(self):
+        self.inn(level=6, mira=5)
+        self.lua.execute("NS.db.buildings.mine = 4")
+        self.send("ragefire", ["mira"])
+        self.assertEqual(tuple(self.lua.eval("function() return NS.Inn:Work('mira', 'mine') end")()), (False, "away"))
+        self.lua.execute("NS.db.buildings.pond = 0")
+        self.assertEqual(tuple(self.lua.eval("function() return NS.Inn:Work('tobin', 'pond') end")()), (False, "nothing"))
+
+    def test_what_was_made_before_is_counted_at_the_old_pace(self):
+        self.inn(level=6)
+        self.lua.execute("NS.db.buildings.mine = 4; NS.db.buildings.barn = 7; NS.db.goods.ore = 0; NS.Village:Produce()")
+        rate = self.ev("NS.Village:Rate('mine')")
+        self.lua.execute(f"NOW = NOW + {HOUR}; NS.Inn:Work('tobin', 'mine')")       # one hour alone, then the Miner comes
+        self.assertEqual(self.ev("NS.Village:Good('ore')"), rate)
+        self.lua.execute(f"NOW = NOW + {HOUR}; NS.Inn:Rest('mine')")
+        self.assertEqual(self.ev("NS.Village:Good('ore')"), rate + int(rate * 1.25))
+
+    def test_the_best_for_the_place_comes_first_and_the_lodging_before_the_rooms(self):
+        self.inn(level=6)
+        self.lua.execute("NS.db.buildings.mine = 4; NS.Inn:Welcome('fizzwick', 1); NS.Inn:Welcome('lyra', 1)")
+        order = self.ev("(function() local o = {} for i, c in ipairs(NS.Inn:Workers('mine')) do o[i] = c.id end return table.concat(o, ',') end)()")
+        self.assertTrue(order.startswith("fizzwick,tobin,lyra,mira"), order)
+
+    def test_the_screen_of_the_mine_gives_the_place_with_a_click(self):
+        self.inn(level=6)
+        self.lua.execute("NS.db.buildings.mine = 4")
+        self.open("mine")
+        s = "NS.UI.screens.mine"
+        self.assertEqual(self.ev(s + ".work.rows[1].fid"), "tobin")
+        self.assertEqual(self.ev(s + ".rate:GetText()"), "24 ore an hour")
+        self.press(s + ".work.rows[1]")
+        self.assertEqual(self.ev("NS.Inn:Worker('mine')"), "tobin")
+        self.assertEqual(self.ev(s + ".rate:GetText()"), "30 ore an hour")
+        self.assertEqual(self.ev(s + ".work.now:GetText()"), "Tobin works here: +25% made.")
+        self.press(s + ".work.stop")
+        self.assertIsNone(self.ev("NS.Inn:Worker('mine')"))
+
+
 class Screens(Base):
     def test_the_ranking_moves_and_swaps_followers(self):
         self.inn(level=6, mira=5)
