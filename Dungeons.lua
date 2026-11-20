@@ -38,6 +38,9 @@
         Dungeons:Cost / Duration / Reward / TrophyChance (id, party, ...)
         Dungeons:Send(id, party, opts)      ok, why
         Dungeons:Trips() / Dungeons:Collect(n) / Dungeons:CollectAll()
+        Dungeons.results                    the groups collected and not shown yet (the result card of the Inn); each is
+                                            its trip plus `ups` (levels gained), `levels` (the level now) and `fresh`
+                                            (combos found for the first time). Kept until shown, not in the save.
 ]]
 
 local addonName, KH = ...
@@ -921,6 +924,8 @@ function Dg:Send(id, party, opts)
     return true
 end
 
+Dg.results = {}
+
 function Dg:Trips() return KH.db.trips or {} end
 
 function Dg:TripState(trip)
@@ -959,7 +964,11 @@ function Dg:Collect(n)
         end
     end
     d.combos = d.combos or {}
-    for _, c in ipairs(trip.combos or {}) do d.combos[c] = true end
+    trip.fresh = {}
+    for _, c in ipairs(trip.combos or {}) do
+        if not d.combos[c] then trip.fresh[#trip.fresh + 1] = c end
+        d.combos[c] = true
+    end
     if trip.newcomer then trip.welcome = I:Welcome(trip.newcomer, trip.newLevel) end
     if trip.named then db.goods[trip.named] = V:Good(trip.named) + 1 end
     if trip.scout then
@@ -968,7 +977,13 @@ function Dg:Collect(n)
     end
     if trip.caravan and KH.Events then KH.Events:Spawn("caravan") end   -- the caravan escorted passes by the village
     if trip.dungeon then d.runs = (d.runs or 0) + 1 end
-    if trip.dungeon or trip.call then KH.Journal:Add(trip) end
+    if trip.dungeon or trip.call then
+        KH.Journal:Add(trip)
+        -- what the group brought, for the result card: who went up, to which level, what was found
+        trip.ups, trip.levels = ups, {}
+        for _, fid in ipairs(trip.party) do trip.levels[fid] = I:Get(fid).level end
+        Dg.results[#Dg.results + 1] = trip
+    end
     return trip, ups
 end
 

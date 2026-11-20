@@ -348,6 +348,8 @@ def window(path, locale, setup, view, after="", settle=2.0, clock_at=None, befor
     g.load("KorumHomestead", HOMESTEAD)
     if before_view:
         g.run(before_view)
+    # the result cards of the groups collected while the scene was set up are not the scene (unless it asks for them)
+    g.run("if NS.Dungeons and not KEEP_RESULTS then NS.Dungeons.results = {} end")
     g.run(f"NS.UI:Show('{view}')")
     g.advance(settle)
     if after:
@@ -416,6 +418,10 @@ def homestead(out):
     scene("17f-chamado-grupo", "ptBR", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll()" + call +
           "; NS.UI.innDungeon = e.def.id; NS.UI.innParty = NS.Dungeons:Suggest(e.def.id)")
     scene("17g-call-english", "enUS", mid, "visitors", before_view=inn + "; NS.Dungeons:CollectAll()" + call)
+    back = ("; KEEP_RESULTS = true; NS.Rand = function() return 1 end; NS.Dungeons:Send('deadmines', {'mira', 'elda'}); NS.Rand = nil; "
+            "for _, trip in ipairs(NS.db.trips) do trip.at = NS.Now() - 999999 end; NS.Dungeons:CollectAll()")
+    scene("11l-estalagem-resultado", "ptBR", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll(); NS.Dungeons.results = {}" + back)
+    scene("11m-inn-result-english", "enUS", mid, "inn", before_view=inn + "; NS.Dungeons:CollectAll(); NS.Dungeons.results = {}" + back)
     scene("16-ajustes", "ptBR", mid, "settings")
     visitors = ("NS.db.level = 30; NS.db.buildings.workshop = 3; NS.Orders:Ensure(); NS.Events:Spawn('urgent'); "
                 "local e = NS.Events:Spawn('caravan'); local t = e.trades[1]; "

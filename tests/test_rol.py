@@ -417,6 +417,61 @@ class Work(Base):
         self.assertIsNone(self.ev("NS.Inn:Worker('mine')"))
 
 
+class Result(Base):
+    def test_a_group_that_comes_back_shows_what_happened(self):
+        self.inn(level=6, mira=4, tobin=5)
+        self.lua.execute("NS.Inn:Get('mira').xp = 170")              # ten short of level 5
+        self.assertTrue(self.send("deadmines", ["mira", "tobin"]))
+        self.lua.execute(f"NOW = NOW + {30 * HOUR}")
+        self.open("inn")
+        s = "NS.UI.screens.inn"
+        self.assertFalse(self.ev(s + ".result:IsShown()"))          # nothing before it is collected
+        coins = self.ev("NS.db.trips[1].coins")
+        self.press(s + ".action")
+        card = s + ".result.card"
+        self.assertTrue(self.ev(s + ".result:IsShown()"))
+        self.assertEqual(self.ev(card + ".title:GetText()"), "The Deadmines")
+        self.assertIn("Success", self.ev(card + ".verdict:GetText()"))
+        self.assertIn(f"{coins:,}", self.ev(card + ".reward:GetText()"))
+        self.assertIn("Mira", self.ev(card + ".rows[1].name:GetText()"))
+        self.assertEqual(self.ev(card + ".rows[1].level:GetText()"), "level 4 > 5")
+        self.assertEqual(self.ev(card + ".rows[1].hurt:GetText()"), "came back well")
+        self.assertFalse(self.ev(card + ".rows[3]:IsShown()"))
+        self.press(card + ".ok")
+        self.assertFalse(self.ev(s + ".result:IsShown()"))
+
+    def test_a_failure_says_so_and_who_is_hurt(self):
+        self.inn(level=6, tobin=1)
+        self.lua.execute("local n = 0; NS.Rand = function() n = n + 1; return n == 1 and 9999 or 1 end")
+        self.lua.execute(f"assert(NS.Dungeons:Send('ragefire', {{'tobin'}})); NS.Rand = nil; NOW = NOW + {2 * HOUR}")
+        self.open("inn")
+        s = "NS.UI.screens.inn"
+        self.press(s + ".action")
+        card = s + ".result.card"
+        self.assertIn("Failure · the chance was 80%", self.ev(card + ".verdict:GetText()"))
+        self.assertIn("hurt: rests 2h", self.ev(card + ".rows[1].hurt:GetText()"))
+
+    def test_each_group_has_its_card_and_someone_new_is_greeted_after(self):
+        self.inn(level=6, mira=5, tobin=5, elda=5)
+        cid = self.call("rescue", "zephras", size=2, level=5)
+        self.rolls(1)
+        self.assertTrue(self.ev(f"(NS.Dungeons:Send('{cid}', {{'mira', 'tobin'}}))"))
+        self.assertTrue(self.ev("(NS.Dungeons:Send('lordaeron', {'elda'}))"))
+        self.lua.execute(f"NS.Rand = nil; NOW = NOW + {30 * HOUR}")
+        self.open("inn")
+        s = "NS.UI.screens.inn"
+        self.press(s + ".action")
+        self.assertEqual(self.ev("#NS.Dungeons.results"), 2)
+        self.assertEqual(self.ev(s + ".result.card.title:GetText()"), "Rescue · Zephras Isle")
+        self.assertIn("Lyra decided to stay", self.ev(s + ".result.card.found:GetText()"))
+        self.assertEqual(self.ev(s + ".result.card.ok.label:GetText()"), "Next (1 more)")
+        self.assertFalse(self.ev(s + ".arrive:IsShown()"))
+        self.press(s + ".result.card.ok")
+        self.assertEqual(self.ev(s + ".result.card.title:GetText()"), "Ruins of Lordaeron")
+        self.press(s + ".result.card.ok")
+        self.assertTrue(self.ev(s + ".arrive:IsShown()"))             # then Lyra's arrival card
+
+
 class Screens(Base):
     def test_the_ranking_moves_and_swaps_followers(self):
         self.inn(level=6, mira=5)

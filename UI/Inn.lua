@@ -166,12 +166,9 @@ local function BuildInn(win)
         s.rows[i] = row
     end
     s.action = Kit.Button(s.frame, 220, 36, "", function()
-        local coins, _, trips = Dg:CollectAll()
-        if trips and trips[1] and trips[1].dungeon then
-            Notice(KH.Journal:ChatText(KH.Journal:Latest()))
-        elseif coins > 0 then
-            Notice(T("collected", KH.Number(coins)))
-        end
+        local coins = Dg:CollectAll()
+        -- each group that came back shows its result card (s.result); an old mission only has coins to tell
+        if #Dg.results == 0 and coins > 0 then Notice(T("collected", KH.Number(coins))) end
         UI:Refresh()
     end)
     s.action:SetPoint("BOTTOMRIGHT", 0, 0)
@@ -545,6 +542,112 @@ local function BuildInn(win)
         if e and ChatFrame_OpenChat then ChatFrame_OpenChat(KH.Journal:ChatText(e)) end
     end)
     sheet.chat:SetPoint("BOTTOMRIGHT", 0, 0)
+
+    -- a group came back: what happened there, one card per group (Dungeons.results), until the player reads it
+    local result = CreateFrame("Frame", nil, s.frame)
+    result:SetAllPoints(s.frame)
+    result:SetFrameLevel(s.frame:GetFrameLevel() + 34)
+    result:EnableMouse(true)
+    result.fill = result:CreateTexture(nil, "BACKGROUND")
+    result.fill:SetAllPoints(result)
+    result.fill:SetColorTexture(0, 0, 0, 0.62)
+    local rcard = CreateFrame("Frame", nil, result)
+    rcard:SetSize(540, 380)
+    rcard:SetPoint("CENTER", 0, 4)
+    rcard.surface, rcard.outline = Kit.Rounded(rcard, 18, 0.07, 0.085, 0.095, 0.99, 0.14)
+    rcard.title = Kit.Text(rcard, 17, C.text, "CENTER")
+    rcard.title:SetPoint("TOP", 0, -16)
+    rcard.title:SetWidth(500)
+    rcard.title:SetWordWrap(false)
+    rcard.verdict = Kit.Text(rcard, 13, C.text, "CENTER")
+    rcard.verdict:SetPoint("TOP", 0, -44)
+    rcard.verdict:SetWidth(500)
+    rcard.verdict:SetWordWrap(false)
+    rcard.reward = Kit.Text(rcard, 12, C.gold, "CENTER")
+    rcard.reward:SetPoint("TOP", 0, -66)
+    rcard.reward:SetWidth(500)
+    rcard.reward:SetWordWrap(false)
+    rcard.rows = {}
+    for k = 1, 6 do
+        local r = CreateFrame("Frame", nil, rcard)
+        r:SetSize(500, 26)
+        r:SetPoint("TOP", 0, -92 - (k - 1) * 28)
+        r.surface, r.outline = Kit.Rounded(r, 8, 1, 1, 1, 0.04, 0.05)
+        r.disc = r:CreateTexture(nil, "ARTWORK")
+        r.disc:SetSize(22, 22)
+        r.disc:SetPoint("LEFT", 4, 0)
+        r.name = Kit.Text(r, 11, C.text)
+        r.name:SetPoint("LEFT", 34, 0)
+        r.name:SetWidth(130)
+        r.name:SetWordWrap(false)
+        r.xp = Kit.Text(r, 11, C.textSoft)
+        r.xp:SetPoint("LEFT", 170, 0)
+        r.xp:SetWidth(70)
+        r.xp:SetWordWrap(false)
+        r.level = Kit.Text(r, 11, C.accent)
+        r.level:SetPoint("LEFT", 244, 0)
+        r.level:SetWidth(110)
+        r.level:SetWordWrap(false)
+        r.hurt = Kit.Text(r, 10, C.textSoft, "RIGHT")
+        r.hurt:SetPoint("RIGHT", -10, 0)
+        r.hurt:SetWidth(136)
+        r.hurt:SetWordWrap(false)
+        rcard.rows[k] = r
+    end
+    rcard.found = Kit.Text(rcard, 11, C.textSoft, "CENTER")
+    rcard.found:SetWidth(500)
+    rcard.found:SetWordWrap(true)
+    rcard.ok = Kit.Button(rcard, 200, 34, "", function()
+        table.remove(Dg.results, 1)
+        UI:Refresh()
+    end)
+    rcard.ok:SetPoint("BOTTOM", 0, 14)
+    rcard.ok:SetStyle("primary")
+    result.card = rcard
+    result:Hide()
+    s.result = result
+
+    local function ShowResult(trip)
+        local card = rcard
+        local odds = math.floor(Dg.Odds(trip.total or 0) + 0.5)
+        Kit.Fit(card.title, Dg.Name(trip.call and {call = trip.call.kind, place = trip.call.place} or trip.dungeon), 500)
+        Kit.Fit(card.verdict, (trip.ok and "|cff59d973" or "|cffff7a6b") .. T(trip.ok and "resOk" or "resFail", odds) .. "|r", 500)
+        Kit.Fit(card.reward, T("resReward", KH.Number(trip.coins or 0), KH.Number(trip.vxp or 0)), 500)
+        local hurt = {}
+        for _, fid in ipairs(trip.hurt or {}) do hurt[fid] = true end
+        local rest = KH.Duration(KH.Balance.DUNGEON.injuryHours * 3600)
+        for k, r in ipairs(card.rows) do
+            local fid = trip.party[k]
+            r:SetShown(fid ~= nil)
+            if fid then
+                local f = In:Get(fid)
+                local now, up = (trip.levels or {})[fid] or f.level, (trip.ups or {})[fid] or 0
+                r.disc:SetTexture(Portrait(fid))
+                Kit.Fit(r.name, QName(f.quality, FName(fid)), 130)
+                r.xp:SetText(T("resXP", (trip.fxp or {})[fid] or 0))
+                if up > 0 then Kit.Fit(r.level, T("resLevelUp", now - up, now), 110)
+                else Kit.Fit(r.level, "|cffa8adb8" .. T("folLevel", now) .. "|r", 110) end
+                Kit.Fit(r.hurt, hurt[fid] and ("|cffff7a6b" .. T("resHurt", rest) .. "|r") or T("resFine"), 136)
+            end
+        end
+        -- what was found, in words
+        local found = {}
+        for _, drop in ipairs(trip.drops or {}) do
+            if drop == "trophy" then found[#found + 1] = T("resTrophy", D.Name(KH.Balance.TROPHIES[trip.dungeon]) or "")
+            elseif drop == "core" then found[#found + 1] = T("good_core")
+            else found[#found + 1] = T("resDrop_" .. drop) end
+        end
+        if trip.named then found[#found + 1] = T("good_" .. trip.named) end
+        if trip.newcomer then found[#found + 1] = T(trip.welcome == "new" and "j_new" or "j_again", FName(trip.newcomer)) end
+        for _, c in ipairs(trip.fresh or {}) do found[#found + 1] = T("resCombo", T("cb_" .. c), T("cbd_" .. c)) end
+        if trip.caravan then found[#found + 1] = T("j_caravan") end
+        if trip.scout then found[#found + 1] = T("j_scout", T("dg_" .. trip.scout)) end
+        card.found:ClearAllPoints()
+        card.found:SetPoint("TOP", 0, -92 - math.min(#trip.party, 6) * 28 - 8)
+        card.found:SetText(#found > 0 and ("|cffffd24d" .. T("resFound") .. "|r " .. table.concat(found, " · "))
+            or ("|cff757a87" .. T("resNothing") .. "|r"))
+        card.ok:SetLabel(#Dg.results > 1 and T("resNext", #Dg.results - 1) or T("resClose"))
+    end
 
     -- someone new arrived: a card with who it is and where it came from, until the player greets it
     local arrive = CreateFrame("Frame", nil, s.frame)
@@ -1012,10 +1115,13 @@ local function BuildInn(win)
         elseif view == "ranking" then RefreshRanking()
         elseif view == "book" then RefreshBook()
         else RefreshSheet() end
-        -- someone new: the arrival card, over whatever is open
-        local fid = level > 0 and In:Arrivals()[1]
+        -- a group came back: its result first; then, if someone new came with it, the arrival card
+        local trip = level > 0 and Dg.results[1]
+        self.result:SetShown(trip ~= nil and trip ~= false)
+        if trip then ShowResult(trip) end
+        local fid = level > 0 and not trip and In:Arrivals()[1]
         while fid and not In:Has(fid) do In:Greeted(fid); fid = In:Arrivals()[1] end
-        self.arrive:SetShown(fid ~= nil and fid ~= false)
+        self.arrive:SetShown(fid ~= nil and fid ~= false and not trip)
         if fid then
             local card, f = self.arrive.card, In:Get(fid)
             self.arrive.fid = fid

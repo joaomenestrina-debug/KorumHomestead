@@ -138,7 +138,7 @@ function UI:CollectAway()
     if text ~= "" then Notice(text) end
     self:HideAway()
     KH.Away:Mark()
-    self:Refresh()
+    if #KH.Dungeons.results > 0 then self:Show("inn") else self:Refresh() end     -- what the groups brought
 end
 
 -- the window opened: if it was closed long enough, the card tells what happened; the stamp starts again from now

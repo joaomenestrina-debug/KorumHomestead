@@ -270,6 +270,19 @@ def extras(out):
     scene("trabalho-estalagem", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond')")
     scene("trabalho-grupo", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond'); NS.UI.innDungeon = 'stratholme'")
     scene("trabalho-ranking", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond'); NS.UI.innTab = 'ranking'; NS.UI.innRank = 2")
+    # the result card of a group that came back: a success with everything found, a failure with everyone hurt, a call
+    home = "KEEP_RESULTS = true; for _, trip in ipairs(NS.db.trips) do trip.at = NS.Now() - 999999 end; NS.Dungeons:CollectAll(); NS.db.arrivals = {}"
+    six = "{'garrick', 'sela', 'bram', 'lyra', 'mira', 'tobin'}"
+    scene("resultado-raide", "inn", found + "NS.Inn:Promote('sela', 2); NS.Rand = function() return 1 end; "
+          f"assert(NS.Dungeons:Send('onyxia', {six})); NS.Rand = nil; " + home)
+    scene("resultado-falha", "inn", found + "local n = 0; NS.Rand = function() n = n + 1; return n == 1 and 9999 or 1 end; "
+          "NS.db.adventure = {}; assert(NS.Dungeons:Send('stratholme', {'tobin', 'elda', 'lyra'}, {boss = true})); NS.Rand = nil; " + home)
+    scene("resultado-masmorra", "inn", found + "NS.Inn:Get('mira').level = 4; NS.Inn:Get('mira').xp = 170; NS.Rand = function() return 1 end; "
+          "assert(NS.Dungeons:Send('thanes', {'mira'})); assert(NS.Dungeons:Send('scholomance', {'tobin', 'elda', 'garrick'})); NS.Rand = nil; " + home)
+    scene("resultado-chamado", "inn", found + "local e = NS.Events:Spawn('call'); e.def.call, e.def.place, e.def.size = 'rescue', 'blackmaw', 3; "
+          "NS.Rand = function() return 1 end; assert(NS.Dungeons:Send(e.def.id, {'mira', 'tobin', 'elda'})); NS.Rand = nil; " + home)
+    scene("resultado-escolta", "inn", found + "local e = NS.Events:Spawn('call'); e.def.call, e.def.place, e.def.size, e.def.mult = 'escort', 'excavation', 2, 1.5; "
+          "NS.Rand = function() return 1 end; assert(NS.Dungeons:Send(e.def.id, {'mira', 'tobin'})); NS.Rand = nil; " + home)
     places = ("zephras", "thanes", "lordaeron", "excavation", "drowned", "kroldok", "alcaz", "blackmaw")
     for kind in ("defense", "attack", "escort", "rescue", "recon"):
         for place in places:
