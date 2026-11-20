@@ -40,19 +40,31 @@ class Base(unittest.TestCase):
 
 
 class Chance(Base):
-    def test_each_threat_left_takes_25_and_a_counter_removes_it(self):
+    def test_each_threat_left_takes_points_and_a_counter_removes_it(self):
         self.inn(mira=1, sela=1)
         # Ragefire: Horde and Hostile magic. Mira counters Horde (Volley); Sela counters magic (Counterspell)
-        self.assertEqual(self.parts("ragefire", ["mira"]), "threat:-25:magic trait:10:mira")   # Mira likes caves
-        self.assertEqual(self.chance("ragefire", ["mira"]), 85)
-        self.assertEqual(self.chance("ragefire", ["sela"]), 75)
-        self.assertEqual(self.parts("ragefire", []), "threat:-25:horde threat:-25:magic missing:-20:1")
+        self.assertEqual(self.parts("ragefire", ["mira"]), "threat:-10:magic trait:10:mira")   # Mira likes caves
+        self.assertEqual(self.chance("ragefire", ["mira"]), 100)
+        self.assertEqual(self.chance("ragefire", ["sela"]), 90)
+        self.assertEqual(self.parts("ragefire", []), "threat:-10:horde threat:-10:magic missing:-20:1")
+
+    def test_the_first_dungeons_forgive_more(self):
+        """A threat left takes 10 points up to level 3, 15 up to 6, 20 up to 9 and 25 from there on (owner, 19/11)."""
+        cost = [self.ev(f"NS.Dungeons.ThreatCost({lv})") for lv in (1, 3, 4, 6, 7, 9, 10, 30)]
+        self.assertEqual(cost, [10, 10, 15, 15, 20, 20, 25, 25])
+        self.inn(mira=12)
+        self.assertIn("threat:-25:magic", self.parts("scarlet", ["mira"]))
+        # one follower of the level of each of the first six dungeons, answering nothing, still has a fair chance
+        self.inn(tobin=1)
+        for d, level in (("ragefire", 1), ("lordaeron", 3), ("wailing", 4)):
+            self.lua.execute(f"NS.Inn:Get('tobin').level = {level}")
+            self.assertGreaterEqual(self.chance(d, ["tobin"]), 70, d)
 
     def test_levels_under_cost_5_each_and_over_give_2_up_to_10(self):
         self.inn(mira=1, tobin=1)
         self.lua.execute("NS.Inn:Get('mira').level = 4; NS.Inn:Get('tobin').level = 4")
         # Deadmines (level 5, Horde and Traps, 2 followers): Mira counters Horde; the group is one level under
-        self.assertEqual(self.parts("deadmines", ["mira", "tobin"]), "threat:-25:traps level:-5:nil trait:10:mira")
+        self.assertEqual(self.parts("deadmines", ["mira", "tobin"]), "threat:-15:traps level:-5:nil trait:10:mira")
         self.lua.execute("NS.Inn:Get('mira').level = 30; NS.Inn:Get('tobin').level = 30")
         self.assertIn("level:10:nil", self.parts("deadmines", ["mira", "tobin"]))
 
@@ -92,7 +104,7 @@ class Group(Base):
     def test_the_recommended_come_first_with_what_they_counter(self):
         self.inn(mira=8, tobin=8, elda=8, garrick=8, sela=8, bram=8)
         first = self.lua.eval("function() local r = NS.Dungeons:Recommended('blackfathom', {'mira'})[1]; return r.id, r.gain, r.counters[1] end")()
-        self.assertEqual(tuple(first), ("elda", 45, "poison"))        # Poison countered and the empty place filled
+        self.assertEqual(tuple(first), ("elda", 40, "poison"))        # Poison countered and the empty place filled
 
     def test_someone_away_is_not_free(self):
         self.inn(mira=1)
@@ -117,23 +129,23 @@ class Runs(Base):
         self.assertEqual(self.ev("NS.db.dungeons.runs"), 1)
 
     def test_a_failure_pays_half_and_may_hurt(self):
-        self.inn(mira=1)
+        self.inn(tobin=1)                                                # Tobin answers nothing there: 80%
         self.lua.execute("NS.Rand = function() return 1 end")
-        full = self.ev("(NS.Dungeons:Reward('ragefire', {'mira'}, 85))")
-        self.assertTrue(self.send("ragefire", ["mira"], roll=9999))      # 99.99 > 85: a failure; 0.9999 > 0.30: not hurt
+        full = self.ev("(NS.Dungeons:Reward('ragefire', {'tobin'}, 80))")
+        self.assertTrue(self.send("ragefire", ["tobin"], roll=9999))     # 99.99 > 80: a failure; 0.9999 > 0.30: not hurt
         self.assertFalse(self.ev("NS.db.trips[1].ok"))
         self.assertEqual(self.ev("NS.db.trips[1].coins"), round(full / 2))
 
     def test_a_hurt_follower_rests_two_hours(self):
-        self.inn(mira=1)
+        self.inn(tobin=1)
         self.lua.execute("local n = 0; NS.Rand = function() n = n + 1; return n == 1 and 9999 or 1 end")
-        self.lua.execute("assert(NS.Dungeons:Send('ragefire', {'mira'})); NS.Rand = nil")
-        self.assertEqual(self.ev("NS.db.trips[1].hurt[1]"), "mira")
+        self.lua.execute("assert(NS.Dungeons:Send('ragefire', {'tobin'})); NS.Rand = nil")
+        self.assertEqual(self.ev("NS.db.trips[1].hurt[1]"), "tobin")
         self.lua.execute(f"NOW = NOW + {HOUR}; NS.Inn:CollectAll()")
-        self.assertEqual(self.ev("(NS.Inn:State('mira'))"), "hurt")
-        self.assertFalse(self.ev("NS.Dungeons:Free('mira')"))
+        self.assertEqual(self.ev("(NS.Inn:State('tobin'))"), "hurt")
+        self.assertFalse(self.ev("NS.Dungeons:Free('tobin')"))
         self.lua.execute(f"NOW = NOW + {2 * HOUR}")
-        self.assertEqual(self.ev("(NS.Inn:State('mira'))"), "home")
+        self.assertEqual(self.ev("(NS.Inn:State('tobin'))"), "home")
 
     def test_the_dungeon_of_the_day_gives_more_follower_xp(self):
         self.inn(mira=1)
@@ -319,7 +331,7 @@ class Consumables(Base):
     def test_a_potion_adds_10_and_is_spent(self):
         self.inn(mira=1)
         self.lua.execute("NS.db.goods.heal = 1")
-        self.assertEqual(self.lua.eval("function() return (NS.Dungeons:Chance('ragefire', {'mira'}, {potion = 'heal'})) end")(), 95)
+        self.assertEqual(self.lua.eval("function() return (NS.Dungeons:Chance('ragefire', {'mira'}, {potion = 'heal'})) end")(), 110)
         self.lua.execute("NS.Rand = function() return 1 end; assert(NS.Dungeons:Send('ragefire', {'mira'}, {potion = 'heal'})); NS.Rand = nil")
         self.assertEqual(self.ev("NS.db.goods.heal"), 0)
 

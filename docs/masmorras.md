@@ -227,7 +227,7 @@ Horda (muitos inimigos), Chefe brutal, Magia hostil, Veneno e doença, Armadilha
 
 Mostrada antes de enviar, e já com o motivo de cada parte (a tela lista de onde vem cada ponto):
 
-1. **Ameaças:** cada ameaça não anulada tira **25 pontos** de 100. Uma habilidade anula uma ameaça; duas iguais anulam
+1. **Ameaças:** cada ameaça não anulada tira **25 pontos** de 100. Nas primeiras masmorras tira menos (pedido do dono, 19/11): **10** até o nível 3, **15** até o 6, **20** até o 9. Uma habilidade anula uma ameaça; duas iguais anulam
    duas ameaças iguais.
 2. **Nível:** para cada nível que a média do grupo estiver abaixo da masmorra, −5 pontos; acima, +2 (no máximo +10).
 3. **Grupo incompleto:** −20 pontos por seguidor faltando.

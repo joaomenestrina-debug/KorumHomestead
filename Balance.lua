@@ -480,6 +480,7 @@ B.COMBOS = {
 
 -- The rules of a run (docs/masmorras.md §3, §6, §8 and §9)
 --   threat     points one uncountered threat takes          below/above  points per level the group is under/over it
+--   threatEarly  the first dungeons forgive more: up to that level a threat left takes only this much (owner, 19/11)
 --   missing    points per follower missing                  aboveMax     the most the levels above add
 --   maxChance  the chance counts up to this; what passes 100 becomes a reward bonus (150 = x1.5)
 --   coinShare  coins per follower per hour, as a share of what the Garden makes in one hour now
@@ -493,6 +494,7 @@ B.COMBOS = {
 --   merit, epic   insignia drop chance on a success, from that dungeon level up (meritIcon, epicIcon: their icons)
 B.DUNGEON = {
     threat = 25, below = 5, above = 2, aboveMax = 10, missing = 20, maxChance = 150, warnBelow = 5,
+    threatEarly = {{upTo = 3, points = 10}, {upTo = 6, points = 15}, {upTo = 9, points = 20}},
     coinShare = 0.045, xpShare = 0.005, fishPerHour = 2,
     fxpBase = 60, fxpPerLevel = 4, lowGap = 5, lowXP = 0.25,
     openAhead = 3, injury = 0.30, injuryHours = 2, daily = 0.5,

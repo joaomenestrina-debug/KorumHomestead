@@ -476,6 +476,14 @@ function Dg:Threats(id, opts)
     return list
 end
 
+-- what a threat nobody answers takes in a dungeon of that level: less in the first ones
+function Dg.ThreatCost(level)
+    for _, step in ipairs(R.threatEarly) do
+        if level <= step.upTo then return step.points end
+    end
+    return R.threat
+end
+
 -- total chance (not clamped), the parts {{key, points, arg}}, the counters {{threat, fid, ability}} and the threats left
 function Dg:Chance(id, party, opts)
     local d = Dg.Get(id)
@@ -501,7 +509,7 @@ function Dg:Chance(id, party, opts)
             total = total + points
         end
     end
-    for _, threat in ipairs(open) do Add("threat", -R.threat, threat) end
+    for _, threat in ipairs(open) do Add("threat", -Dg.ThreatCost(d.level), threat) end
     if #party > 0 then
         local sum = 0
         for _, fid in ipairs(party) do sum = sum + I:Get(fid).level end
