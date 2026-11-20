@@ -67,10 +67,39 @@ local function BuildWorkshop(win)
     local QUEUE_TOP = RECIPE_TOP + RECIPE_H + 14
     s.queueHead = Kit.Text(s.frame, 11, C.textMuted)
     s.queueHead:SetPoint("TOPLEFT", 0, -QUEUE_TOP)
+    -- the queue scrolls (owner, 20/11): the wheel over it, or a click on its bar, shows the places under the first six
+    local BAR, QH = 4, QUEUE_ROWS * 28
+    s.qoff = 0
+    local area = CreateFrame("Frame", nil, s.frame)
+    area:SetSize(W, QH)
+    area:SetPoint("TOPLEFT", 0, -QUEUE_TOP - 20)
+    area:EnableMouseWheel(true)
+    area:SetScript("OnMouseWheel", function(_, delta) s:ScrollQueue(s.qoff - delta) end)
+    s.qarea = area
+    local track = CreateFrame("Button", nil, area)
+    track:SetSize(BAR + 8, QH)
+    track:SetPoint("TOPRIGHT", 0, 0)
+    track.line = track:CreateTexture(nil, "BACKGROUND")
+    track.line:SetSize(BAR, QH)
+    track.line:SetPoint("TOP", 0, 0)
+    track.line:SetColorTexture(1, 1, 1, 0.06)
+    track.thumb = track:CreateTexture(nil, "ARTWORK")
+    track.thumb:SetWidth(BAR)
+    track.thumb:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 0.7)
+    -- a click on the bar goes one page down; at the bottom, back to the top
+    track:SetScript("OnClick", function()
+        local most = math.max(0, #Wk:Jobs() - QUEUE_ROWS)
+        s:ScrollQueue(s.qoff >= most and 0 or s.qoff + QUEUE_ROWS)
+    end)
+    s.qtrack = track
+    function s:ScrollQueue(off)
+        self.qoff = math.max(0, math.min(math.max(0, #Wk:Jobs() - QUEUE_ROWS), math.floor(off + 0.5)))
+        self:Refresh()
+    end
     s.queue = {}
     for i = 1, QUEUE_ROWS do
         local row = CreateFrame("Frame", nil, s.frame)
-        row:SetSize(W, 26)
+        row:SetSize(W - BAR - 16, 26)
         row:SetPoint("TOPLEFT", 0, -QUEUE_TOP - 20 - (i - 1) * 28)
         row.icon = row:CreateTexture(nil, "ARTWORK")
         row.icon:SetSize(22, 22)
@@ -142,17 +171,28 @@ local function BuildWorkshop(win)
             end
         end
         self.queueHead:SetText(level > 0 and T("queueHead", #jobs, Wk:Slots()) or "")
+        local most = math.max(0, #jobs - QUEUE_ROWS)
+        self.qoff = math.min(self.qoff, most)
         for i, row in ipairs(self.queue) do
-            local job = jobs[i]
+            local n = i + self.qoff
+            local job = jobs[n]
             row:SetShown(job ~= nil)
             if job then
                 row.icon:SetTexture(GoodTex(job.recipe))
-                local more = (i == #self.queue and #jobs > i) and ("   |cff757a87+" .. (#jobs - i) .. "|r") or ""
-                row.name:SetText(T("good_" .. job.recipe) .. more)
+                row.name:SetText(T("good_" .. job.recipe))
                 row.left:SetText(KH.Duration(job.left))
-                row.bar:SetShown(i == 1)
-                if i == 1 then row.bar:Set(job.progress) end
+                row.bar:SetShown(n == 1)                     -- the one being made now
+                if n == 1 then row.bar:Set(job.progress) end
             end
+        end
+        local track = self.qtrack
+        track:SetShown(most > 0)
+        if most > 0 then
+            local QH = QUEUE_ROWS * 28
+            local h = math.max(18, math.floor(QH * QUEUE_ROWS / #jobs))
+            track.thumb:SetHeight(h)
+            track.thumb:ClearAllPoints()
+            track.thumb:SetPoint("TOP", track, "TOP", 0, -math.floor((QH - h) * self.qoff / most + 0.5))
         end
     end
     return s

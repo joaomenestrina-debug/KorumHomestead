@@ -190,7 +190,8 @@ def extras(out):
     for trade in ("alchemy", "cooking", "smithing", "gear"):
         first = f"local id; for _, r in ipairs(NS.Workshop.RECIPES) do if r.trade == '{trade}' then id = id or r.id end end; "
         scene("oficina-" + trade, "workshop",
-              after=f"NS.UI.trade = '{trade}'; {first} for i = 1, 6 do NS.Workshop:Craft(id) end; NS.UI:Refresh()")
+              after=f"NS.UI.trade = '{trade}'; {first} for i = 1, 9 do NS.Workshop:Craft(id) end; NS.UI:Refresh()")
+    scene("oficina-fila-rolada", "workshop", after="for i = 1, 9 do NS.Workshop:Craft('heal') end; NS.UI.screens.workshop:ScrollQueue(9)")
     for kind in ("urgent", "merchant", "caravan", "fish", "ore"):
         scene("visita-" + kind, "visitors", f"NS.Events:Spawn('{kind}'); NS.Events:Spawn('caravan')")
     scene("visita-nenhuma", "visitors")

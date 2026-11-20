@@ -228,6 +228,25 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev(f"{rows}[2].button.style"), "primary")
         self.assertEqual(self.ev(f"{rows}[1].button.style"), "quiet")
 
+    def test_the_workshop_queue_scrolls(self):
+        self.lua.execute("NS.db.buildings.workshop = 7; NS.db.buildings.hall = 7; NS.db.goods.fish = 99; NS.db.tutorial.done = true; NS.db.seen.workshop = true")
+        for _ in range(9):
+            self.lua.execute("assert(NS.Workshop:Craft('stew'))")
+        self.open("workshop")
+        s = "NS.UI.screens.workshop"
+        self.assertTrue(self.ev(s + ".qtrack:IsShown()"))
+        left = "NS.Duration(NS.Workshop:Jobs()[%d].left)"
+        self.assertEqual(self.ev(s + ".queue[1].left:GetText()"), self.ev(left % 1))
+        self.lua.execute(f"{s}.qarea:GetScript('OnMouseWheel')({s}.qarea, -1)")       # the wheel down: one place
+        self.assertEqual(self.ev(s + ".queue[1].left:GetText()"), self.ev(left % 2))
+        self.lua.execute(f"{s}.qarea:GetScript('OnMouseWheel')({s}.qarea, -10)")      # never past the last
+        self.assertEqual(self.ev(s + ".queue[6].left:GetText()"), self.ev(left % 9))
+        self.assertEqual(self.ev(s + ".qoff"), 3)
+        self.press(s + ".qtrack")                                                    # at the bottom: back to the top
+        self.assertEqual(self.ev(s + ".qoff"), 0)
+        self.lua.execute("NS.db.queue = {}; NS.UI:Refresh()")
+        self.assertFalse(self.ev(s + ".qtrack:IsShown()"))
+
     def test_the_workshop_screen_changes_trade(self):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.goods.fish = 5; NS.db.tutorial.done = true")
         self.open("workshop")
