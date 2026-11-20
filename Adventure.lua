@@ -78,6 +78,7 @@ end
 function A:Remind(reason)
     if not self:On() then return false end
     local a = Save()
+    if a.remind == false then return false end            -- "don't ask again" on the card; back on in the Settings
     if KH.Now() - (a.lastQueue or 0) < B.ADVENTURE.queueGap then return false end
     if _G.InCombatLockdown and InCombatLockdown() then return false end
     if not (KH.UI and KH.UI.Reminder and KH.UI:Reminder(reason)) then return false end

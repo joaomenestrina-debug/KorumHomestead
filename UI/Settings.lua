@@ -17,7 +17,7 @@ local function BuildSettings(win)
     }, function() return KH.db.lang end, function(v) KH.db.lang = v; UI:Relabel() end)
     s.lang:SetPoint("TOPLEFT", 0, -92)
     local y = -138
-    local PITCH = 47                     -- six options and the foot of the screen fit
+    local PITCH = 40                     -- seven options and the foot of the screen fit
     s.alerts, y = Kit.Toggle(s.frame, y, W, function() return KH.db.alerts end, function(v) KH.db.alerts = v end, PITCH)
     s.welcome, y = Kit.Toggle(s.frame, y, W, function() return KH.db.welcome end, function(v) KH.db.welcome = v end, PITCH)
     s.minimap, y = Kit.Toggle(s.frame, y, W, function() return not KH.db.minimap.hide end,
@@ -28,6 +28,8 @@ local function BuildSettings(win)
         function(v) KH.db.bubble.label = v; UI:UpdateAlert() end, PITCH)
     s.adventure, y = Kit.Toggle(s.frame, y, W, function() return KH.Adventure:On() end,
         function(v) KH.db.adventure = KH.db.adventure or {}; KH.db.adventure.on = v and true or false end, PITCH)
+    s.remind, y = Kit.Toggle(s.frame, y, W, function() return (KH.db.adventure or {}).remind ~= false end,
+        function(v) KH.db.adventure = KH.db.adventure or {}; KH.db.adventure.remind = v and true or false end, PITCH)
     s.about = Kit.Text(s.frame, 10, C.textMuted)
     s.about:SetPoint("BOTTOMLEFT", 0, 12)
     s.news = Kit.Button(s.frame, 170, 30, "", function() UI:ShowNews(false) end)
@@ -37,7 +39,7 @@ local function BuildSettings(win)
         self.head:SetText(T("settingsH"))
         self.sub:SetText(T("settingsS"))
         self.langLabel:SetText(T("language"))
-        for _, spec in ipairs({{self.alerts, "optAlerts"}, {self.welcome, "optWelcome"}, {self.minimap, "optMinimap"}, {self.bubble, "optBubble"}, {self.label, "optLabel"}, {self.adventure, "optAdventure"}}) do
+        for _, spec in ipairs({{self.alerts, "optAlerts"}, {self.welcome, "optWelcome"}, {self.minimap, "optMinimap"}, {self.bubble, "optBubble"}, {self.label, "optLabel"}, {self.adventure, "optAdventure"}, {self.remind, "optRemind"}}) do
             spec[1].label:SetText(T(spec[2]))
             spec[1].desc:SetText(T(spec[2] .. "D"))
             spec[1]:Sync()

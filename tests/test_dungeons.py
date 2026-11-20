@@ -440,8 +440,8 @@ class Adventure(Base):
         self.assertIsNone(self.ev(r))
         self.lua.execute("NS.db.crops = {}; NS.Farm:Plant(1, 2447); NOW = NOW + 600; FLY = true; NS.UI:Tick(); NS.UI:Tick()")
         self.assertTrue(self.ev(r + ":IsShown()"))
-        self.assertEqual(self.ev(r + ".why:GetText()"), "A flight is a good time to look after it.")
-        self.assertEqual(self.ev(r + ".lines[1]:GetText()"), "1 plot ready to harvest")
+        self.assertEqual(self.ev(r + ".title:GetText()"), "Look after the village while you fly?")
+        self.assertIn("1 plot ready to harvest", self.ev(r + ".sub:GetText()"))
         self.lua.execute(r + ".open:GetScript('OnClick')(" + r + ".open)")
         self.assertFalse(self.ev(r + ":IsShown()"))
         self.assertEqual(self.ev("NS.UI.view"), "garden")              # the button goes to what waits first
@@ -450,6 +450,22 @@ class Adventure(Base):
         self.assertFalse(self.ev(r + ":IsShown()"))
         self.lua.execute("function GetLFGMode() return 'queued' end; Fire('LFG_UPDATE')")
         self.assertFalse(self.ev(r + ":IsShown()"))
+
+    def test_dont_ask_again_turns_the_reminder_off_until_the_settings_turn_it_on(self):
+        r = "KorumHomesteadReminder"
+        self.lua.execute("FLY = false; function UnitOnTaxi() return FLY end; NS.UI:Tick(); FLY = true; NS.UI:Tick()")
+        self.assertTrue(self.ev(r + ":IsShown()"))
+        self.lua.execute(f"{r}.box:GetScript('OnClick')({r}.box); {r}.later:GetScript('OnClick')({r}.later)")
+        self.assertFalse(self.ev(r + ":IsShown()"))
+        self.assertFalse(self.ev("NS.db.adventure.remind"))
+        self.lua.execute(f"FLY = false; NS.UI:Tick(); NOW = NOW + 5000; FLY = true; NS.UI:Tick()")
+        self.assertFalse(self.ev(r + ":IsShown()"))
+        self.assertTrue(self.ev("NS.Adventure:On()"))                  # the rest of the Adventure goes on
+        self.open("settings")
+        self.press("NS.UI.screens.settings.remind")
+        self.assertTrue(self.ev("NS.db.adventure.remind"))
+        self.lua.execute("KorumHomesteadFrame:Hide(); FLY = false; NS.UI:Tick(); FLY = true; NS.UI:Tick()")
+        self.assertTrue(self.ev(r + ":IsShown()"))
 
     def test_the_reminder_respects_the_setting_the_fight_and_the_open_window(self):
         r = "KorumHomesteadReminder"
