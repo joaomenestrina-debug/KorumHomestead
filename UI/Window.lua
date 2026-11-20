@@ -388,6 +388,7 @@ end)
 
 function UI:Tick()
     KH.Daily:Ensure()
+    KH.Adventure:Tick()                                    -- a flight that starts reminds of the village
     -- the random events: they only come with the game open (this clock), and go away when their time is over
     local new = KH.Events:Update()
     if new then KH:Notify(T("ev_new_" .. new.kind)) end

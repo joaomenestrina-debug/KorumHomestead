@@ -43,4 +43,5 @@ UI/Workshop.lua
 UI/Inn.lua
 UI/Window.lua
 UI/Bubble.lua
+UI/Reminder.lua
 UI/Minimap.lua

@@ -4,8 +4,10 @@
     The village stays a world of its own: it never changes anything on the character. It only reads what the game tells
     and reacts:
 
-        joining a queue (dungeon or battleground)   the village opens, at most once every B.ADVENTURE.queueGap seconds
-                                                    (never in a fight)
+        joining a queue (dungeon or battleground)   a small card reminds of the village (UI/Reminder.lua: what waits, and
+        or taking a flight                          a button to open it), at most once every B.ADVENTURE.queueGap
+                                                    seconds for the two together, never in a fight (owner, 20/11: a
+                                                    reminder, not the window opening by itself)
         killing a boss of a dungeon                 the followers are inspired there: +B.DUNGEON.inspired chance for the
                                                     next B.DUNGEON.inspiredRuns runs; killing again renews, never adds up;
                                                     the dungeon gets the "You were here" mark
@@ -22,7 +24,9 @@
 
         Adventure:On()                  the setting
         Adventure:Queued()              true while the character waits in a queue
-        Adventure:OnQueue()             the queue changed (opens the village when a wait starts)
+        Adventure:OnQueue()             the queue changed (reminds of the village when a wait starts)
+        Adventure:Tick()                once a second: a flight that starts reminds of the village
+        Adventure:Remind(reason)        "queue" or "flight": the reminder card, when it may show now
         Adventure:OnBoss(success)       a boss fight ended in the current instance
         Adventure:CurrentDungeon()      the id of the dungeon the character is in, or nil
         Adventure:Zone()                the place of the calls whose zone the character is in, or nil
@@ -70,18 +74,34 @@ function A:Queued()
     return false
 end
 
+-- the reminder card, at most once every queueGap seconds (a queue and a flight share the wait), never in a fight
+function A:Remind(reason)
+    if not self:On() then return false end
+    local a = Save()
+    if KH.Now() - (a.lastQueue or 0) < B.ADVENTURE.queueGap then return false end
+    if _G.InCombatLockdown and InCombatLockdown() then return false end
+    if not (KH.UI and KH.UI.Reminder and KH.UI:Reminder(reason)) then return false end
+    a.lastQueue = KH.Now()
+    return true
+end
+
 local waiting = false
 function A:OnQueue()
     local now = self:Queued()
     local started = now and not waiting
     waiting = now
-    if not started or not self:On() then return false end
-    local a = Save()
-    if KH.Now() - (a.lastQueue or 0) < B.ADVENTURE.queueGap then return false end
-    if _G.InCombatLockdown and InCombatLockdown() then return false end
-    a.lastQueue = KH.Now()
-    if KH.UI and not (KH.UI.frame and KH.UI.frame:IsShown()) then KH.UI:Show("village") end
-    return true
+    if not started then return false end
+    return self:Remind("queue")
+end
+
+-- a flight: the game tells no event for it, so the clock of the window asks once a second
+local flying = false
+function A:Tick()
+    local now = (_G.UnitOnTaxi and UnitOnTaxi("player")) and true or false
+    local started = now and not flying
+    flying = now
+    if started then return self:Remind("flight") end
+    return false
 end
 
 -- the dungeon of the addon the character is in: by the game's id, or by the name in English or in Portuguese
@@ -174,4 +194,5 @@ KH:On("BOSS_KILL", function() A:OnBoss(true) end)
 KH:On("PLAYER_LOGIN", function()
     Save()
     waiting = A:Queued()
+    flying = (_G.UnitOnTaxi and UnitOnTaxi("player")) and true or false
 end)

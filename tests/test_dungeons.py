@@ -399,15 +399,43 @@ class Adventure(Base):
     def instance(self, name, kind="party", iid=36):
         self.lua.execute(f"function GetInstanceInfo() return [[{name}]], '{kind}', 1, '', 5, 0, false, {iid} end")
 
-    def test_a_queue_opens_the_village_at_most_every_ten_minutes(self):
+    def test_a_queue_reminds_of_the_village_at_most_every_ten_minutes(self):
+        r = "KorumHomesteadReminder"
         self.lua.execute("QUEUED = false; function GetLFGMode() return QUEUED and 'queued' or nil end")
         self.lua.execute("QUEUED = true; Fire('LFG_UPDATE')")
-        self.assertEqual(self.ev("NS.UI.view"), "village")
-        self.assertTrue(self.ev("KorumHomesteadFrame:IsShown()"))
-        self.lua.execute("KorumHomesteadFrame:Hide(); QUEUED = false; Fire('LFG_UPDATE'); NOW = NOW + 300; QUEUED = true; Fire('LFG_UPDATE')")
-        self.assertFalse(self.ev("KorumHomesteadFrame:IsShown()"))
+        self.assertTrue(self.ev(r + ":IsShown()"))
+        self.assertFalse(self.ev("KorumHomesteadFrame ~= nil and KorumHomesteadFrame:IsShown()"))   # a reminder, not the window
+        self.lua.execute(r + ":Hide(); QUEUED = false; Fire('LFG_UPDATE'); NOW = NOW + 300; QUEUED = true; Fire('LFG_UPDATE')")
+        self.assertFalse(self.ev(r + ":IsShown()"))
         self.lua.execute("QUEUED = false; Fire('LFG_UPDATE'); NOW = NOW + 301; QUEUED = true; Fire('LFG_UPDATE')")
-        self.assertTrue(self.ev("KorumHomesteadFrame:IsShown()"))
+        self.assertTrue(self.ev(r + ":IsShown()"))
+
+    def test_a_flight_reminds_too_and_shares_the_wait_with_the_queue(self):
+        r = "KorumHomesteadReminder"
+        self.lua.execute("FLY = false; function UnitOnTaxi() return FLY end; NS.UI:Tick()")
+        self.assertIsNone(self.ev(r))
+        self.lua.execute("NS.db.crops = {}; NS.Farm:Plant(1, 2447); NOW = NOW + 600; FLY = true; NS.UI:Tick(); NS.UI:Tick()")
+        self.assertTrue(self.ev(r + ":IsShown()"))
+        self.assertEqual(self.ev(r + ".why:GetText()"), "A flight is a good time to look after it.")
+        self.assertEqual(self.ev(r + ".lines[1]:GetText()"), "1 plot ready to harvest")
+        self.lua.execute(r + ".open:GetScript('OnClick')(" + r + ".open)")
+        self.assertFalse(self.ev(r + ":IsShown()"))
+        self.assertEqual(self.ev("NS.UI.view"), "garden")              # the button goes to what waits first
+        # landing and flying again within ten minutes says nothing; neither does a queue
+        self.lua.execute("KorumHomesteadFrame:Hide(); FLY = false; NS.UI:Tick(); NOW = NOW + 120; FLY = true; NS.UI:Tick()")
+        self.assertFalse(self.ev(r + ":IsShown()"))
+        self.lua.execute("function GetLFGMode() return 'queued' end; Fire('LFG_UPDATE')")
+        self.assertFalse(self.ev(r + ":IsShown()"))
+
+    def test_the_reminder_respects_the_setting_the_fight_and_the_open_window(self):
+        r = "KorumHomesteadReminder"
+        self.lua.execute("FLY = false; function UnitOnTaxi() return FLY end; NS.UI:Tick()")
+        self.lua.execute("NS.db.adventure.on = false; FLY = true; NS.UI:Tick()")
+        self.assertIsNone(self.ev(r))
+        self.lua.execute("NS.db.adventure.on = true; FLY = false; NS.UI:Tick(); function InCombatLockdown() return true end; FLY = true; NS.UI:Tick()")
+        self.assertIsNone(self.ev(r))
+        self.lua.execute("function InCombatLockdown() return false end; FLY = false; NS.UI:Tick(); NS.UI:Show('village'); FLY = true; NS.UI:Tick()")
+        self.assertIsNone(self.ev(r))
 
     def test_a_boss_inspires_the_followers_there_and_does_not_add_up(self):
         self.inn(mira=5, tobin=5)

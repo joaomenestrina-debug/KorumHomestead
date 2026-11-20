@@ -131,7 +131,7 @@ original = S.Game.shot
 
 def shot(self, path, frame_name=None, **kw):
     scene_name[0] = pathlib.Path(path).stem
-    if frame_name == "KorumHomesteadFrame":
+    if frame_name in ("KorumHomesteadFrame", "KorumHomesteadReminder"):
         check(self, frame_name)
     return original(self, path, frame_name, **kw)
 
@@ -283,6 +283,13 @@ def extras(out):
           "NS.Rand = function() return 1 end; assert(NS.Dungeons:Send(e.def.id, {'mira', 'tobin', 'elda'})); NS.Rand = nil; " + home)
     scene("resultado-escolta", "inn", found + "local e = NS.Events:Spawn('call'); e.def.call, e.def.place, e.def.size, e.def.mult = 'escort', 'excavation', 2, 1.5; "
           "NS.Rand = function() return 1 end; assert(NS.Dungeons:Send(e.def.id, {'mira', 'tobin'})); NS.Rand = nil; " + home)
+    # the reminder of a flight or a queue: nothing waiting, and the longest lines (a call, the Barn, the orders)
+    busy = (full + "; NS.db.buildings.inn = 7; local e = NS.Events:Spawn('call'); e.def.call, e.def.place = 'recon', 'excavation'; "
+            "NS.Events:Spawn('merchant')")
+    for locale in ("ptBR", "enUS"):
+        for reason in ("flight", "queue"):
+            S.reminder(out / f"x-lembrete-{reason}-vazio-{locale}.png", locale, "{tutorial = {done = true}, newsSeen = 1000}", reason)
+            S.reminder(out / f"x-lembrete-{reason}-cheio-{locale}.png", locale, rich, reason, busy)
     places = ("zephras", "thanes", "lordaeron", "excavation", "drowned", "kroldok", "alcaz", "blackmaw")
     for kind in ("defense", "attack", "escort", "rescue", "recon"):
         for place in places:

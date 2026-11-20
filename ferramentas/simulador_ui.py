@@ -468,7 +468,22 @@ def homestead(out):
     g.run("NS.db.crops = {}; NS.db.plots = {}; local o = NS.Daily:Order(); NS.db.crops[o.plant] = o.qty; NS.UI:Refresh()")
     g.advance(6.6)
     made.append(g.shot(out / "15-icone-encomenda-do-dia.png", "KorumHomesteadIcon", margin=44, right=300))
+    made.append(reminder(out / "19-lembrete-voo.png", "ptBR", mid, "flight"))
+    made.append(reminder(out / "19b-reminder-queue-english.png", "enUS", mid, "queue"))
     return made
+
+
+def reminder(path, locale, setup, reason, before=""):
+    """The reminder card of a flight or a queue (UI/Reminder.lua), alone on the screen."""
+    g = Game(locale, PT_NAMES if locale == "ptBR" else None)
+    g.run("math.randomseed(11)")
+    g.run("KorumHomesteadDB = " + setup)
+    g.load("KorumHomestead", HOMESTEAD)
+    if before:
+        g.run(before)
+    g.run(f"NS.UI:Reminder('{reason}')")
+    g.advance(1)
+    return g.shot(path, "KorumHomesteadReminder", margin=30)
 
 
 def pagina(out):
