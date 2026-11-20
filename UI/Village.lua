@@ -171,7 +171,7 @@ local function BuildVillage(win)
             local n, why = KH.Farm:HarvestAll()
             if n > 0 then
                 Kit.Float(self.spots.garden.art, "+" .. n, C.accentBright, 1, 16)
-                Notice(T("harvestedN", n))
+                Notice(T(why and "harvestedPart" or "harvestedN", n))
             elseif why then
                 Notice(Reason(why))
             end

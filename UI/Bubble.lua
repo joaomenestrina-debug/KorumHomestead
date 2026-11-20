@@ -199,6 +199,10 @@ function UI:AlertLines()
         if e.def then name = KH.Dungeons.Name(e.def) end      -- a call: what it is and where
         out[#out + 1] = {T("alertEv_" .. e.kind, name, KH.Duration(KH.Events:Left(e))), "visitors"}
     end
+    -- the Barn about to stop the Garden, the Mine or the Pond: said before it happens
+    local fill = KH.Village:Fill()
+    if fill >= 1 then out[#out + 1] = {T("alertBarnFull"), "barn"}
+    elseif fill >= KH.Balance.BARN_WARN then out[#out + 1] = {T("alertBarn", math.floor(fill * 100)), "barn"} end
     if KH.Daily:CanDeliver() then out[#out + 1] = {T("alertDaily"), "orders"} end
     local orders = 0
     for i = 1, D.ORDER_SLOTS do if KH.Orders:CanDeliver(i) then orders = orders + 1 end end

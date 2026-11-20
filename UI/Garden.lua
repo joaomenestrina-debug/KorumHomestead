@@ -174,7 +174,8 @@ local function BuildGarden(win)
             UI:Show("hall")                       -- more plots come from a bigger Garden, built in the Hall
         elseif status == "ready" then
             local n, why = KH.Farm:Harvest(i)
-            if n > 0 then Kit.Float(tile.ring, "+" .. n, C.accentBright, 1, 16) elseif why then Notice(Reason(why)) end
+            if n > 0 then Kit.Float(tile.ring, "+" .. n, C.accentBright, 1, 16) end
+            if why then Notice(n > 0 and T("harvestedPart", n) or Reason(why)) end
         elseif status == "empty" then
             self:OpenMenu(i)                          -- an empty plot asks which seed goes in it
             return
@@ -391,7 +392,7 @@ local function BuildGarden(win)
                 total = total + n
                 why = why or reason
             end
-            Notice(total > 0 and T("harvestedN", total) or (why and Reason(why)) or "")
+            Notice(total > 0 and T(why and "harvestedPart" or "harvestedN", total) or (why and Reason(why)) or "")
         elseif self.mode == "plant" then
             local n, why = KH.Farm:PlantAll(db.selected)
             if n > 0 then Notice(T("plantedN", n)) elseif why then Notice(Reason(why)) end

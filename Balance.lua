@@ -524,6 +524,9 @@ function B.FollowerXPToNext(level)
     return F.xpBase + F.xpPerLevel * level + (level >= F.lateFrom and F.late * (level - F.lateFrom + 1) or 0)
 end
 
+-- The Barn warns before it stops the village (owner, 20/11): from this share full, a line on the icon and in the chat
+B.BARN_WARN = 0.8
+
 -- While you were away (Away.lua): the window tells what happened only after this long closed (seconds).
 B.AWAY = {minSeconds = 1800}
 

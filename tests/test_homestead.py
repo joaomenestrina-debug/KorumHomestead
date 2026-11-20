@@ -354,10 +354,29 @@ class Homestead(unittest.TestCase):
     def test_the_barn_holds_only_so_much(self):
         self.lua.execute("NS.db.crops[765] = 39; NS.Farm:Plant(1, 2447); NOW = NOW + 60")
         n, why = self.lua.eval("function() return NS.Farm:Harvest(1) end")()
-        self.assertEqual((n, why), (0, "barnFull"))                   # 39 + 3 do not fit in 40
-        self.assertEqual(self.ev("(NS.Farm:Status(1))"), "ready")      # the plant waits in the plot
+        self.assertEqual((n, why), (1, "barnFull"))                   # 39 + 3 do not fit in 40: one goes in
+        self.assertEqual(self.ev("(NS.Farm:Status(1))"), "ready")      # the rest waits in the plot
+        xp = self.ev("NS.db.xp")
+        n, why = self.lua.eval("function() return NS.Farm:Harvest(1) end")()
+        self.assertEqual((n, why), (0, "barnFull"))                   # full: nothing more, nothing lost
         self.lua.execute("NS.db.buildings.barn = 2")
-        self.assertEqual(self.ev("(NS.Farm:Harvest(1))"), 3)
+        self.assertEqual(self.ev("(NS.Farm:Harvest(1))"), 2)           # the two that were left
+        self.assertEqual(self.ev("NS.db.xp"), xp)                      # the xp of a harvest comes once
+        self.assertEqual(self.ev("(NS.Farm:Status(1))"), "empty")
+        self.assertEqual(self.ev("NS.db.crops[2447]"), 3)
+
+    def test_the_barn_warns_from_80_percent(self):
+        self.lua.execute(self.NOTES)
+        self.lua.execute("NS.db.crops[765] = 31; NS.UI:Tick()")
+        self.assertFalse(any("Barn" in n for n in self.lua.eval("NOTES").values()))
+        self.assertFalse(any("Barn" in line[1] for line in self.lua.eval("NS.UI:AlertLines()").values()))
+        self.lua.execute("NS.db.crops[765] = 32; NS.UI:Tick(); NS.UI:Tick()")
+        notes = [n for n in self.lua.eval("NOTES").values() if "Barn" in n]
+        self.assertEqual(len(notes), 1, notes)                         # said once, not every second
+        self.assertIn("80% full", notes[0])
+        self.assertEqual(self.lua.eval("NS.UI:AlertLines()")[1][1], "The Barn is 80% full")
+        self.lua.execute("NS.db.crops[765] = 40")
+        self.assertIn("The Barn is full", self.lua.eval("NS.UI:AlertLines()")[1][1])
 
     def test_a_bigger_market_pays_more(self):
         self.lua.execute("NS.db.buildings.market = 6; NS.db.crops[785] = 10")     # +20%

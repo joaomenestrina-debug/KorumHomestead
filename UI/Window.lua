@@ -394,6 +394,14 @@ function UI:Tick()
     for _, recipe in ipairs(KH.Workshop:Update()) do
         if KH.db.alerts then KH:Notify(T("craftDone", T("good_" .. recipe))) end
     end
+    -- the Barn passes 80%: one line, before the Garden, the Mine or the Pond stop
+    local fill = KH.Village:Fill()
+    if fill >= KH.Balance.BARN_WARN and not UI.barnWarned then
+        UI.barnWarned = true
+        if KH.db.alerts then KH:Notify(T(fill >= 1 and "alertBarnFull" or "barnAlmost", math.floor(fill * 100))) end
+    elseif fill < KH.Balance.BARN_WARN then
+        UI.barnWarned = nil
+    end
     local back = KH.Inn:Update()
     if back > 0 and KH.db.alerts then KH:Notify(T(back == 1 and "innBackOne" or "innBackMany", back)) end
     local built, level = KH.Village:Update()

@@ -122,14 +122,22 @@ end
 function F:Harvest(index)
     local db = KH.db
     if self:Status(index) ~= "ready" then return 0 end
-    local plant = D.Plant(db.plots[index].plant)
-    local amount = D.Yield(plant, db.level)
-    if KH.Village:Stored() + amount > KH.Village:BarnCap() then return 0, "barnFull" end
-    db.crops[plant.id] = (db.crops[plant.id] or 0) + amount
+    local plot = db.plots[index]
+    local plant = D.Plant(plot.plant)
+    -- a Barn almost full takes what fits; the rest waits in the plot (`left`), still ready, and the xp comes once
+    local amount = plot.left or D.Yield(plant, db.level)
+    local room = KH.Village:BarnCap() - KH.Village:Stored()
+    if room <= 0 then return 0, "barnFull" end
+    local fit = math.min(amount, room)
+    db.crops[plant.id] = (db.crops[plant.id] or 0) + fit
+    db.stats.harvested = db.stats.harvested + fit
+    if not plot.left then self:AddXP(plant.xp) end
+    if fit < amount then
+        plot.left = amount - fit
+        return fit, "barnFull"
+    end
     db.plots[index] = nil
-    db.stats.harvested = db.stats.harvested + amount
-    self:AddXP(plant.xp)
-    return amount
+    return fit
 end
 
 function F:HarvestAll()
