@@ -503,6 +503,24 @@ class Screens(Base):
         # the group is full: the others add nothing, so they show nothing
         self.assertEqual(self.ev(s + ".run.free[1].gain:GetText()"), "")
 
+    def test_after_sending_the_list_of_dungeons_stays(self):
+        """Owner, 20/11: sending a group does not jump to the Followers tab."""
+        self.inn(level=3, mira=3, tobin=3)
+        self.lua.execute("NS.UI.innTab = 'dungeons'")
+        self.open("inn")
+        s = "NS.UI.screens.inn"
+        self.press(s + ".drows[1]")
+        self.press(s + ".run.free[1]")
+        self.press(s + ".run.send")
+        self.assertEqual(self.ev("NS.UI.innTab"), "dungeons")
+        self.assertIsNone(self.ev("NS.UI.innDungeon"))
+        self.assertTrue(self.ev(s + ".dlist:IsShown()"))
+        # a call goes back to the Visitors, where it came from
+        cid = self.call("defense", "thanes", size=1, level=3)
+        self.lua.execute(f"NS.UI.innDungeon = '{cid}'; NS.UI.innParty = {{'tobin'}}; NS.UI:Refresh()")
+        self.press(s + ".run.send")
+        self.assertEqual(self.ev("NS.UI.view"), "visitors")
+
     def test_someone_new_is_greeted_with_a_card(self):
         self.inn(level=6, mira=5)
         self.lua.execute("NS.Inn:Welcome('aldric', 3)")

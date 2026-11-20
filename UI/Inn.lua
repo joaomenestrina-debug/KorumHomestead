@@ -441,11 +441,14 @@ local function BuildInn(win)
     run.suggest:SetPoint("BOTTOMLEFT", 0, 0)
     run.send = Kit.Button(run, 220, 36, "", function()
         local name = Dg.Name(UI.innDungeon)                 -- a call leaves the list when the group leaves
+        local call = Dg.Get(UI.innDungeon).call
         local ok, why, n = Dg:Send(UI.innDungeon, UI.innParty or {}, UI.innOpts)
         if ok then
             Notice(T("dgSent", name))
+            -- back to where the group was picked from (owner, 20/11): the list of dungeons, or the Visitors for a call
             UI.innDungeon, UI.innParty, UI.innOpts = nil, nil, nil
-            UI.innTab = "followers"
+            if call then UI:Show("visitors"); return end
+            UI.innTab = "dungeons"
         else
             Notice(why == "fish" and T("why_fishN", n) or Reason(why))
         end
