@@ -414,6 +414,20 @@ local function BuildInn(win)
             end
         end)
         b:SetPoint("BOTTOMLEFT", (k - 1) * (math.floor((W - 16) / 3) + 8), 72)
+        -- what each one does, under the mouse: the numbers come from the rules
+        local enter, leave = b:GetScript("OnEnter"), b:GetScript("OnLeave")
+        b:SetScript("OnEnter", function(frame)
+            if enter then enter(frame) end
+            local R = KH.Balance.DUNGEON
+            if kind == "alchemy" then Tip(frame, T("runPotionH"), {T("runPotionD", R.potion), T("runFromWorkshop")})
+            elseif kind == "cooking" then
+                Tip(frame, T("runFoodH"), {T("runFoodD", R.food, math.floor(R.foodXP * 100 + 0.5)), T("runFromWorkshop")})
+            else Tip(frame, T("runBossH"), {T("runBossD")}) end
+        end)
+        b:SetScript("OnLeave", function(frame)
+            if leave then leave(frame) end
+            if GameTooltip then GameTooltip:Hide() end
+        end)
         run.opts[k] = b
     end
     run.reward = Kit.Text(run, 11, C.gold)
@@ -901,10 +915,19 @@ local function BuildInn(win)
         local odds, bonus = Dg.Odds(total)
         run.chance:SetText(#party > 0 and (ChanceColor(odds) .. Percent(odds) .. "|r") or "|cff757a87—|r")
         run.chanceLabel:SetText(bonus > 1 and T("runBonus", Percent((bonus - 1) * 100)) or T("runChance"))
+        -- more parts than lines: the last line adds up the rest, so what is shown always sums to the chance
+        local shown = parts
+        if #parts > #run.parts then
+            shown = {}
+            for k = 1, #run.parts - 1 do shown[k] = parts[k] end
+            local rest, n = 0, 0
+            for k = #run.parts, #parts do rest, n = rest + parts[k][2], n + 1 end
+            shown[#run.parts] = {"more", rest, n}
+        end
         for k, line in ipairs(run.parts) do
-            local p = parts[k]
+            local p = shown[k]
             if p then
-                local sign = p[2] > 0 and "|cff59d973+" or "|cffff7a6b"
+                local sign = p[2] >= 0 and "|cff59d973+" or "|cffff7a6b"
                 local what
                 if p[1] == "threat" then what = T("partThreat", T("th_" .. p[3]))
                 elseif p[1] == "trait" then what = T("partTrait", FName(p[3]))
@@ -912,6 +935,7 @@ local function BuildInn(win)
                 elseif p[1] == "veteran" then what = T("partVeteran", FName(p[3]))
                 elseif p[1] == "combo" then what = T("partCombo", T("cb_" .. p[3]))
                 elseif p[1] == "missing" then what = T("partMissing", p[3])
+                elseif p[1] == "more" then what = T("partMore", p[3])
                 else what = T("part_" .. p[1]) end
                 line:SetText(sign .. p[2] .. "|r  " .. what)
             else
@@ -925,8 +949,9 @@ local function BuildInn(win)
         else
             run.combo:SetText("")
         end
-        run.opts[1]:SetLabel(T("runPotion", opts.potion and T("good_" .. opts.potion) or T("runNone")))
-        run.opts[2]:SetLabel(T("runFood", opts.food and T("good_" .. opts.food) or T("runNone")))
+        local R = KH.Balance.DUNGEON
+        run.opts[1]:SetLabel(T("runPotion", opts.potion and (T("good_" .. opts.potion) .. " |cff59d973+" .. R.potion .. "%|r") or T("runNone")))
+        run.opts[2]:SetLabel(T("runFood", opts.food and (T("good_" .. opts.food) .. " |cff59d973+" .. R.food .. "%|r") or T("runNone")))
         run.opts[3]:SetLabel(T("runBoss", opts.boss and T("runBossOn") or T("runBossOff")))
         run.opts[3]:SetShown(not d.raid and not d.call)
         local who, gain = Dg:LodgeHint(id, party, opts)

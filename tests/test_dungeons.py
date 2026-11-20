@@ -335,6 +335,30 @@ class Consumables(Base):
         self.lua.execute("NS.Rand = function() return 1 end; assert(NS.Dungeons:Send('ragefire', {'mira'}, {potion = 'heal'})); NS.Rand = nil")
         self.assertEqual(self.ev("NS.db.goods.heal"), 0)
 
+    def test_food_adds_5_to_the_chance(self):
+        self.inn(tobin=1)
+        self.lua.execute("NS.db.goods.stew = 1; NS.db.goods.heal = 1")
+        plain = self.chance("ragefire", ["tobin"])
+        fed = self.lua.eval("function() return (NS.Dungeons:Chance('ragefire', {'tobin'}, {food = 'stew'})) end")()
+        both = self.lua.eval("function() return (NS.Dungeons:Chance('ragefire', {'tobin'}, {food = 'stew', potion = 'heal'})) end")()
+        self.assertEqual((fed - plain, both - plain), (5, 15))
+
+    def test_the_parts_shown_always_add_up_to_the_chance(self):
+        self.inn(mira=30, tobin=30, elda=30, garrick=30, sela=30, bram=30)
+        self.lua.execute("for _, g in ipairs({'gw7', 'ga7', 'stew', 'heal'}) do NS.db.goods[g] = 9 end; "
+                         "for _, f in ipairs({'mira', 'tobin', 'bram'}) do NS.Inn:Equip(f, 'gw7'); NS.Inn:Equip(f, 'ga7') end; "
+                         "NS.UI.innDungeon = 'scarlet'; NS.UI.innParty = {'mira', 'tobin', 'bram'}; "
+                         "NS.UI.innOpts = {potion = 'heal', food = 'stew', boss = true}")
+        self.open("inn")
+        total = self.lua.eval("function() return (NS.Dungeons:Chance('scarlet', {'mira', 'tobin', 'bram'}, NS.UI.innOpts)) end")()
+        shown = self.lua.eval("""(function() local sum = 0
+            for _, line in ipairs(NS.UI.screens.inn.run.parts) do
+                local n = (line:GetText() or ''):gsub('|c%x%x%x%x%x%x%x%x', ''):gsub('|r', ''):match('^([+-]?%d+)')
+                sum = sum + (tonumber(n) or 0)
+            end
+            return sum end)()""")
+        self.assertEqual(100 + shown, total)
+
     def test_food_gives_more_xp(self):
         self.inn(mira=1)
         plain = self.lua.eval("function() local _, _, x = NS.Dungeons:Reward('ragefire', {'mira'}, 100, -1); return x.mira end")()

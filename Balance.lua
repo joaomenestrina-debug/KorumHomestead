@@ -506,7 +506,7 @@ B.DUNGEON = {
     merit = {chance = 0.10, from = 8}, epic = {chance = 0.05, from = 19},
     meritIcon = "inv_jewelry_talisman_08", epicIcon = "inv_jewelry_trinketpvp_01",
     trophyMin = 0.05, trophyMax = 0.20, bossTrophy = 1.5, bossShort = 0.25,
-    potion = 10, foodXP = 0.20, foodHurt = 0.5, inspired = 15, inspiredRuns = 3,
+    potion = 10, food = 5, foodXP = 0.20, foodHurt = 0.5, inspired = 15, inspiredRuns = 3,
     miraTrophy = 0.05, garrickHurt = 0.10, veteran = 10, mentorXP = 0.10,
     named = 0.10,                       -- a raid: the chance of a piece with a name
 }

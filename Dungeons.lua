@@ -611,6 +611,7 @@ function Dg:Chance(id, party, opts)
         if pts ~= 0 then Add("combo", pts, c.id) end
     end
     if Opt(opts, "potion") and #party > 0 then Add("potion", R.potion) end
+    if Opt(opts, "food") and #party > 0 then Add("food", R.food) end       -- a meal helps too (owner, 20/11)
     local insp = ((KH.db.adventure or {}).inspired or {})[id]
     if insp and insp > 0 and #party > 0 then Add("inspired", R.inspired) end
     if (KH.db.dungeons.scouted or {})[id] and #party > 0 then Add("scout", B.CALLS.recon.scout) end
