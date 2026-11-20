@@ -558,7 +558,8 @@ function Dg:Recommended(id, party, opts)
             local total, _, counters = self:Chance(id, with, opts)
             local mine = {}
             for _, c in ipairs(counters) do if c[2] == fid then mine[#mine + 1] = c[1] end end
-            out[#out + 1] = {id = fid, gain = total - base, counters = mine, free = self:Free(fid), full = #party >= d.size}
+            out[#out + 1] = {id = fid, gain = total - base, total = total, counters = mine, free = self:Free(fid),
+                full = #party >= d.size}
         end
     end
     table.sort(out, function(a, b)

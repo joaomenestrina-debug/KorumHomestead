@@ -139,11 +139,11 @@ local function BuildInn(win)
         {value = "dungeons", label = T("innTabDungeons")}, {value = "ranking", label = T("innTabRanking")},
         {value = "book", label = T("innTabBook")}},
         function() return UI.innTab end,
-        function(v) UI.innTab = v; UI.innFollower, UI.innDungeon, UI.innSwap = nil, nil, nil; UI:Refresh() end)
+        function(v) UI.innTab = v; UI.innFollower, UI.innDungeon, UI.innSwap, UI.innOpts = nil, nil, nil, nil; UI:Refresh() end)
     s.tabs:SetPoint("TOPLEFT", 0, -58)
     s.back = Kit.Button(s.frame, 130, 28, "", function()
         local d = UI.innDungeon and Dg.Get(UI.innDungeon)
-        UI.innFollower, UI.innDungeon, UI.innParty = nil, nil, nil
+        UI.innFollower, UI.innDungeon, UI.innParty, UI.innOpts = nil, nil, nil, nil
         if d and d.call then UI:Show("visitors") else UI:Refresh() end
     end)
     s.back:SetPoint("TOPLEFT", 0, -58)
@@ -204,7 +204,7 @@ local function BuildInn(win)
         row.tag:SetPoint("RIGHT", -70, 0)
         row:SetScript("OnClick", function()
             if row.id and Dg:Open(row.id) then
-                UI.innDungeon, UI.innParty = row.id, nil
+                UI.innDungeon, UI.innParty, UI.innOpts = row.id, nil, nil
                 UI:Refresh()
             end
         end)
@@ -774,7 +774,16 @@ local function BuildInn(win)
                     if rec.gain > 0 and #names > 0 then Kit.Fit(r.tag, T("runRec", table.concat(names, ", ")), 170)
                     elseif rec.gain > 0 then Kit.Fit(r.tag, T("runRecPlain"), 170)
                     else r.tag:SetText("") end
-                    if rec.gain > 0 then r.gain:SetText("|cff59d973+" .. rec.gain .. "%|r")
+                    if rec.full then
+                        -- the group is full: nobody else goes, so there is nothing to add
+                        r.tag:SetText("")
+                        r.gain:SetText("")
+                        r:SetAlpha(0.45)
+                    elseif #party == 0 then
+                        -- nobody picked yet: the chance this follower alone gives, the same number the screen shows next
+                        local alone = Dg.Odds(rec.total)
+                        r.gain:SetText(ChanceColor(alone) .. Percent(alone) .. "|r")
+                    elseif rec.gain > 0 then r.gain:SetText("|cff59d973+" .. rec.gain .. "%|r")
                     elseif rec.gain < 0 then r.gain:SetText("|cffff7a6b" .. rec.gain .. "%|r")
                     else r.gain:SetText("|cff757a87+0%|r") end
                 end

@@ -367,6 +367,23 @@ class Screens(Base):
         self.assertTrue(self.ev("NS.Inn:InRoom('lyra')"))
         self.assertIsNone(self.ev("NS.UI.innSwap"))
 
+    def test_the_chance_of_the_list_is_the_chance_of_the_run(self):
+        """Seen in the game on 19/11: the list said 89% and the run 64%, because the optional boss of another dungeon
+        was still on."""
+        self.inn(level=3, mira=3, tobin=3, elda=1)
+        self.lua.execute("NS.UI.innTab = 'dungeons'; NS.UI.innOpts = {boss = true}")
+        self.open("inn")
+        s = "NS.UI.screens.inn"
+        listed = self.ev(s + ".drows[1].chance:GetText()")
+        self.press(s + ".drows[1]")
+        self.assertIsNone(self.ev("NS.UI.innOpts and NS.UI.innOpts.boss"))
+        # nobody picked: each free follower shows the chance it gives alone, and the best is the one of the list
+        self.assertEqual(self.ev(s + ".run.free[1].gain:GetText()"), listed)
+        self.press(s + ".run.free[1]")
+        self.assertEqual(self.ev(s + ".run.chance:GetText()"), listed)
+        # the group is full: the others add nothing, so they show nothing
+        self.assertEqual(self.ev(s + ".run.free[1].gain:GetText()"), "")
+
     def test_someone_new_is_greeted_with_a_card(self):
         self.inn(level=6, mira=5)
         self.lua.execute("NS.Inn:Welcome('aldric', 3)")
