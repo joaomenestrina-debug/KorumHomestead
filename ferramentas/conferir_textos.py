@@ -184,6 +184,11 @@ def extras(out):
     for view in ("village", "hall", "garden", "barn", "orders", "mine", "pond", "workshop", "inn", "settings", "guide"):
         scene("topo-" + view, view)
     scene("horta-menu", "garden", after="NS.UI.screens.garden:OpenMenu(1)")
+    for tab in ("herbs", "raw", "alchemy", "cooking", "smithing", "gear"):
+        scene("celeiro-" + tab, "barn", f"NS.db.goods.core = 9; NS.db.goods.quelserrar = 1; NS.db.goods.onyxcloak = 1; NS.UI.barnTab = '{tab}'")
+    scene("celeiro-rolado", "barn", "NS.UI.barnTab = 'herbs'", after="NS.UI.screens.barn.boff = 99; NS.UI:Refresh()")
+    scene("celeiro-aba-vazia", "barn", "NS.db.goods = {ore = 5}; NS.UI.barnTab = 'gear'")
+    scene("oficina-filas", "workshop", "for _, r in ipairs({'heal', 'heal', 'stew', 'copper'}) do NS.Workshop:Craft(r) end; NS.UI.trade = 'cooking'")
     for b in BUILDINGS:
         scene("vila-sobre-" + b, "village", after=f"local s = NS.UI.screens.village; s.hover = '{b}'; s:Paint()")
         scene("licao-" + b, "orders" if b == "market" else b, setup=rich.replace(seen, "{}"))

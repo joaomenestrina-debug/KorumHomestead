@@ -359,8 +359,39 @@ class Homestead(unittest.TestCase):
         coins = self.ev("NS.db.coins")
         self.press(ore + ".sell1")
         self.assertEqual(self.ev("NS.db.coins"), coins + self.ev("NS.Village:GoodSell('ore')"))
-        self.press(barn + ".action")                                           # sell everything takes the goods too
+        self.assertEqual(self.ev("NS.UI.barnTab"), "raw")                    # from the Mine: the tab of the raw things
+        self.press(barn + ".action")                                           # the big button sells the tab
         self.assertEqual(self.ev("NS.Village:Good('ore')"), 0)
+
+    def test_the_barn_shows_one_kind_per_tab(self):
+        self.lua.execute("NS.db.crops[2447] = 5; NS.db.goods.ore = 7; NS.db.goods.heal = 2; NS.db.goods.stew = 3; "
+                         "NS.db.goods.core = 1; NS.db.goods.quelserrar = 1; NS.db.tutorial.done = true; NS.UI.barnTab = 'herbs'")
+        self.open("barn")
+        barn = "NS.UI.screens.barn"
+        shown = "(function() local o = {} for _, r in ipairs(NS.UI.screens.barn.rows) do if r:IsShown() then o[#o + 1] = tostring(r.id) end end return table.concat(o, ',') end)()"
+        self.assertEqual(self.ev(shown), "2447")
+        for tab, ids in (("raw", "ore,core"), ("alchemy", "heal"), ("cooking", "stew"), ("gear", "quelserrar"), ("smithing", "")):
+            self.lua.execute(f"NS.UI.barnTab = '{tab}'; NS.UI:Refresh()")
+            self.assertEqual(self.ev(shown), ids, tab)
+        self.assertEqual(self.ev(barn + ".empty:GetText()"), "Nothing of this kind in the Barn now.")
+        self.assertFalse(self.ev(barn + ".action.enabled") if self.ev(barn + ".action.enabled") is not None else False)
+        self.lua.execute("NS.UI.barnTab = 'alchemy'; NS.UI:Refresh()")
+        self.press(barn + ".action")                                           # sells the potions, nothing else
+        self.assertEqual(self.ev("NS.Village:Good('heal')"), 0)
+        self.assertEqual(self.ev("NS.Village:Good('stew')"), 3)
+        self.assertEqual(self.ev("NS.db.crops[2447]"), 5)
+
+    def test_every_herb_of_the_barn_can_be_reached_by_scrolling(self):
+        self.lua.execute("for _, p in ipairs(NS.Data.PLANTS) do NS.db.crops[p[1]] = 3 end; NS.db.tutorial.done = true; NS.UI.barnTab = 'herbs'")
+        self.open("barn")
+        barn = "NS.UI.screens.barn"
+        seen = set()
+        visible = "(function() local o = {} for _, r in ipairs(NS.UI.screens.barn.rows) do if r:IsShown() then o[#o + 1] = tostring(r.id) end end return table.concat(o, ',') end)()"
+        self.assertTrue(self.ev(barn + ".btrack:IsShown()"))
+        for _ in range(30):
+            seen.update(self.ev(visible).split(","))
+            self.lua.execute(f"{barn}.barea:GetScript('OnMouseWheel')({barn}.barea, -1)")
+        self.assertEqual(len(seen), self.ev("#NS.Data.PLANTS"))
 
     def test_buildings_cost_coins_and_take_time_one_work_at_a_time(self):
         self.assertEqual(self.up("hall"), (False, "village"))         # the buildings walk with the Village level
@@ -820,9 +851,9 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev(barn + ".head:GetText()"), f"{2 * self.ev('#NS.Data.PLANTS')} herbs in the barn")
         self.assertEqual(self.ev(barn + ".rows[2].wanted:GetText()"), "on order")
         self.assertEqual(self.ev(barn + ".rows[1].wanted:GetText()"), "")
-        self.assertIn("Sell everything", self.ev(barn + ".action.label:GetText()"))
-        # thirteen kinds still fit in the window, without scrolling
-        self.assertLessEqual(66 + 13 * self.ev(barn + ".rows[13]:GetHeight()") + 40, self.ev("NS.UI.win.contentHeight"))
+        self.assertIn("Sell these", self.ev(barn + ".action.label:GetText()"))
+        # the rows that show fit in the window; the rest is reached by scrolling
+        self.assertLessEqual(98 + self.ev(barn + ".bfit") * self.ev(barn + ".rows[1]:GetHeight()") + 40, self.ev("NS.UI.win.contentHeight"))
 
     def test_changes_are_shown_as_they_happen(self):
         self.lua.execute("NS.db.coins = 100; NS.db.tutorial.done = true")

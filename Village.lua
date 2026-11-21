@@ -39,6 +39,22 @@ V.GOODS = B.GOODS
 V.GOOD_ORDER = {"ore", "fish"}
 for _, id in ipairs(B.RARE_ORDER) do V.GOOD_ORDER[#V.GOOD_ORDER + 1] = id end
 for _, r in ipairs(B.RECIPES) do V.GOOD_ORDER[#V.GOOD_ORDER + 1] = r.id end
+-- the Core of the raids and the pieces with a name: they wait in the Barn too
+V.GOOD_ORDER[#V.GOOD_ORDER + 1] = "core"
+for _, pieces in pairs(B.NAMED) do
+    for _, id in ipairs(pieces) do V.GOOD_ORDER[#V.GOOD_ORDER + 1] = id end
+end
+
+-- the tab of the Barn a thing is shown in (owner, 20/11): herbs, raw things, or the trade of the Workshop that made it
+V.BARN_TABS = {"herbs", "raw", "alchemy", "cooking", "smithing", "gear"}
+function V.BarnTab(key)
+    if type(key) == "number" then return "herbs" end
+    for _, r in ipairs(B.RECIPES) do
+        if r.id == key then return r.trade end
+    end
+    if B.GOODS[key] and B.GOODS[key].gear then return "gear" end
+    return "raw"
+end
 -- every good is shown with the icon of an item of the game, as the herbs are
 -- Item ids used for the game's icons.
 V.ITEM = {}

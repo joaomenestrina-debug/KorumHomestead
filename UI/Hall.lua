@@ -33,7 +33,7 @@ local function BuildSource(id)
         s.rate:SetPoint("TOPLEFT", 0, -90)
         s.have = Kit.Text(s.frame, 12, C.textSoft)
         s.have:SetPoint("TOPLEFT", 0, -124)
-        s.action = Kit.Button(s.frame, 220, 36, T("openBarn"), function() UI:Show("barn") end)
+        s.action = Kit.Button(s.frame, 220, 36, T("openBarn"), function() UI.barnTab = "raw"; UI:Show("barn") end)
         s.action:SetPoint("BOTTOMRIGHT", 0, 0)
         s.action:SetStyle("primary")
 

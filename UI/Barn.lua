@@ -7,14 +7,55 @@ local Reason, Notice, Screen = P.Reason, P.Notice, P.Screen
 local GoodTex, SetIcon = P.GoodTex, P.SetIcon
 local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingName, P.Tip
 
+local TOP = 98                                  -- under the tabs
+UI.barnTab = "herbs"
+
 local function BuildBarn(win)
     local s = Screen(win, "barn")
     local W = s.width
     s.rows = {}
+    -- one tab for each kind of thing (owner, 20/11): herbs, raw things, and what each trade of the Workshop made
+    local options = {}
+    for _, tab in ipairs(KH.Village.BARN_TABS) do
+        options[#options + 1] = {value = tab, label = T(tab == "herbs" and "barnTab_herbs" or tab == "raw" and "barnTab_raw" or "trade_" .. tab)}
+    end
+    s.tabs = Kit.Segmented(s.frame, W, options, function() return UI.barnTab end,
+        function(v) UI.barnTab = v; s.boff = 0; UI:Refresh() end)
+    -- the list scrolls when a tab has more kinds than fit (the herbs go past twenty): the wheel over it, or the bar
+    local BAR = 4
+    s.boff = 0
+    local area = CreateFrame("Frame", nil, s.frame)
+    area:SetPoint("TOPLEFT", 0, -TOP)
+    area:SetPoint("BOTTOMRIGHT", s.frame, "BOTTOMRIGHT", 0, 52)
+    area:EnableMouseWheel(true)
+    area:SetScript("OnMouseWheel", function(_, delta) s.boff = s.boff - delta; s:Refresh() end)
+    s.barea = area
+    local track = CreateFrame("Button", nil, area)
+    track:SetWidth(BAR + 8)
+    track:SetPoint("TOPRIGHT", 0, 0)
+    track:SetPoint("BOTTOMRIGHT", 0, 0)
+    track.line = track:CreateTexture(nil, "BACKGROUND")
+    track.line:SetWidth(BAR)
+    track.line:SetPoint("TOP", 0, 0)
+    track.line:SetPoint("BOTTOM", 0, 0)
+    track.line:SetColorTexture(1, 1, 1, 0.06)
+    track.thumb = track:CreateTexture(nil, "ARTWORK")
+    track.thumb:SetWidth(BAR)
+    track.thumb:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 0.7)
+    track:SetScript("OnClick", function()                 -- one page down; at the bottom, back to the top
+        s.boff = (s.boff >= (s.bmost or 0)) and 0 or s.boff + (s.bfit or 1)
+        s:Refresh()
+    end)
+    s.btrack = track
+    local LIST_W = W - BAR - 14
+    s.tabs:SetPoint("TOPLEFT", 0, -58)
+    s.empty = Kit.Text(s.frame, 12, C.textMuted)
+    s.empty:SetPoint("TOPLEFT", 0, -TOP - 12)
+    s.empty:SetWidth(W)
     for i, p in ipairs(D.PLANTS) do
         local row = CreateFrame("Frame", nil, s.frame)
-        row:SetSize(W, 44)
-        row.id = p[1]
+        row:SetSize(LIST_W, 44)
+        row.id, row.tab = p[1], "herbs"
         row.rule = Kit.Hairline(row, 0.05)
         row.rule:SetPoint("BOTTOMLEFT")
         row.rule:SetPoint("BOTTOMRIGHT")
@@ -44,8 +85,8 @@ local function BuildBarn(win)
 
     for _, good in ipairs(KH.Village.GOOD_ORDER) do
         local row = CreateFrame("Frame", nil, s.frame)
-        row:SetSize(W, 44)
-        row.id, row.good = good, true
+        row:SetSize(LIST_W, 44)
+        row.id, row.good, row.tab = good, true, KH.Village.BarnTab(good)
         row.rule = Kit.Hairline(row, 0.05)
         row.rule:SetPoint("BOTTOMLEFT")
         row.rule:SetPoint("BOTTOMRIGHT")
@@ -84,10 +125,14 @@ local function BuildBarn(win)
     s.action = Kit.Button(s.frame, 260, 36, "", function() s:Action() end)
     s.action:SetPoint("BOTTOMRIGHT", 0, 0)
 
+    -- the button sells what the open tab shows; with an empty barn it shows the way back to the garden
     function s:Action()
         if self.total > 0 then
-            local coins = KH.Farm:SellAll()
-            for _, good in ipairs(KH.Village.GOOD_ORDER) do coins = coins + KH.Village:SellGood(good) end
+            local coins = 0
+            if UI.barnTab == "herbs" then coins = KH.Farm:SellAll() end
+            for _, good in ipairs(KH.Village.GOOD_ORDER) do
+                if KH.Village.BarnTab(good) == UI.barnTab then coins = coins + KH.Village:SellGood(good) end
+            end
             if coins > 0 then Notice(T("soldFor", KH.Number(coins))) end
             UI:Refresh()
         else
@@ -104,25 +149,46 @@ local function BuildBarn(win)
             if row.good then return KH.Village:Good(row.id) end
             return db.crops[row.id] or 0
         end
-        local herbs = 0
-        for _, row in ipairs(self.rows) do
-            if Have(row) > 0 then shown = shown + 1 end
-        end
-        local room = self.height - 66 - 52
-        local rowH = math.max(22, math.min(44, math.floor(room / math.max(1, shown))))
-        local fit = math.floor(room / rowH)
-        local at = 0
+        local herbs, here, tabWorth = 0, 0, 0
+        local count = {}
         for _, row in ipairs(self.rows) do
             local n = Have(row)
-            row:SetShown(n > 0 and at < fit)
+            if n > 0 then
+                count[row.tab] = (count[row.tab] or 0) + 1
+                if row.tab == UI.barnTab then shown = shown + 1 end
+            end
+        end
+        -- each tab says how many kinds it holds
+        for k, tab in ipairs(KH.Village.BARN_TABS) do
+            local base = T(tab == "herbs" and "barnTab_herbs" or tab == "raw" and "barnTab_raw" or "trade_" .. tab)
+            Kit.Fit(self.tabs.buttons[k].label, base .. ((count[tab] or 0) > 0 and (" |cff40d9c4" .. count[tab] .. "|r") or ""),
+                math.floor(W / #KH.Village.BARN_TABS) - 8)
+        end
+        self.tabs:Sync()
+        local room = self.height - TOP - 52
+        local rowH = math.max(26, math.min(44, math.floor(room / math.max(1, shown))))
+        local fit = math.floor(room / rowH)
+        self.bfit, self.bmost = fit, math.max(0, shown - fit)
+        self.boff = math.max(0, math.min(self.bmost, math.floor(self.boff + 0.5)))
+        local at, seen = 0, 0
+        for _, row in ipairs(self.rows) do
+            local n = Have(row)
+            local mine = row.tab == UI.barnTab
+            if n > 0 and mine then seen = seen + 1 end
+            local inView = seen > self.boff and at < fit          -- under the scroll and still on the page
+            row:SetShown(n > 0 and mine and inView)
             if n > 0 then
                 local sell = row.good and KH.Village:GoodSell(row.id) or D.Plant(row.id).sell
                 total = total + n
                 if not row.good then herbs = herbs + n end
                 worth = worth + math.floor(n * sell * KH.Village:PayBonus())
+                if mine then here, tabWorth = here + n, tabWorth + math.floor(n * sell * KH.Village:PayBonus()) end
+            end
+            if n > 0 and mine and inView then
+                local sell = row.good and KH.Village:GoodSell(row.id) or D.Plant(row.id).sell
                 row:SetHeight(rowH)
                 row:ClearAllPoints()
-                row:SetPoint("TOPLEFT", 0, -66 - at * rowH)
+                row:SetPoint("TOPLEFT", 0, -TOP - at * rowH)
                 at = at + 1
                 local side = math.min(30, rowH - 6)
                 row.icon:SetSize(side, side)
@@ -140,13 +206,24 @@ local function BuildBarn(win)
                 row.sellAll:SetLabel(T("sellAll"))
             end
         end
+        local track = self.btrack
+        track:SetShown(self.bmost > 0)
+        if self.bmost > 0 then
+            local h = math.max(18, math.floor(room * fit / shown))
+            track.thumb:SetHeight(h)
+            track.thumb:ClearAllPoints()
+            track.thumb:SetPoint("TOP", track, "TOP", 0, -math.floor((room - h) * self.boff / self.bmost + 0.5))
+        end
         self.total = total
+        self.empty:SetText(total > 0 and here == 0 and T("barnTabEmpty") or "")
         if total > 0 then
             self.head:SetText(herbs == total and (total == 1 and T("barnHeadOne") or T("barnHead", total)) or T("barnHeadMixed", total))
             self.sub:SetText(T("barnSub", KH.Number(worth)))
-            self.action:SetLabel(T("sellEverything", KH.Number(worth)))
-            self.action:SetStyle("primary")
+            self.action:SetLabel(here > 0 and T("sellTab", KH.Number(tabWorth)) or T("barnTabNone"))
+            self.action:SetStyle(here > 0 and "primary" or "quiet")
+            self.action:SetEnabledState(here > 0)
         else
+            self.action:SetEnabledState(true)
             self.head:SetText(T("barnEmptyH"))
             self.sub:SetText(T("barnEmpty"))
             self.action:SetLabel(T("goGarden"))
