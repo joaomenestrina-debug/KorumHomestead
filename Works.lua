@@ -6,6 +6,10 @@
 
 
         Workshop:Slots() / Workshop:Unlocked(recipeId) / Workshop:CanCraft(recipeId)
+
+    Each trade (a tab: alchemy, cooking, smithing, gear) has a queue of its own, with the same number of places, and
+    they all run at the same time (owner, 20/11). The save keeps one list, db.queue; a job belongs to the trade of its
+    recipe and starts when the job before it in that trade ends.
         Workshop.Shown(trade)           the 3 recipes the Workshop screen shows for a trade
         Workshop:Offered(recipeId)      open and on the screen: the only items orders and visitors ask for
         Workshop:Craft(recipeId)        takes the herbs and puts the potion in the queue
@@ -132,7 +136,7 @@ function W:CanCraft(id)
     if not r then return false, "noRecipe" end
     if V:Level("workshop") == 0 then return false, "noWorkshop" end
     if V:Level("workshop") < r.level then return false, "recipeLevel", r.level end
-    if #KH.db.queue >= self:Slots() then return false, "queueFull" end
+    if #self:Jobs(W.Recipe(id).trade) >= self:Slots() then return false, "queueFull" end
     if not self:Has(r) then return false, "herbs" end
     return true
 end
@@ -143,30 +147,46 @@ function W:Craft(id)
     local r = W.Recipe(id)
     local db = KH.db
     for _, input in ipairs(r.inputs) do Take(input[1], input[2]) end
-    local last = db.queue[#db.queue]
-    local at = last and (last.at + last.time) or KH.Now()
+    -- after the last job of the same trade (each trade has its own queue)
+    local at = KH.Now()
+    for _, job in ipairs(db.queue) do
+        local jr = W.Recipe(job.recipe)
+        if jr and jr.trade == r.trade then at = math.max(at, job.at + job.time) end
+    end
     db.queue[#db.queue + 1] = {recipe = id, at = at, time = r.time}
     return true
 end
 
--- the queue as it stands: {{recipe, left, progress}, ...}
-function W:Jobs()
+-- the queue of a trade as it stands (all of them with no trade): {{recipe, left, progress, trade}, ...}, the next to be
+-- ready first
+function W:Jobs(trade)
     local out = {}
-    for i, job in ipairs(KH.db.queue) do
-        local left = job.at + job.time - KH.Now()
-        out[i] = {recipe = job.recipe, left = math.max(0, left), progress = math.min(1, math.max(0, (KH.Now() - job.at) / job.time))}
+    for _, job in ipairs(KH.db.queue) do
+        local r = W.Recipe(job.recipe)
+        if not trade or (r and r.trade == trade) then
+            local left = job.at + job.time - KH.Now()
+            out[#out + 1] = {recipe = job.recipe, left = math.max(0, left), trade = r and r.trade,
+                progress = math.min(1, math.max(0, (KH.Now() - job.at) / job.time))}
+        end
     end
+    table.sort(out, function(a, b) return a.left < b.left end)
     return out
 end
 
 function W:Update()
     local db = KH.db
     local done = {}
-    while db.queue[1] and KH.Now() >= db.queue[1].at + db.queue[1].time do
-        local job = table.remove(db.queue, 1)
-        db.goods[job.recipe] = (db.goods[job.recipe] or 0) + 1
-        done[#done + 1] = job.recipe
-        KH.Farm:AddXP(W.XP(job.recipe))             -- the Workshop gives xp (more than the herbs it used)
+    local i = 1
+    while db.queue[i] do                            -- every trade runs at once: any job may be the one that ended
+        local job = db.queue[i]
+        if KH.Now() >= job.at + job.time then
+            table.remove(db.queue, i)
+            db.goods[job.recipe] = (db.goods[job.recipe] or 0) + 1
+            done[#done + 1] = job.recipe
+            KH.Farm:AddXP(W.XP(job.recipe))         -- the Workshop gives xp (more than the herbs it used)
+        else
+            i = i + 1
+        end
     end
     return done
 end

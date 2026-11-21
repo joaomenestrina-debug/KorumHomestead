@@ -183,6 +183,24 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("#NS.db.queue"), 0)
         self.assertEqual(self.ev("NS.Village:SellGood('agil')"), self.ev("NS.Workshop.Value('agil')"))
 
+    def test_each_trade_has_its_own_queue_and_they_work_at_once(self):
+        self.lua.execute("NS.db.buildings.workshop = 2; NS.db.goods.fish = 50; NS.db.goods.ore = 50; NS.Balance.CRAFT.queueBase = 1")
+        self.lua.execute("NS.db.crops[2447] = 9; NS.db.crops[765] = 9; NS.db.crops[2449] = 9")
+        for recipe in ("heal", "heal", "stew", "stew", "copper", "copper"):
+            self.assertTrue(self.ev(f"(NS.Workshop:Craft('{recipe}'))"), recipe)      # two places in each trade
+        for recipe in ("heal", "stew", "copper"):
+            self.assertEqual(self.lua.eval(f"function() return NS.Workshop:CanCraft('{recipe}') end")()[1], "queueFull")
+        self.assertEqual(self.ev("#NS.Workshop:Jobs('alchemy')"), 2)
+        # the first of each trade started now, not after the others
+        heal = self.ev("NS.Workshop.Recipe('heal').time")
+        stew = self.ev("NS.Workshop.Recipe('stew').time")
+        self.assertEqual(self.ev("NS.Workshop:Jobs('cooking')[1].left"), stew)
+        self.assertEqual(self.ev("NS.Workshop:Jobs('alchemy')[2].left"), 2 * heal)
+        self.lua.execute(f"NOW = NOW + {max(heal, stew)}")
+        done = sorted(self.lua.eval("NS.Workshop:Update()").values())
+        self.assertIn("heal", done)
+        self.assertIn("stew", done)
+
     def test_every_place_opens_with_its_drawing_and_explains_itself_once(self):
         self.lua.execute("NS.db.buildings.workshop = 2; NS.db.tutorial.done = true; NS.db.seen = {}")
         self.open("workshop")
@@ -210,12 +228,10 @@ class Homestead(unittest.TestCase):
         self.assertEqual((self.ev("NS.Village:Good('fish')"), self.ev("NS.db.crops[2447]")), (0, None))
         self.assertTrue(self.ev("(NS.Workshop:Craft('bar'))"))                 # the third place
         self.lua.execute("NOW = NOW + 90 + 300")
-        self.assertEqual(len(self.lua.eval("NS.Workshop:Update()")), 2)
+        self.assertEqual(len(self.lua.eval("NS.Workshop:Update()")), 3)       # the Smithing does not wait for the Cooking
         self.assertEqual(self.ev("NS.Village:Good('stew')"), 1)
         self.assertEqual(self.ev("NS.Village:Good('ore')"), 1)
         self.assertEqual(tuple(self.lua.eval("function() return NS.Workshop:CanCraft('blade') end")())[:2], (False, "recipeLevel"))
-        self.lua.execute("NOW = NOW + 200")
-        self.lua.eval("NS.Workshop:Update()")
         self.assertEqual(self.ev("NS.Village:SellGood('bar')"), self.ev("NS.Workshop.Value('bar')"))
 
     def test_the_workshop_recommends_the_craft_worth_the_most(self):
@@ -229,13 +245,13 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev(f"{rows}[1].button.style"), "quiet")
 
     def test_the_workshop_queue_scrolls(self):
-        self.lua.execute("NS.db.buildings.workshop = 7; NS.db.buildings.hall = 7; NS.db.goods.fish = 99; NS.db.tutorial.done = true; NS.db.seen.workshop = true")
+        self.lua.execute("NS.db.buildings.workshop = 7; NS.db.buildings.hall = 7; NS.db.goods.fish = 99; NS.db.tutorial.done = true; NS.db.seen.workshop = true; NS.UI.trade = 'cooking'")
         for _ in range(9):
             self.lua.execute("assert(NS.Workshop:Craft('stew'))")
         self.open("workshop")
         s = "NS.UI.screens.workshop"
         self.assertTrue(self.ev(s + ".qtrack:IsShown()"))
-        left = "NS.Duration(NS.Workshop:Jobs()[%d].left)"
+        left = "NS.Duration(NS.Workshop:Jobs('cooking')[%d].left)"
         self.assertEqual(self.ev(s + ".queue[1].left:GetText()"), self.ev(left % 1))
         self.lua.execute(f"{s}.qarea:GetScript('OnMouseWheel')({s}.qarea, -1)")       # the wheel down: one place
         self.assertEqual(self.ev(s + ".queue[1].left:GetText()"), self.ev(left % 2))

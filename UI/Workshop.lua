@@ -20,7 +20,8 @@ local function BuildWorkshop(win)
     s.rows = {}
     local options = {}
     for _, trade in ipairs(Wk.TABS) do options[#options + 1] = {value = trade, label = T("trade_" .. trade)} end
-    s.trades = Kit.Segmented(s.frame, 440, options, function() return UI.trade end, function(v) UI.trade = v; UI:Refresh() end)
+    s.trades = Kit.Segmented(s.frame, 440, options, function() return UI.trade end,
+        function(v) UI.trade = v; s.qoff = 0; UI:Refresh() end)
     s.trades:SetPoint("TOPLEFT", 0, -58)
     s.tradeHint = Kit.Text(s.frame, 11, C.textSoft)
     s.tradeHint:SetPoint("LEFT", s.trades, "RIGHT", 16, 0)
@@ -88,12 +89,12 @@ local function BuildWorkshop(win)
     track.thumb:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 0.7)
     -- a click on the bar goes one page down; at the bottom, back to the top
     track:SetScript("OnClick", function()
-        local most = math.max(0, #Wk:Jobs() - QUEUE_ROWS)
+        local most = math.max(0, #Wk:Jobs(UI.trade) - QUEUE_ROWS)
         s:ScrollQueue(s.qoff >= most and 0 or s.qoff + QUEUE_ROWS)
     end)
     s.qtrack = track
     function s:ScrollQueue(off)
-        self.qoff = math.max(0, math.min(math.max(0, #Wk:Jobs() - QUEUE_ROWS), math.floor(off + 0.5)))
+        self.qoff = math.max(0, math.min(math.max(0, #Wk:Jobs(UI.trade) - QUEUE_ROWS), math.floor(off + 0.5)))
         self:Refresh()
     end
     s.queue = {}
@@ -116,16 +117,21 @@ local function BuildWorkshop(win)
     function s:Refresh()
         local db = KH.db
         local level = V:Level("workshop")
-        local jobs = Wk:Jobs()
+        local jobs = Wk:Jobs(UI.trade)                     -- the queue of the tab that is open
+        local all = #Wk:Jobs()
         if level == 0 then
             self.head:SetText(T("shopNoH")); self.sub:SetText(T("shopNoS"))
-        elseif #jobs > 0 then
-            self.head:SetText(T("shopBusyH", #jobs)); self.sub:SetText(T("shopBusyS", Wk:Slots()))
+        elseif all > 0 then
+            self.head:SetText(T("shopBusyH", all)); self.sub:SetText(T("shopBusyS", Wk:Slots()))
         else
             self.head:SetText(T("shopH")); self.sub:SetText(T("shopS", Wk:Slots()))
         end
         -- the recommended craft: of the recipes shown that can be made now (Advice.lua)
         local best, why
+        for k, trade in ipairs(Wk.TABS) do
+            local n = #Wk:Jobs(trade)
+            self.trades.buttons[k].label:SetText(T("trade_" .. trade) .. (n > 0 and (" |cff40d9c4" .. n .. "|r") or ""))
+        end
         self.trades:Sync()
         self.tradeHint:SetText(T("tradeHint_" .. UI.trade))
         local recipes = Wk.Shown(UI.trade, level)          -- the two best already open and the next one to come
@@ -181,8 +187,8 @@ local function BuildWorkshop(win)
                 row.icon:SetTexture(GoodTex(job.recipe))
                 row.name:SetText(T("good_" .. job.recipe))
                 row.left:SetText(KH.Duration(job.left))
-                row.bar:SetShown(n == 1)                     -- the one being made now
-                if n == 1 then row.bar:Set(job.progress) end
+                row.bar:SetShown(job.progress > 0)           -- the one being made now in this trade
+                if job.progress > 0 then row.bar:Set(job.progress) end
             end
         end
         local track = self.qtrack
