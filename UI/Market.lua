@@ -128,7 +128,7 @@ local function BuildOrders(win)
     function s:Deliver(i)
         local ok, result = KH.Orders:Deliver(i)
         if ok then
-            Notice(T("delivered", KH.Number(result.paid or result.coins)))
+            Notice(KH.Say("delivered", KH.Number(result.paid or result.coins)))
             Kit.FadeIn(self.rows[i], 0.35)          -- a new order took its place
         else
             Notice(Reason(result))
@@ -142,13 +142,13 @@ local function BuildOrders(win)
         if not ok then
             Notice(Reason(r))
         elseif r.rare > 0 then
-            Notice(T("streakRare", r.streak, KH.Number(r.pay), KH.Number(r.bonus), r.rare, D.Name(KH.Balance.DAILY.rareItem)))
+            Notice(KH.Say("streakRare", r.streak, KH.Number(r.pay), KH.Number(r.bonus), r.rare, D.Name(KH.Balance.DAILY.rareItem)))
             Kit.Float(self.daily.coins, "+" .. KH.Number(r.pay), C.gold, 1, 14)
         elseif r.bonus > 0 then
-            Notice(T("streakPrize", r.streak, KH.Number(r.pay), KH.Number(r.bonus)))
+            Notice(KH.Say("streakPrize", r.streak, KH.Number(r.pay), KH.Number(r.bonus)))
             Kit.Float(self.daily.coins, "+" .. KH.Number(r.pay), C.gold, 1, 14)
         else
-            Notice(T("dailyDelivered", KH.Number(r.pay)))
+            Notice(KH.Say("dailyDelivered", KH.Number(r.pay)))
         end
     end
 

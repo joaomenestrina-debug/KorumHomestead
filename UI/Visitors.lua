@@ -114,13 +114,13 @@ local function BuildVisitors(win)
         local ok, r
         if e.kind == "urgent" then
             ok, r = KH.Events:Deliver(e.id)
-            if ok then Notice(T("evDone_urgent", KH.Number(r.coins), KH.Number(r.xp))) end
+            if ok then Notice(KH.Say("evDone_urgent", KH.Number(r.coins), KH.Number(r.xp))) end
         elseif e.kind == "merchant" then
             ok, r = KH.Events:Sell(e.id)
-            if ok then Notice(T("evDone_merchant", r.n, KH.Number(r.coins))) end
+            if ok then Notice(KH.Say("evDone_merchant", r.n, KH.Number(r.coins))) end
         else
             ok, r = KH.Events:Collect(e.id)
-            if ok then Notice(T("evDone_find", Name(r.key))) end
+            if ok then Notice(KH.Say("evDone_find", Name(r.key))) end
         end
         if not ok then Notice(Reason(r)) end
         UI:Refresh()
@@ -130,7 +130,7 @@ local function BuildVisitors(win)
         local e = card.event
         if not e then return end
         local ok, r = KH.Events:Trade(e.id, k)
-        if ok then Notice(T("evDone_trade", r.m, Name(r.get))) else Notice(Reason(r)) end
+        if ok then Notice(KH.Say("evDone_trade", r.m, Name(r.get))) else Notice(Reason(r)) end
         UI:Refresh()
     end
 

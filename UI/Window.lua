@@ -253,7 +253,7 @@ function UI:ShowLevel()
         for _, p in ipairs(D.PLANTS) do
             if p[2] > self.levelSeen and p[2] <= db.level then seed = p[1] end
         end
-        Notice(seed and T("newSeed", db.level, D.Name(seed)) or T("levelNotice", db.level))
+        Notice(seed and KH.Say("newSeed", db.level, D.Name(seed)) or KH.Say("levelNotice", db.level))
         Kit.Float(lv.label, T("herbalism", db.level), C.accentBright, -1, 12)
     end
     self.levelSeen = db.level
@@ -422,23 +422,23 @@ function UI:Tick()
     KH.Adventure:Tick()                                    -- a flight that starts reminds of the village
     -- the random events: they only come with the game open (this clock), and go away when their time is over
     local new = KH.Events:Update()
-    if new then KH:Notify(T("ev_new_" .. new.kind)) end
+    if new then KH:Notify(KH.Say("ev_new_" .. new.kind)) end
     for _, recipe in ipairs(KH.Workshop:Update()) do
-        if KH.db.alerts then KH:Notify(T("craftDone", T("good_" .. recipe))) end
+        if KH.db.alerts then KH:Notify(KH.Say("craftDone", T("good_" .. recipe))) end
     end
     -- the Barn passes 80%: one line, before the Garden, the Mine or the Pond stop
     local fill = KH.Village:Fill()
     if fill >= KH.Balance.BARN_WARN and not UI.barnWarned then
         UI.barnWarned = true
-        if KH.db.alerts then KH:Notify(T(fill >= 1 and "alertBarnFull" or "barnAlmost", math.floor(fill * 100))) end
+        if KH.db.alerts then KH:Notify(KH.Say(fill >= 1 and "alertBarnFull" or "barnAlmost", math.floor(fill * 100))) end
     elseif fill < KH.Balance.BARN_WARN then
         UI.barnWarned = nil
     end
     local back = KH.Inn:Update()
-    if back > 0 and KH.db.alerts then KH:Notify(T(back == 1 and "innBackOne" or "innBackMany", back)) end
+    if back > 0 and KH.db.alerts then KH:Notify(KH.Say(back == 1 and "innBackOne" or "innBackMany", back)) end
     local built, level = KH.Village:Update()
     if built then
-        local text = T("built", T("b_" .. built), level)
+        local text = KH.Say("built", T("b_" .. built), level)
         if KH.db.alerts then KH:Notify(text) end
         Notice(text)
     end
@@ -447,7 +447,7 @@ function UI:Tick()
         if ready and not announced[i] then
             announced[i] = true
             local plot = KH.db.plots[i]
-            if KH.db.alerts and plot then KH:Notify(T("readyAlert", D.Name(plot.plant))) end
+            if KH.db.alerts and plot then KH:Notify(KH.Say("readyAlert", D.Name(plot.plant))) end
         elseif not ready then
             announced[i] = nil
         end
@@ -467,7 +467,8 @@ KH:On("PLAYER_LOGIN", function()
     end
     KH.After(6, function()
         local n = KH.Farm:ReadyCount()
-        if KH.db.welcome and n > 0 then KH:Notify(T(n == 1 and "headReadyOne" or "headReadyMany", n)) end
+        if KH.db.welcome and n > 0 then KH:Notify(KH.Say(n == 1 and "headReadyOne" or "headReadyMany", n))
+        elseif KH.db.welcome and KH.MayorOn() and KH.MayorLines("hello") > 0 then KH:Notify(KH.Say("hello")) end
     end)
 end)
 KH:On("GET_ITEM_INFO_RECEIVED", function() UI:Refresh() end)

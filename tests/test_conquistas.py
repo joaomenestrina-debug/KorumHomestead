@@ -66,5 +66,16 @@ class Achievements(td.Base):
         self.assertIn("Master of the Homestead", self.ev(s + ".rows[1].name:GetText()"))
 
 
+
+class Mayor(td.Base):
+    def test_the_mayor_says_his_line_and_the_plain_text_when_he_has_none_or_is_off(self):
+        self.assertEqual(self.ev("NS.Say('levelUp', 7)"), self.ev("NS.T('levelUp', 7)"))
+        self.lua.execute("NS.L.enUS.mayor_craftDone_1 = 'Your %s is ready. Try not to break it.'")
+        said = self.ev("NS.Say('craftDone', 'Stew')")
+        self.assertIn("Mayor Ambrose", said)
+        self.assertIn("Your Stew is ready. Try not to break it.", said)
+        self.lua.execute("NS.db.mayor = false")
+        self.assertEqual(self.ev("NS.Say('craftDone', 'Stew')"), self.ev("NS.T('craftDone', 'Stew')"))
+
 if __name__ == "__main__":
     unittest.main()

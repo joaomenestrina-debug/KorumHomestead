@@ -194,7 +194,7 @@ local function BuildInn(win)
     s.action = Kit.Button(s.frame, 220, 36, "", function()
         local coins = Dg:CollectAll()
         -- each group that came back shows its result card (s.result); an old mission only has coins to tell
-        if #Dg.results == 0 and coins > 0 then Notice(T("collected", KH.Number(coins))) end
+        if #Dg.results == 0 and coins > 0 then Notice(KH.Say("collected", KH.Number(coins))) end
         UI:Refresh()
     end)
     s.action:SetPoint("BOTTOMRIGHT", 0, 0)
@@ -525,7 +525,7 @@ local function BuildInn(win)
         local call = Dg.Get(UI.innDungeon).call
         local ok, why, n = Dg:Send(UI.innDungeon, UI.innParty or {}, UI.innOpts)
         if ok then
-            Notice(T("dgSent", name))
+            Notice(KH.Say("dgSent", name))
             -- back to where the group was picked from (owner, 20/11): the list of dungeons, or the Visitors for a call
             UI.innDungeon, UI.innParty, UI.innOpts = nil, nil, nil
             if call then UI:Show("visitors"); return end
@@ -608,7 +608,7 @@ local function BuildInn(win)
             if f.level >= KH.Balance.FOLLOWER.maxLevel and not f.mastery then
                 if In:Master(fid, k == 1 and "veteran" or "mentor") then Notice(T("ttl_" .. fid)) end
             elseif In:Promote(fid, k) then
-                Notice(T("promoted", FName(fid)))
+                Notice(KH.Say("promoted", FName(fid)))
             end
             UI:Refresh()
         end)

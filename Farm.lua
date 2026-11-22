@@ -33,7 +33,7 @@ function F:AddXP(n)
         while db.capXP >= every do
             db.capXP = db.capXP - every
             db.daily.rare = (db.daily.rare or 0) + 1
-            KH:Notify(KH.T("capLotus", D.Name(KH.Balance.DAILY.rareItem)))
+            KH:Notify(KH.Say("capLotus", D.Name(KH.Balance.DAILY.rareItem)))
         end
         return
     end
@@ -41,7 +41,7 @@ function F:AddXP(n)
     while db.level < D.MAX_LEVEL and db.xp >= D.XPToNext(db.level) do
         db.xp = db.xp - D.XPToNext(db.level)
         db.level = db.level + 1
-        KH:Notify(KH.T("levelUp", db.level))
+        KH:Notify(KH.Say("levelUp", db.level))
     end
     if db.level >= D.MAX_LEVEL then db.xp = 0 end
 end

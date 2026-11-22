@@ -138,10 +138,10 @@ function A:OnBoss(success)
             a.raidAt[id] = KH.Now()
             KH.db.dungeons.epic = (KH.db.dungeons.epic or 0) + 1
             a.raidLuck = true                               -- more chance of a new follower on their next raid
-            KH:Notify(KH.T("advRaid"))
+            KH:Notify(KH.Say("advRaid"))
         end
     else
-        KH:Notify(KH.T("advInspired", KH.T("dg_" .. id)))
+        KH:Notify(KH.Say("advInspired", KH.T("dg_" .. id)))
     end
     return id
 end

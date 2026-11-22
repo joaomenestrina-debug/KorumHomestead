@@ -145,7 +145,7 @@ local function Next()
     local a = KH.Achievements.Get(id)
     card.id = id
     card.icon:SetTexture(Icon(a))
-    card.title:SetText(T("achNew"))
+    card.title:SetText(KH.MayorOn() and KH.MayorLines("achNew") > 0 and KH.T("mayor_achNew_" .. math.random(KH.MayorLines("achNew"))) or T("achNew"))
     Kit.Fit(card.name, T("ach_" .. id), 250, 9)
     card.pts:SetText(T("achPts", a.points))
     card.left = HOLD
@@ -187,7 +187,7 @@ function UI:AchievementCard(ids)
     if not card then Build() end
     for _, id in ipairs(ids) do
         waiting[#waiting + 1] = id
-        if KH.db.alerts then KH:Notify(T("achChat", T("ach_" .. id), KH.Achievements.Get(id).points)) end
+        if KH.db.alerts then KH:Notify(KH.Say("achChat", T("ach_" .. id), KH.Achievements.Get(id).points)) end
     end
     if not card:IsShown() then Next() end
 end
