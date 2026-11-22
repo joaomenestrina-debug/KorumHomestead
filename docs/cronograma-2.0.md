@@ -149,7 +149,7 @@ gantt
 
 | ID | Tarefa | Quem | Data | Entrega / aceite |
 |---|---|---|---|---|
-| A11 | **55 ícones das conquistas** no estilo do addon (cinza até conseguir) e **retrato do Prefeito** ([`tarefas/A11.md`](tarefas/A11.md)) | **Codex** (você aprova) | 23/11–04/12 | PNG em alta resolução |
+| A11 | **9 ícones das conquistas**, um por categoria, no estilo do addon (cinza até conseguir), e **retrato do Prefeito** ([`tarefas/A11.md`](tarefas/A11.md)) | **Codex** (você aprova) | 23/11–30/11 | PNG em alta resolução |
 | A9 | Decorações para o mapa da vila | **Codex** (você aprova) | 07–20/12 | PNG em alta resolução |
 | A10 | Seguidores pequenos andando na vila | **Codex** (você aprova) | 14–27/12 | PNG em alta resolução |
 
