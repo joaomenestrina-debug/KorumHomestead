@@ -137,6 +137,8 @@ function W:CanCraft(id)
     if V:Level("workshop") == 0 then return false, "noWorkshop" end
     if V:Level("workshop") < r.level then return false, "recipeLevel", r.level end
     if #self:Jobs(W.Recipe(id).trade) >= self:Slots() then return false, "queueFull" end
+    -- the Barn has a space for what each trade makes: what is there and what is in the queue must fit
+    if V:Space(V.SpaceOf(id)) + #self:Jobs(r.trade) >= V:BarnCap() then return false, "barnFull" end
     if not self:Has(r) then return false, "herbs" end
     return true
 end

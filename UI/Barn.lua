@@ -276,16 +276,19 @@ local function BuildBarn(win)
             self.action:SetLabel(T("goGarden"))
             self.action:SetStyle("quiet")
         end
-        -- the space of the herbs, and of each good the village makes
-        local cap = KH.Village:BarnCap()
-        local parts = {T("storedHerbs", KH.Village:Stored(), cap)}
-        for _, id in ipairs(KH.Village.BUILDINGS) do
-            local good = KH.Village.MAKES[id]
-            if good and KH.Village:Level(id) > 0 then
-                parts[#parts + 1] = T("storedGood", T("good_" .. good), KH.Village:Good(good), cap)
+        -- the space of what the open tab holds (every tab has one: equipment, finds and potions count too)
+        local V = KH.Village
+        local cap = V:BarnCap()
+        local parts = {}
+        for _, space in ipairs(V.TAB_SPACES[UI.barnTab]) do
+            local up = (space ~= "ore" or V:Level("mine") > 0) and (space ~= "fish" or V:Level("pond") > 0)
+            if up then
+                local have = V:Space(space)
+                local color = have >= cap and "|cffff7a6b" or (have >= cap * KH.Balance.BARN_WARN and "|cffffd24d" or "")
+                parts[#parts + 1] = color .. T("storedGood", T("space_" .. space), have, cap) .. (color ~= "" and "|r" or "")
             end
         end
-        self.fill:SetText(table.concat(parts, "  ·  "))
+        Kit.Fit(self.fill, table.concat(parts, "  ·  "), W - 280)
         self.stats:SetText(T("stats", db.stats.harvested, db.stats.delivered, KH.Number(db.stats.earned)))
     end
     return s

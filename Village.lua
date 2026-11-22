@@ -226,14 +226,43 @@ function V:Stored()
     return n
 end
 
--- how full the Barn is (0 to 1): the herbs share one space, and each good the village makes has a space of its own;
--- the fullest of them counts
+-- The spaces of the Barn (owner, 22/11: everything it holds is counted), each as big as BarnCap:
+--   herbs      all the herbs together                      ore, fish    what the Mine and the Pond make, each its own
+--   finds      the rare finds, the Raid Core and the pieces with a name
+--   alchemy, cooking, smithing, gear   what each trade of the Workshop made
+-- A full space stops what fills it (the Garden, the Mine, the Pond, a craft of that trade). What comes from a dungeon,
+-- a raid or a visitor always comes in, even over the space: nothing is ever lost.
+function V.SpaceOf(key)
+    if type(key) == "number" then return "herbs" end
+    if key == "ore" or key == "fish" then return key end
+    local tab = V.BarnTab(key)
+    if tab == "raw" or (tab == "gear" and not KH.Workshop.Recipe(key)) then return "finds" end
+    return tab
+end
+
+function V:Space(space)
+    if space == "herbs" then return self:Stored() end
+    local n = 0
+    for _, good in ipairs(V.GOOD_ORDER) do
+        if V.SpaceOf(good) == space then n = n + self:Good(good) end
+    end
+    return n
+end
+
+-- the spaces a tab of the Barn shows, in order
+V.TAB_SPACES = {herbs = {"herbs"}, raw = {"ore", "fish", "finds"}, alchemy = {"alchemy"}, cooking = {"cooking"},
+    smithing = {"smithing"}, gear = {"gear"}}
+local SPACES = {"herbs", "ore", "fish", "finds", "alchemy", "cooking", "smithing", "gear"}
+V.SPACES = SPACES
+
+-- how full the Barn is (0 to 1): the fullest of its spaces (ore and fish only once their building is up)
 function V:Fill()
     local cap = self:BarnCap()
     if cap <= 0 then return 0 end
-    local most = self:Stored()
-    for id, good in pairs(V.MAKES) do
-        if self:Level(id) > 0 then most = math.max(most, self:Good(good)) end
+    local most = 0
+    for _, space in ipairs(SPACES) do
+        local up = (space ~= "ore" or self:Level("mine") > 0) and (space ~= "fish" or self:Level("pond") > 0)
+        if up then most = math.max(most, self:Space(space)) end
     end
     return math.min(1, most / cap)
 end

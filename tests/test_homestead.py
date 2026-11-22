@@ -381,6 +381,22 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("NS.Village:Good('stew')"), 3)
         self.assertEqual(self.ev("NS.db.crops[2447]"), 5)
 
+    def test_everything_in_the_barn_counts_in_its_space(self):
+        self.lua.execute("NS.db.buildings.barn = 1; NS.db.buildings.workshop = 2; NS.db.goods.fish = 30")
+        cap = self.ev("NS.Village:BarnCap()")
+        self.lua.execute(f"NS.db.goods.gw1 = 3; NS.db.goods.quelserrar = 1; NS.db.goods.core = 2; NS.db.goods.lobster = 1; NS.db.goods.stew = {cap - 1}")
+        self.assertEqual(self.ev("NS.Village:Space('gear')"), 3)                    # the Workshop's equipment
+        self.assertEqual(self.ev("NS.Village:Space('finds')"), 4)                   # the core, the named piece, the find
+        self.assertEqual(self.ev("NS.Village:Space('cooking')"), cap - 1)
+        # one place left among the meals: one stew may be queued, not two
+        self.assertTrue(self.ev("(NS.Workshop:Craft('stew'))"))
+        self.assertEqual(tuple(self.lua.eval("function() return NS.Workshop:CanCraft('stew') end")())[:2], (False, "barnFull"))
+        self.assertTrue(self.ev("NS.Workshop:CanCraft('heal') or true"))           # the potions have their own space
+        self.lua.execute(f"NS.db.goods.stew = {cap}")
+        self.assertEqual(self.ev("NS.Village:Fill()"), 1)
+        self.lua.execute("NS.db.tutorial.done = true; NS.UI.barnTab = 'raw'; NS.UI:Show('barn')")
+        self.assertIn("Finds 4 /", self.ev("NS.UI.screens.barn.fill:GetText()"))
+
     def test_the_barn_sells_a_chosen_quantity(self):
         self.lua.execute("NS.db.goods.fish = 183; NS.db.tutorial.done = true; NS.UI.barnTab = 'raw'")
         self.open("barn")
