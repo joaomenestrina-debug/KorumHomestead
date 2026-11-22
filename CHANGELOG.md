@@ -1,5 +1,69 @@
 # Changelog
 
+## 2.2.0-alpha1
+The followers go to the dungeons of WoW Forever. Your village is carried over: nothing you have is lost.
+
+**Followers and dungeons**
+- The Inn sends the followers to the dungeons of WoW Forever: each dungeon has threats, each follower has abilities that counter them, and the chance shows before you send.
+- Followers level up from 1 to 30, find insignias to become Rare or Epic, and choose abilities and traits. Nobody dies, and failed runs still grant half the reward.
+- A Suggested group button, a Recommended mark on who helps most, a dungeon of the day, and a Journal that tells what each group did.
+- A group that comes back shows its result: success or failure, the chance it had, coins, XP, who went up a level, who came back hurt and what was found.
+- Combos between two followers, a Book with the combos and the trophies of each dungeon, an optional boss, and Onyxia's Lair once a week, with its Raid Core.
+- At level 30 a follower picks a Mastery and earns a Title.
+- 12 new followers to find, from Rare to Legendary, in dungeons, in Onyxia's Lair and in rescue calls. If 40 runs bring no one new, the next successful run does.
+- The Inn has one room per level plus a Lodging: followers in rooms go out. The Ranking tab lists everyone by Power and lets you swap places.
+- Visitors bring calls for defense, attack, escort, rescue and scouting across the zones of Forever.
+
+**Your adventure**
+- A boss you kill inspires the followers in that dungeon, and a zone where you stay five minutes sends calls more often.
+- Taking a flight or joining a queue shows a small reminder of the village, with what waits and a button to open it (at most every 10 minutes; it can be turned off in the Settings).
+
+**Workshop, Mine and Pond**
+- The Workshop makes weapons and armor for the followers (the Equipment tab); a potion (+10%) and a meal (+5%) can go with each group.
+- Each trade of the Workshop has its own queue, and they all work at once; the recipes show side by side and the queue scrolls.
+- The Mine and the Pond each have one job slot: a follower at home adds 10% to production, a Miner or a Fisher 25%.
+
+**Barn**
+- Tabs for herbs, resources and the goods of each trade; the large button sells the open tab.
+- Sell by quantity with minus and plus; a dot marks what an order or a work needs.
+- Every tab has its own space, equipment and dungeon finds included. A full space stops the crafts of its trade; dungeon, raid and visitor rewards always come in.
+- The Barn warns when it passes 80%, and a harvest stores what fits: the rest waits in the plot.
+
+**Other changes**
+- Text fits every window: long names shrink instead of being cut off.
+
+### Em português
+Os seguidores vão às masmorras do WoW Forever. Sua vila é mantida: nada do que você tem se perde.
+
+**Seguidores e masmorras**
+- A Estalagem manda os seguidores às masmorras do WoW Forever: cada masmorra tem ameaças, cada seguidor tem habilidades que as anulam, e a chance aparece antes de enviar.
+- Os seguidores sobem do nível 1 ao 30, acham insígnias para virar Raros ou Épicos e escolhem habilidades e traços. Ninguém morre, e uma ida malsucedida ainda dá metade da recompensa.
+- Um botão Grupo sugerido, o selo Recomendado em quem mais ajuda, a masmorra do dia e um Diário que conta o que cada grupo fez.
+- O grupo que volta mostra o resultado: sucesso ou falha, a chance que tinha, moedas, XP, quem subiu de nível, quem voltou ferido e o que foi achado.
+- Combos entre dois seguidores, um Livro com os combos e os troféus de cada masmorra, um chefe opcional e o Covil da Onyxia uma vez por semana, com seu Núcleo de Raide.
+- No nível 30 o seguidor escolhe uma Maestria e ganha um Título.
+- 12 seguidores novos para encontrar, de Raros a Lendários, em masmorras, no Covil da Onyxia e em chamados de resgate. Se 40 idas não trouxerem ninguém novo, a próxima ida bem-sucedida traz.
+- A Estalagem tem um quarto por nível e um Alojamento: quem está num quarto sai. A aba Ranking lista todos por Poder e permite trocar os lugares.
+- Os visitantes trazem chamados de defesa, ataque, escolta, resgate e reconhecimento pelas zonas do Forever.
+
+**Sua aventura**
+- Um chefe que você mata inspira os seguidores naquela masmorra, e uma zona onde você fica cinco minutos manda chamados com mais frequência.
+- Pegar um voo ou entrar numa fila mostra um lembrete pequeno da vila, com o que espera e um botão para abrir (no máximo a cada 10 minutos; dá para desligar nos Ajustes).
+
+**Oficina, Mina e Lagoa**
+- A Oficina faz armas e armaduras para os seguidores (aba Equipamento); uma poção (+10%) e uma comida (+5%) podem ir com cada grupo.
+- Cada ofício da Oficina tem sua própria fila, e todos trabalham ao mesmo tempo; as receitas aparecem lado a lado e a fila rola.
+- A Mina e a Lagoa têm uma vaga de trabalho cada: um seguidor em casa aumenta a produção em 10%, um Mineiro ou Pescador em 25%.
+
+**Celeiro**
+- Abas para ervas, recursos e os produtos de cada ofício; o botão grande vende a aba aberta.
+- Venda por quantidade com menos e mais; uma bolinha marca o que uma encomenda ou uma obra pede.
+- Cada aba tem seu próprio espaço, equipamento e achados de masmorras incluídos. Um espaço cheio para a fabricação do seu ofício; recompensas de masmorras, raides e visitantes entram sempre.
+- O Celeiro avisa quando passa de 80%, e a colheita guarda o que couber: o resto espera no canteiro.
+
+**Outras mudanças**
+- Os textos cabem em todas as janelas: nomes longos diminuem em vez de serem cortados.
+
 ## 2.1.0
 Visitors come to the village, the art was redrawn, and the village dresses for Winter Veil. Your village is carried over: nothing you have is lost.
 
