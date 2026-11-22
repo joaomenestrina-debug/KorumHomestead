@@ -4,7 +4,7 @@
 dono em 19/11), e o que vinha depois mudou com os pedidos do teste. A versão anterior deste arquivo está no histórico
 do git.*
 
-Este documento diz **quem faz o quê e quando**. As regras de cada parte estão nas especificações:
+Este documento diz **quem faz o quê e quando**, a partir da lista do que falta em [`conhecimento.md`](conhecimento.md) §8. As regras de cada parte estão nas especificações:
 [`economia.md`](economia.md), [`eventos.md`](eventos.md), [`masmorras.md`](masmorras.md) e
 [`historia-forever.md`](historia-forever.md).
 
@@ -58,7 +58,7 @@ gantt
 |---|---|---|
 | **Eu** | Dono do produto e testador no jogo | Decisões de produto, prioridades e equilíbrio; **todo teste dentro do jogo**; aprovar a arte e os desenhos novos; tokens e acessos |
 | **Claude** | Arquiteto, líder técnico, gestor e **todo o código** | Arquitetura, dados, migrações, lógica, telas, testes, simulador, textos EN e ptBR; briefings para o Codex; integrar; versões, tags e changelog; manter este cronograma |
-| **Codex** | Arte e textos | Arte (a partir do kit de arte, aprovada pelo dono), revisão dos textos EN/ptBR e, desde 22/11, as falas do Prefeito. Não escreve código |
+| **Codex** | Arte e textos | Arte (a partir do kit de arte, aprovada pelo dono), revisão dos textos EN/ptBR e, desde 22/11, as falas dos personagens. Não escreve código |
 
 ## 3. Como trabalhamos
 
@@ -100,8 +100,8 @@ gantt
 | T6.4 | Aprovar o desenho da **missão pessoal** e da **amizade** (proposto em 22/11) | **Eu** | 25/11 | ✅ aprovado em 22/11 |
 | T6.5 | Confirmar as **decisões provisórias** da S5: origem de Tazu, Faelan e Shalendra; novos chegam no nível do lugar; ataque dá Insígnia de Mérito; raide sem Épico próprio | **Eu** | 25/11 | ✅ confirmadas em 22/11 |
 | T6.6 | Revisão dos textos novos desde a alpha1 (trabalho, conquistas, Novidades) | **Codex** | 27/11 | PR para o ramo de trabalho; verificador em 0 |
-| T6.11 | **Prefeito Ambrósio**: código pronto (fala nos avisos, liga e desliga nos Ajustes); personalidade em `prefeito.md` | Claude | 22/11 | ✅ feito |
-| T6.12 | Falas do Prefeito em todos os avisos, EN e PT ([`tarefas/T6.11.md`](tarefas/T6.11.md)) | **Codex** | 27/11 | PR; verificador em 0 |
+| T6.11 | **Cinco personagens** (Intendente, Capataz, Escrivão, Mordomo, Conselheira): código pronto (`Voices.lua`), personalidades em `personagens.md` | Claude | 22/11 | ✅ feito |
+| T6.12 | Falas dos cinco personagens em todos os avisos, EN e PT ([`tarefas/T6.11.md`](tarefas/T6.11.md)) | **Codex** | 27/11 | PR; verificador em 0 |
 | T6.7 | README e página do CurseForge com as masmorras, o trabalho e as conquistas | Claude | 27/11 | texto EN/ptBR |
 | T6.8 | Atualizar `masmorras.md` com o que mudou no teste (trabalho, conquistas, Celeiro, lembrete) | Claude | 27/11 | especificação igual ao jogo |
 | T6.9 | Teste no jogo (conquistas de um save antigo, aba Trabalho, Horta e Oficina mais rápidas) | **Eu** | 28/11 | relato |
@@ -114,7 +114,7 @@ gantt
 | T7.1 | **Amizade**: laço de 1 a 3 com as idas juntos, bônus de chance e de combo, linha no Diário, melhores amigos na ficha | Claude | 01–02/12 | testes; depende do T6.4 |
 | T7.2 | **Missão pessoal**, etapa 1 (nível 10): uma ida ao lugar de origem, história no Diário, traço pessoal | Claude | 02–04/12 | 18 histórias; depende do T6.4 |
 | T7.3 | Conquistas novas da amizade e da missão pessoal | Claude | 04/12 | o Mestre do Homestead passa a pedir também essas |
-| T7.10 | Importar os ícones das conquistas e o retrato do Prefeito (A11); retrato no cartão das conquistas e no lembrete; momentos novos do Prefeito | Claude | 05/12 | capturas |
+| T7.10 | Importar os ícones das conquistas e os retratos (A11); retrato de quem fala no cartão das conquistas e no lembrete; momentos novos dos personagens | Claude | 05/12 | capturas |
 | T7.4 | Datas das festas pelo calendário do jogo (`C_Calendar`), no lugar das datas fixas | Claude | 03/12 | Véu de Inverno abre e fecha com o jogo |
 | T7.5 | Teste do T3.0 (`/kh debug` e `/kh eventos`: uma masmorra, uma fila, trocas de zona) | **Eu** | até 05/12 | registro dos eventos |
 | T7.6 | Ajustar a §12 de `masmorras.md` ao que o Forever oferece | Claude | depois do T7.5 | especificação atualizada |
@@ -149,7 +149,7 @@ gantt
 
 | ID | Tarefa | Quem | Data | Entrega / aceite |
 |---|---|---|---|---|
-| A11 | **9 ícones das conquistas**, um por categoria, no estilo do addon (cinza até conseguir), e **retrato do Prefeito** ([`tarefas/A11.md`](tarefas/A11.md)) | **Codex** (você aprova) | 23/11–30/11 | PNG em alta resolução |
+| A11 | **9 ícones das conquistas**, um por categoria, no estilo do addon (cinza até conseguir), e os **5 retratos dos personagens** ([`tarefas/A11.md`](tarefas/A11.md)) | **Codex** (você aprova) | 23/11–30/11 | PNG em alta resolução |
 | A9 | Decorações para o mapa da vila | **Codex** (você aprova) | 07–20/12 | PNG em alta resolução |
 | A10 | Seguidores pequenos andando na vila | **Codex** (você aprova) | 14–27/12 | PNG em alta resolução |
 
@@ -163,7 +163,8 @@ gantt
 | 22/11 | Tudo o que for feito depois da alpha1 sai só no domingo 29/11 |
 | 22/11 | Trabalho em todas as construções; conquistas como as do WoW, todas visíveis |
 | 22/11 | Missão pessoal e amizade aprovadas como propostas; decisões provisórias da S5 confirmadas |
-| 22/11 | Prefeito Ambrósio fala os avisos, com humor seco (`prefeito.md`); o Codex escreve as falas e desenha os ícones das conquistas |
+| 22/11 | Cinco personagens comentam os avisos, cada um a sua parte (`personagens.md`); o Codex escreve as falas e desenha os ícones e os retratos |
+| 22/11 | Base de conhecimento em `docs/conhecimento.md`: ler antes de cada trabalho; o cronograma sai da sua seção 8 |
 
 ## 6. Depois da 2.3 (sem datas ainda)
 

@@ -5,7 +5,7 @@ tested outside it with a small mock of the client in Python.
 
 ## Your role (Codex) — since 17/11, decided by the owner
 
-**You do only two things: art and text review. You do not write or change code** (no `.lua`, no `.py`, no tests, no
+**You do art, text review and, since 22/11, the lines of the village's characters (`docs/personagens.md`). You do not write or change code** (no `.lua`, no `.py`, no tests, no
 `.toc`), even if you see a bug: write it in your pull request instead. All code is Claude's.
 
 - **Art:** pixel art for places, decorations, portraits and the addon's own icons, following the art kit of the task in
@@ -19,7 +19,7 @@ The sections below about code are for Claude; for you they explain what not to b
 
 ## Before anything
 
-Read **`docs/CONTEXTO.md`** (Portuguese): where the project is, what to do now, the decisions already taken and the
+Read **`docs/conhecimento.md`** (Portuguese: the knowledge base, what exists and the rules) and **`docs/CONTEXTO.md`** (Portuguese): where the project is, what to do now, the decisions already taken and the
 map of the code. When your task is done, update its sections 1 and 2 (the state of your task) in your pull request.
 
 ## Where things are

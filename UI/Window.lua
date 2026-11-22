@@ -468,7 +468,7 @@ KH:On("PLAYER_LOGIN", function()
     KH.After(6, function()
         local n = KH.Farm:ReadyCount()
         if KH.db.welcome and n > 0 then KH:Notify(KH.Say(n == 1 and "headReadyOne" or "headReadyMany", n))
-        elseif KH.db.welcome and KH.MayorOn() and KH.MayorLines("hello") > 0 then KH:Notify(KH.Say("hello")) end
+        elseif KH.db.welcome and KH.VoiceLines("hello") > 0 then KH:Notify(KH.Say("hello")) end
     end)
 end)
 KH:On("GET_ITEM_INFO_RECEIVED", function() UI:Refresh() end)

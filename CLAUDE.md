@@ -1,6 +1,8 @@
 # Korum Homestead
 
-Start every session by reading **[docs/CONTEXTO.md](docs/CONTEXTO.md)**: where the project is, what to do now, the
+Start every session by reading **[docs/conhecimento.md](docs/conhecimento.md)** (the knowledge base: what exists, the
+rules, the characters and the list of what is missing, from which the schedule is made) and then
+**[docs/CONTEXTO.md](docs/CONTEXTO.md)**: where the project is, what to do now, the
 decisions already taken and the map of the code. Keep its sections 1 and 2 up to date in the same commit that changes the
 state of a task.
 

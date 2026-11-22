@@ -7,6 +7,9 @@ ignore:
   - arquivo
   - docs
   - .gitignore
+  - .github
+  - CLAUDE.md
+  - AGENTS.md
 
 # the "what's new" of each file on CurseForge comes from this file, not from the commit messages
 manual-changelog:

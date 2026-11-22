@@ -1,0 +1,72 @@
+--[[
+    Korum Homestead - the voices of the village (owner, 22/11): five people who work for the player, the owner of the
+    village, and say its alerts and news with their own humour, each about their part of it (docs/personagens.md):
+
+        steward   Steward Ambrose    the village as a whole: logging in, its level, the buildings, achievements
+        foreman   Foreman Dorota     the Garden, the Mine, the Pond, the Barn and the Workshop
+        clerk     Clerk Tiberius     the Market: orders, the order of the day and its streak
+        butler    Butler Fenwick     the visitors
+        advisor   Advisor Marga      the Inn: groups, followers, calls, the character's bosses and raids
+
+    Every moment is the key of the text it replaces: the lines for the key `readyAlert` are `say_readyAlert_1`,
+    `say_readyAlert_2`... in Locales.lua, with the same codes (%s, %d) in the same order. A moment with no line, or
+    with the voices turned off in the Settings ("The characters speak"), says the plain text, as before.
+
+        KH.Say(key, ...)       one of the lines of that moment with the name of who says it, or T(key, ...)
+        KH.SayLine(key)        only the words of a line (no name), or nil: for a title, like the achievement card's
+        KH.Speaker(key)        who says that moment ("steward", "foreman"...)
+        KH.VoiceLines(key)     how many lines that moment has
+        KH.VoicesOn()
+]]
+
+local addonName, KH = ...
+
+KH.SPEAKERS = {"steward", "foreman", "clerk", "butler", "advisor"}
+
+local WHO = {
+    steward = {"hello", "levelUp", "levelNotice", "newSeed", "built", "capLotus", "achChat", "achNew"},
+    foreman = {"readyAlert", "headReadyOne", "headReadyMany", "craftDone", "barnAlmost", "alertBarnFull"},
+    clerk = {"delivered", "dailyDelivered", "streakPrize", "streakRare"},
+    butler = {"ev_new_urgent", "ev_new_merchant", "ev_new_caravan", "ev_new_fish", "ev_new_ore", "evDone_urgent",
+        "evDone_merchant", "evDone_trade", "evDone_find"},
+    advisor = {"dgSent", "innBackOne", "innBackMany", "collected", "promoted", "ev_new_call", "advInspired", "advRaid"},
+}
+local SPEAKER = {}
+for who, keys in pairs(WHO) do
+    for _, key in ipairs(keys) do SPEAKER[key] = who end
+end
+KH.VOICE_MOMENTS = WHO
+
+function KH.Speaker(key) return SPEAKER[key] or "steward" end
+
+local count = {}
+function KH.VoiceLines(key)
+    if count[key] == nil then
+        local n = 0
+        while KH.L.enUS["say_" .. key .. "_" .. (n + 1)] do n = n + 1 end
+        count[key] = n
+    end
+    return count[key]
+end
+
+function KH.VoicesOn()
+    return not KH.db or KH.db.mayor ~= false
+end
+
+-- the last line said for each moment, so the same one does not come twice in a row
+local last = {}
+
+function KH.SayLine(key, ...)
+    local n = KH.VoicesOn() and KH.VoiceLines(key) or 0
+    if n == 0 then return nil end
+    local pick = math.random(n)
+    if n > 1 and pick == last[key] then pick = pick % n + 1 end
+    last[key] = pick
+    return KH.T("say_" .. key .. "_" .. pick, ...)
+end
+
+function KH.Say(key, ...)
+    local line = KH.SayLine(key, ...)
+    if not line then return KH.T(key, ...) end
+    return "|cffffd24d" .. KH.T("who_" .. KH.Speaker(key)) .. ":|r " .. line
+end

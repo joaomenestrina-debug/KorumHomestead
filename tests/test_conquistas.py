@@ -67,12 +67,12 @@ class Achievements(td.Base):
 
 
 
-class Mayor(td.Base):
+class Voices(td.Base):
     def test_the_mayor_says_his_line_and_the_plain_text_when_he_has_none_or_is_off(self):
         self.assertEqual(self.ev("NS.Say('levelUp', 7)"), self.ev("NS.T('levelUp', 7)"))
-        self.lua.execute("NS.L.enUS.mayor_craftDone_1 = 'Your %s is ready. Try not to break it.'")
+        self.lua.execute("NS.L.enUS.say_craftDone_1 = 'Your %s is ready. Try not to break it.'")
         said = self.ev("NS.Say('craftDone', 'Stew')")
-        self.assertIn("Mayor Ambrose", said)
+        self.assertIn("Foreman Dorota", said)            # the Workshop is hers
         self.assertIn("Your Stew is ready. Try not to break it.", said)
         self.lua.execute("NS.db.mayor = false")
         self.assertEqual(self.ev("NS.Say('craftDone', 'Stew')"), self.ev("NS.T('craftDone', 'Stew')"))

@@ -13,7 +13,7 @@ Kit.lua
 Core.lua
 Migrate.lua
 Locales.lua
-Mayor.lua
+Voices.lua
 News.lua
 Balance.lua
 Data.lua

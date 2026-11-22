@@ -145,7 +145,7 @@ local function Next()
     local a = KH.Achievements.Get(id)
     card.id = id
     card.icon:SetTexture(Icon(a))
-    card.title:SetText(KH.MayorOn() and KH.MayorLines("achNew") > 0 and KH.T("mayor_achNew_" .. math.random(KH.MayorLines("achNew"))) or T("achNew"))
+    card.title:SetText(KH.SayLine("achNew") or T("achNew"))
     Kit.Fit(card.name, T("ach_" .. id), 250, 9)
     card.pts:SetText(T("achPts", a.points))
     card.left = HOLD
