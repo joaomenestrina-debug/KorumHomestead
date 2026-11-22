@@ -260,14 +260,14 @@ local function BuildVillage(win)
         self.mode = "garden"
         local label = T("openGarden")
         if step == "plant" then
-            self.head:SetText(T("vilPlantH")); self.sub:SetText(T("vilPlantS"))
+            self.head:SetText(T("vilPlantH")); self.sub:SetText(KH.Say("vilPlantS"))
         elseif step == "wait" then
-            self.head:SetText(T("tutWaitH")); self.sub:SetText(T("tutWaitS", KH.Duration(soonest or 0)))
+            self.head:SetText(T("tutWaitH")); self.sub:SetText(KH.Say("tutWaitS", KH.Duration(soonest or 0)))
         elseif step == "harvest" then
-            self.head:SetText(T("tutHarvestH")); self.sub:SetText(T("vilHarvestS"))
+            self.head:SetText(T("tutHarvestH")); self.sub:SetText(KH.Say("vilHarvestS"))
             self.mode, label = "harvest", T("harvestAll")
         elseif step == "sell" then
-            self.head:SetText(T("tutSellH")); self.sub:SetText(T("vilSellS"))
+            self.head:SetText(T("tutSellH")); self.sub:SetText(KH.Say("vilSellS"))
             self.mode, label = "barn", T("openBarn")
         elseif ready > 0 then
             self.head:SetText(ready == 1 and T("headReadyOne") or T("headReadyMany", ready))

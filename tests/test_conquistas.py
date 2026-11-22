@@ -77,5 +77,16 @@ class Voices(td.Base):
         self.lua.execute("NS.db.mayor = false")
         self.assertEqual(self.ev("NS.Say('craftDone', 'Stew')"), self.ev("NS.T('craftDone', 'Stew')"))
 
+    def test_the_steward_teaches_the_first_steps_and_the_butler_announces_a_version(self):
+        self.lua.execute("NS.L.enUS.say_tutPlantS_1 = 'Plant something. Anything. The soil is getting bored.'")
+        self.lua.execute("NS.db.stats.harvested = 0; NS.db.stats.earned = 0; NS.db.tutorial.done = false; NS.db.plots = {}")
+        self.open("garden")
+        self.assertIn("Steward Ambrose", self.ev("NS.UI.screens.garden.sub:GetText()"))
+        self.lua.execute("NS.L.enUS.say_patch8_1 = 'I announce a new version. Try to contain yourself.'")
+        self.lua.execute("NS.UI:ShowNews(false)")
+        texts = self.lua.eval("(function() local o = {} for i, fs in ipairs(NS.UI.screens.news.pool) do o[i] = fs.text:GetText() or '' end return table.concat(o, '|') end)()")
+        self.assertIn("Butler Fenwick", texts)
+        self.assertIn("Try to contain yourself.", texts)
+
 if __name__ == "__main__":
     unittest.main()

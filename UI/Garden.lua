@@ -519,13 +519,13 @@ local function BuildGarden(win)
         -- the two sentences
         local wait = KH.Duration(soonest or 0)
         if step == "plant" then
-            self.head:SetText(T("tutPlantH")); self.sub:SetText(T("tutPlantS"))
+            self.head:SetText(T("tutPlantH")); self.sub:SetText(KH.Say("tutPlantS"))
         elseif step == "harvest" then
-            self.head:SetText(T("tutHarvestH")); self.sub:SetText(T("tutHarvestS"))
+            self.head:SetText(T("tutHarvestH")); self.sub:SetText(KH.Say("tutHarvestS"))
         elseif step == "wait" then
-            self.head:SetText(T("tutWaitH")); self.sub:SetText(T("tutWaitS", wait))
+            self.head:SetText(T("tutWaitH")); self.sub:SetText(KH.Say("tutWaitS", wait))
         elseif step == "sell" then
-            self.head:SetText(T("tutSellH")); self.sub:SetText(T("tutSellS"))
+            self.head:SetText(T("tutSellH")); self.sub:SetText(KH.Say("tutSellS"))
         elseif ready > 0 then
             self.head:SetText(ready == 1 and T("headReadyOne") or T("headReadyMany", ready))
             self.sub:SetText(T("subReady"))

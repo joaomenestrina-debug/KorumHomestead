@@ -8,6 +8,9 @@
         butler    Butler Fenwick     the visitors
         advisor   Advisor Marga      the Inn: groups, followers, calls, the character's bosses and raids
 
+    The Steward also teaches the first steps (plant, wait, harvest, sell), and the Butler announces every new version
+    on the "What's new" screen: `say_patch<id>_1`, <id> being the entry of KH.NEWS (owner, 22/11).
+
     Every moment is the key of the text it replaces: the lines for the key `readyAlert` are `say_readyAlert_1`,
     `say_readyAlert_2`... in Locales.lua, with the same codes (%s, %d) in the same order. A moment with no line, or
     with the voices turned off in the Settings ("The characters speak"), says the plain text, as before.
@@ -24,7 +27,8 @@ local addonName, KH = ...
 KH.SPEAKERS = {"steward", "foreman", "clerk", "butler", "advisor"}
 
 local WHO = {
-    steward = {"hello", "levelUp", "levelNotice", "newSeed", "built", "capLotus", "achChat", "achNew"},
+    steward = {"hello", "levelUp", "levelNotice", "newSeed", "built", "capLotus", "achChat", "achNew",
+        "tutPlantS", "tutWaitS", "tutHarvestS", "tutSellS", "vilPlantS", "vilHarvestS", "vilSellS"},
     foreman = {"readyAlert", "headReadyOne", "headReadyMany", "craftDone", "barnAlmost", "alertBarnFull"},
     clerk = {"delivered", "dailyDelivered", "streakPrize", "streakRare"},
     butler = {"ev_new_urgent", "ev_new_merchant", "ev_new_caravan", "ev_new_fish", "ev_new_ore", "evDone_urgent",
@@ -37,7 +41,10 @@ for who, keys in pairs(WHO) do
 end
 KH.VOICE_MOMENTS = WHO
 
-function KH.Speaker(key) return SPEAKER[key] or "steward" end
+function KH.Speaker(key)
+    if key:match("^patch%d") then return "butler" end
+    return SPEAKER[key] or "steward"
+end
 
 local count = {}
 function KH.VoiceLines(key)

@@ -25,7 +25,8 @@ São cinco pessoas que trabalham **para você, o dono da vila**. Cada uma coment
 ## Os cinco
 
 ### Intendente Ambrósio (Steward Ambrose): a vila como um todo
-Entrada no jogo, nível da Vila, semente nova, construções, Lótus Negra, conquistas.
+Entrada no jogo, nível da Vila, semente nova, construções, Lótus Negra, conquistas. **Ensina os primeiros passos** a
+quem acaba de receber a vila (plantar, esperar, colher, vender): é a primeira voz que o jogador ouve.
 
 Administra a vila em seu nome há mais tempo do que qualquer um lembra, e acha que ela funciona *apesar* de você.
 Educado até demais, nunca levanta a voz, elogia de um jeito que deixa dúvida. Anota tudo no **Livro de Registros**
@@ -52,7 +53,8 @@ tudo três vezes. Tem medo do Intendente e admiração pela Capataz ("ela produz
 > Encomenda entregue: +%s moedas. Conferi três vezes. Está certo. Acho. · *Order delivered: +%s coins. Checked three times. It is right. I think.*
 
 ### Mordomo Fenwick (Butler Fenwick): quem chega
-Visitantes: mensageiro, mercador, caravana, peixe e veio raros, e as respostas a eles.
+Visitantes: mensageiro, mercador, caravana, peixe e veio raros, e as respostas a eles. **Anuncia cada versão nova**
+na tela de Novidades, como um arauto na corte (`say_patch<id>_1`, uma fala por entrada de `News.lua`).
 
 Recebe todo mundo com pompa exagerada, como se a vila fosse um palácio. Esnobe com caravanas ("cheiram a estrada") e
 com peixe ("um peixe na Lagoa, senhor, e ele não foi convidado"). Anuncia tudo como numa corte.

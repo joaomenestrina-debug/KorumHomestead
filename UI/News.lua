@@ -100,8 +100,8 @@ local function BuildNews(win)
                 fs.dot:ClearAllPoints()
                 fs.dot:SetPoint("TOPLEFT", 4, y - 4)
                 fs.text:ClearAllPoints()
-                fs.text:SetPoint("TOPLEFT", 20, y)
-                fs.dot:SetShown(inside); fs.text:SetShown(inside)
+                fs.text:SetPoint("TOPLEFT", item.voice and 0 or 20, y)     -- the Butler's line has no dot
+                fs.dot:SetShown(inside and not item.voice); fs.text:SetShown(inside)
             end
         end
         local scrolls = self.maxOff > 0
@@ -137,6 +137,19 @@ local function BuildNews(win)
                 head.tag:SetText(entry.id > since and T("newsNew") or "")
                 self.items[n] = {head = true, y = y, h = 18}
                 y = y - 24
+            end
+            -- the Butler announces the version, when he has a line for it (one per entry, the newest first)
+            local patch = "patch" .. entry.id
+            if KH.VoicesOn() and KH.VoiceLines(patch) > 0 then
+                n = n + 1
+                local row = Line(n)
+                row.dot:Hide()
+                row.text:SetText(KH.Say(patch))
+                Kit.Paint(row.text, C.text)
+                row.title:Hide(); row.tag:Hide()
+                local h = math.max(tonumber(row.text.GetStringHeight and row.text:GetStringHeight() or 0) or 0, 15)
+                self.items[n] = {y = y, h = h, voice = true}
+                y = y - h - 10
             end
             for _, text in ipairs(KH.NewsLines(entry.id)) do
                 n = n + 1

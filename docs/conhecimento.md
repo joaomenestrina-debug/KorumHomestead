@@ -49,7 +49,7 @@ Tudo corre pelo relógio, mesmo com o jogo fechado. Addon independente, Lua 5.1,
 | **Trabalho** | uma vaga em Mina, Lagoa, Horta, Oficina e Mercado (aba Trabalho da Estalagem); qualquer um +10%, o ofício certo +25% (Mercado ×0,4); quem trabalha não sai | `CONTEXTO.md` §3 |
 | **Aventura** | chefe do personagem inspira seguidores; raide dá Insígnia Épica; zona visitada chama mais; lembrete pequeno no voo e na fila | `masmorras.md` §12 |
 | **Conquistas** | 55 em 9 categorias, todas visíveis com o que pedem e quanto falta; pontos; cartão ao conseguir; Mestre do Homestead pede todas | `Achievements.lua` |
-| **Personagens** | 5 vozes comentam os avisos (Intendente, Capataz, Escrivão, Mordomo, Conselheira); desligável | [`personagens.md`](personagens.md) |
+| **Personagens** | 5 vozes comentam os avisos (Intendente, Capataz, Escrivão, Mordomo, Conselheira); o Intendente ensina os primeiros passos; o Mordomo anuncia cada versão nas Novidades; desligável | [`personagens.md`](personagens.md) |
 | **Resto** | Novidades, "Enquanto você esteve fora", Guia, Ajustes, ícone na tela com aviso, botão do minimapa, zoom 60–150%, Véu de Inverno, ptBR/EN | — |
 
 ## 4. Regras de texto
@@ -77,6 +77,8 @@ Tudo corre pelo relógio, mesmo com o jogo fechado. Addon independente, Lua 5.1,
   antes. Tag no meio da semana só se algo impedir de jogar. Merge na `main` e tag só com o ok do dono.
 - Tags `vX.Y.0-alphaN` viram Alpha no CurseForge; sem sufixo vira Release; nunca `-rc`.
 - CHANGELOG: inglês e depois `### Em português`.
+- **Toda versão nova** tem uma fala do Mordomo Fenwick anunciando o patch (`say_patch<id>_1` em EN e PT, `<id>` da
+  entrada nova de `News.lua`), escrita por Claude ou pelo Codex e revisada na semana.
 - Nunca tocar no token do CurseForge nem publicar dado pessoal.
 - O Codex pode estar na pasta principal (`C:\AI\Code\KorumHomestead`); Claude trabalha no worktree
   `C:\AI\Code\KorumHomestead-claude`. Nunca `git add -A` sobre arquivos de outros.

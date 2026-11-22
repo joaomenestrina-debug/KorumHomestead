@@ -190,6 +190,7 @@ gantt
 
 - [ ] GitHub Actions verde na `main`
 - [ ] `## Version` do `.toc`, `CHANGELOG.md` e **Novidades** atualizados
+- [ ] Fala do Mordomo anunciando a versão (`say_patch<id>_1`, EN e PT)
 - [ ] `conferir_textos` em 0 e telas olhadas
 - [ ] Saves antigos abrem no jogo sem perder nada
 - [ ] Teste de sábado sem falha aberta
