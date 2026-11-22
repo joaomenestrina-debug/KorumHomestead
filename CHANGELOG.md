@@ -3,10 +3,12 @@
 ## 2.2.0-alpha2
 - The followers list shows the weapon and the armor each one wears, beside the abilities.
 - The Inn has a Work tab: the Garden (plants grow faster), the Workshop (crafts are faster) and the Market (sales and orders pay more) have a place of work too, like the Mine and the Pond. Gardeners, artisans and traders give more, and the followers in the Lodging can work.
+- Achievements, like the ones of WoW: milestones of the Village, the Garden, the buildings, the Market, the Workshop, the followers, the dungeons and the visitors, each with its points, and a last one for having them all. Every one is visible with what it asks and how far you are: the trophy at the top of the window.
 
 ### Em português
 - A lista de seguidores mostra a arma e a armadura que cada um usa, ao lado das habilidades.
 - A Estalagem tem a aba Trabalho: a Horta (plantas crescem mais rápido), a Oficina (fabricação mais rápida) e o Mercado (vendas e encomendas pagam mais) também têm uma vaga de trabalho, como a Mina e a Lagoa. Jardineiros, artesãos e negociantes dão mais, e quem está no Alojamento pode trabalhar.
+- Conquistas, como as do WoW: marcos da Vila, da Horta, das construções, do Mercado, da Oficina, dos seguidores, das masmorras e dos visitantes, cada uma com seus pontos, e uma última por ter todas. Todas aparecem com o que pedem e quanto falta: o troféu no alto da janela.
 
 ## 2.2.0-alpha1
 The followers go to the dungeons of WoW Forever. Your village is carried over: nothing you have is lost.

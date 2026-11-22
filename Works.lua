@@ -187,6 +187,7 @@ function W:Update()
             table.remove(db.queue, i)
             db.goods[job.recipe] = (db.goods[job.recipe] or 0) + 1
             done[#done + 1] = job.recipe
+            db.stats.crafted = (db.stats.crafted or 0) + 1
             KH.Farm:AddXP(W.XP(job.recipe))         -- the Workshop gives xp (more than the herbs it used)
         else
             i = i + 1

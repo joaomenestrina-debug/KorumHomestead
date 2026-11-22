@@ -8,7 +8,7 @@ local GoodTex, SetIcon = P.GoodTex, P.SetIcon
 local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingName, P.Tip
 
 local BUILDERS = P.builders
-local CRUMB = {workshop = "b_workshop", inn = "b_inn", guide = "guide", hall = "b_hall", garden = "b_garden", barn = "b_barn", mine = "b_mine", pond = "b_pond", orders = "b_market", settings = "tabSettings", news = "newsH", visitors = "visitorsTab"}
+local CRUMB = {workshop = "b_workshop", inn = "b_inn", guide = "guide", hall = "b_hall", garden = "b_garden", barn = "b_barn", mine = "b_mine", pond = "b_pond", orders = "b_market", settings = "tabSettings", news = "newsH", visitors = "visitorsTab", achievements = "achH"}
 function UI:Create()
     if self.win then return end
     local win = Kit.Window({
@@ -111,10 +111,33 @@ function UI:Create()
     news:SetScript("OnClick", function() Kit.ClickSound(); UI:ShowNews(false) end)
     self.newsButton = news
 
+    -- the trophy: the achievements, done and still to do
+    local ach = CreateFrame("Button", nil, h)
+    ach:SetSize(26, 26)
+    ach:SetPoint("RIGHT", news, "LEFT", -6, 0)
+    ach.bg = ach:CreateTexture(nil, "BACKGROUND")
+    ach.bg:SetAllPoints()
+    ach.bg:SetTexture(Kit.Icon("dot"))
+    ach.bg:SetVertexColor(1, 1, 1, 0.06)
+    ach.icon = ach:CreateTexture(nil, "ARTWORK")
+    ach.icon:SetSize(14, 14)
+    ach.icon:SetPoint("CENTER")
+    ach.icon:SetTexture(Kit.Icon("trophy"))
+    ach.icon:SetVertexColor(C.gold[1], C.gold[2], C.gold[3])
+    ach:SetScript("OnEnter", function(frame)
+        frame.bg:SetVertexColor(1, 1, 1, 0.16)
+        local have, total = KH.Achievements:Points()
+        local done, all = KH.Achievements:Count()
+        Tip(frame, T("achH"), {T("achS", done, all, have, total)})
+    end)
+    ach:SetScript("OnLeave", function(frame) frame.bg:SetVertexColor(1, 1, 1, 0.06); if GameTooltip then GameTooltip:Hide() end end)
+    ach:SetScript("OnClick", function() Kit.ClickSound(); UI:Show("achievements") end)
+    self.achButton = ach
+
     -- the zoom of the window, 60% to 150%: the whole window scales at once, so texts and places keep their layout
     local zoom = CreateFrame("Frame", nil, h)
     zoom:SetSize(88, 26)                        -- kept tight: the title of the window is on the same line
-    zoom:SetPoint("RIGHT", news, "LEFT", -10, 0)
+    zoom:SetPoint("RIGHT", ach, "LEFT", -10, 0)
     zoom.plus = Kit.Button(zoom, 24, 22, "+", function() UI:Zoom(0.1) end)
     zoom.plus:SetPoint("RIGHT", 0, 0)
     zoom.value = Kit.Text(zoom, 11, C.textSoft, "CENTER")
@@ -388,6 +411,14 @@ end)
 
 function UI:Tick()
     KH.Daily:Ensure()
+    -- the achievements: an old save gets what it already did, quietly and in one line; then each new one has its card
+    local new = KH.Achievements:Check()
+    if not KH.db.achSeeded then
+        KH.db.achSeeded = true
+        if #new > 0 then KH:Print(T("achOld", #new)) end
+    elseif #new > 0 then
+        UI:AchievementCard(new)
+    end
     KH.Adventure:Tick()                                    -- a flight that starts reminds of the village
     -- the random events: they only come with the game open (this clock), and go away when their time is over
     local new = KH.Events:Update()

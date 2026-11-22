@@ -25,7 +25,7 @@ KH.defaults = {
     crops = {},            -- [itemID] = harvested and not sold
     orders = {},           -- {plant, qty, coins, xp, npc}
     daily = {day = 0, order = nil, done = false, streak = 0, best = 0, lastDone = 0, rare = 0},
-    stats = {harvested = 0, earned = 0, delivered = 0},
+    stats = {harvested = 0, earned = 0, delivered = 0, crafted = 0},
     lang = "auto",         -- auto | enUS | ptBR
     alerts = true,         -- a line in the chat when a plot becomes ready
     welcome = true,        -- the line when logging in with plots ready
@@ -50,6 +50,7 @@ KH.defaults = {
     snapshot = nil,        -- the counters at lastSeen: {goods = {...}, buildings = {...}}
     seen = {},             -- the buildings whose "how this works" card was read
     tutorial = {done = false},   -- the first steps shown in the window (plant, wait, harvest, sell); over after the first sale
+    achievements = nil,    -- id -> when it was done (Achievements.lua); achSeeded: an old save got what it had, quietly
     newsSeen = 0,          -- the id of the last "What's new" entry seen (News.lua); an older save sees what came after it
 }
 

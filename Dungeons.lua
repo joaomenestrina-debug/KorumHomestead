@@ -982,7 +982,12 @@ function Dg:Collect(n)
         d.scouted[trip.scout] = true
     end
     if trip.caravan and KH.Events then KH.Events:Spawn("caravan") end   -- the caravan escorted passes by the village
-    if trip.dungeon then d.runs = (d.runs or 0) + 1 end
+    if trip.dungeon then
+        d.runs = (d.runs or 0) + 1
+        d.done = d.done or {}
+        d.done[trip.dungeon] = (d.done[trip.dungeon] or 0) + 1      -- each dungeon apart, for the achievements
+    end
+    if trip.call then d.calls = (d.calls or 0) + 1 end
     if trip.dungeon or trip.call then
         KH.Journal:Add(trip)
         -- what the group brought, for the result card: who went up, to which level, what was found

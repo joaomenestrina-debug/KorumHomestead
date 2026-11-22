@@ -25,6 +25,7 @@ Journal.lua
 Dungeons.lua
 Adventure.lua
 Events.lua
+Achievements.lua
 Probe.lua
 Advice.lua
 Away.lua
@@ -44,4 +45,5 @@ UI/Inn.lua
 UI/Window.lua
 UI/Bubble.lua
 UI/Reminder.lua
+UI/Achievements.lua
 UI/Minimap.lua

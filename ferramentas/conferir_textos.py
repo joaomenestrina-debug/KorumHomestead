@@ -275,6 +275,14 @@ def extras(out):
         scene(f"trabalho-{place}-ficha", "inn", found + f"NS.Inn:Work('{pro}', '{place}'); NS.UI.innFollower = '{pro}'")
     scene("trabalho-estalagem", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond')")
     scene("trabalho-grupo", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond'); NS.UI.innDungeon = 'stratholme'")
+    # the achievements: each category, some done and some not; and every one done
+    half = ("NS.db.stats.harvested = 5000; NS.db.stats.earned = 2500000; NS.db.stats.delivered = 150; NS.db.stats.crafted = 40; "
+            "NS.db.dungeons.runs = 120; NS.db.achSeeded = true; NS.Achievements:Check(); ")
+    for cat in ("village", "garden", "buildings", "market", "workshop", "followers", "dungeons", "visitors", "final"):
+        scene(f"conquistas-{cat}", "achievements", found + half + f"NS.UI.achCat = '{cat}'")
+    scene("conquistas-inicio", "achievements", "NS.UI.achCat = 'followers'")
+    scene("conquistas-todas", "achievements", found + "NS.db.achievements = {}; for _, a in ipairs(NS.Achievements.LIST) do "
+          "NS.db.achievements[a.id] = 1795000000 end; NS.UI.achCat = 'followers'")
     # the Work tab of the Inn: the places, and who could work at each one
     busy = "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('elda', 'garden'); NS.Inn:Work('ilyanna', 'market'); "
     scene("aba-trabalho", "inn", found + busy + "NS.UI.innTab = 'work'")
