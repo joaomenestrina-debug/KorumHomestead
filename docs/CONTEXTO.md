@@ -105,6 +105,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 18/11 | O `/kh debug` e o `/kh evento` ficam entre `--@debug@` e `--@end-debug@`: só existem na cópia do repositório. |
 | 17/11 | Toda mudança que o jogador percebe ganha linha na tela **Novidades** (`News.lua` + `news<id>_<n>` no `Locales.lua`). A tela abre sozinha uma vez ao logar depois da atualização; save novo não vê novidades antigas. A entrada 1 é a `2.0.0-alpha1`: as tarefas da S1 acrescentam linhas nela. |
 | 22/11 | **Sem ranking online** por enquanto (decisão do dono). Pesquisa feita: addon não acessa a internet; os caminhos seriam mensagens de addon (guilda; canal próprio a testar no Forever; contas trial não enviam), código de exportação para um site, ou programa no PC como o Raider.IO. Qualquer pontuação do save pode ser editada. Retomar só se o dono pedir. |
+| 22/11 | **Trabalho em todas as construções** (pedido do dono): Mina, Lagoa, Horta (planta mais rápido), Oficina (fabrica mais rápido) e Mercado (vendas e encomendas pagam mais, bônus ×0,4) têm uma vaga cada, na aba Trabalho da Estalagem. Qualquer seguidor dá +10%, quem tem o ofício +25% (Jardineiro: Elda, Faelan, Shalendra; Artesão: Hoderik, Elandor; Negociante: Corvo, Sela). Quem está no Alojamento pode trabalhar. Próximos, a especificar: missão pessoal (níveis 10/20/30) e amizade que cresce. |
 
 ## 4. Mapa do código
 

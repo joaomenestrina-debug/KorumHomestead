@@ -275,6 +275,13 @@ def extras(out):
         scene(f"trabalho-{place}-ficha", "inn", found + f"NS.Inn:Work('{pro}', '{place}'); NS.UI.innFollower = '{pro}'")
     scene("trabalho-estalagem", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond')")
     scene("trabalho-grupo", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond'); NS.UI.innDungeon = 'stratholme'")
+    # the Work tab of the Inn: the places, and who could work at each one
+    busy = "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('elda', 'garden'); NS.Inn:Work('ilyanna', 'market'); "
+    scene("aba-trabalho", "inn", found + busy + "NS.UI.innTab = 'work'")
+    scene("aba-trabalho-inicio", "inn", "NS.UI.innTab = 'work'")
+    for place in ("mine", "pond", "garden", "workshop", "market"):
+        scene(f"aba-trabalho-{place}", "inn", found + busy + f"NS.UI.innTab = 'work'; NS.UI.innWorkAt = '{place}'")
+    scene("aba-trabalho-pagina2", "inn", found + f"NS.UI.innTab = 'work'; NS.UI.innWorkAt = 'pond'; NS.UI.innWorkPage = 2")
     scene("trabalho-ranking", "inn", found + "NS.Inn:Work('tobin', 'mine'); NS.Inn:Work('bram', 'pond'); NS.UI.innTab = 'ranking'; NS.UI.innRank = 2")
     # the result card of a group that came back: a success with everything found, a failure with everyone hurt, a call
     home = "KEEP_RESULTS = true; for _, trip in ipairs(NS.db.trips) do trip.at = NS.Now() - 999999 end; NS.Dungeons:CollectAll(); NS.db.arrivals = {}"

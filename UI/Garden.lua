@@ -344,7 +344,7 @@ local function BuildGarden(win)
             if b.icon.SetDesaturated then b.icon:SetDesaturated(locked) end
             b.edge:SetColor(C.accent[1], C.accent[2], C.accent[3], chosen and 0.9 or 0)
             b.fill:SetColor(1, 1, 1, (b.hover and not locked) and 0.10 or (chosen and 0.06 or 0))
-            b.note:SetText(locked and T("seedLevel", p.level) or KH.Duration(p.grow))
+            b.note:SetText(locked and T("seedLevel", p.level) or KH.Duration(KH.Farm:GrowTime(p)))
             Kit.Paint(b.note, locked and C.textFaint or (chosen and C.accent or C.textMuted))
         end
         local id = self.hoverSeed or db.selected
@@ -352,7 +352,7 @@ local function BuildGarden(win)
         if db.level < p.level then
             menu.card.detail:SetText(WHITE .. D.Name(id) .. "|r   " .. T("needLevel", p.level))
         else
-            menu.card.detail:SetText(WHITE .. D.Name(id) .. "|r   " .. T("seedInfo", KH.Number(p.cost), KH.Duration(p.grow), D.Yield(p, db.level)))
+            menu.card.detail:SetText(WHITE .. D.Name(id) .. "|r   " .. T("seedInfo", KH.Number(p.cost), KH.Duration(KH.Farm:GrowTime(p)), D.Yield(p, db.level)))
         end
         local qty = self.menuQty or 1
         menu.card.qty:SetText(tostring(qty))
@@ -430,7 +430,7 @@ local function BuildGarden(win)
                 b.note:SetText(T("seedLevel", p.level))
                 Kit.Paint(b.note, C.textFaint)
             else
-                b.note:SetText(KH.Duration(p.grow))
+                b.note:SetText(KH.Duration(KH.Farm:GrowTime(p)))
                 Kit.Paint(b.note, chosen and C.accent or C.textMuted)
             end
         end
@@ -441,7 +441,7 @@ local function BuildGarden(win)
         elseif db.level < p.level then
             self.detail:SetText(WHITE .. D.Name(id) .. "|r   " .. T("needLevel", p.level))
         else
-            self.detail:SetText(WHITE .. D.Name(id) .. "|r   " .. T("seedInfo", KH.Number(p.cost), KH.Duration(p.grow), D.Yield(p, db.level)))
+            self.detail:SetText(WHITE .. D.Name(id) .. "|r   " .. T("seedInfo", KH.Number(p.cost), KH.Duration(KH.Farm:GrowTime(p)), D.Yield(p, db.level)))
         end
     end
 

@@ -155,7 +155,9 @@ function W:Craft(id)
         local jr = W.Recipe(job.recipe)
         if jr and jr.trade == r.trade then at = math.max(at, job.at + job.time) end
     end
-    db.queue[#db.queue + 1] = {recipe = id, at = at, time = r.time}
+    -- a worker in the Workshop makes each craft shorter
+    local time = math.max(1, math.floor(r.time * (1 - KH.Inn:WorkBonus("workshop")) + 0.5))
+    db.queue[#db.queue + 1] = {recipe = id, at = at, time = time}
     return true
 end
 

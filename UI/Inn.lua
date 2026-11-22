@@ -1,9 +1,9 @@
 --[[
     Korum Homestead - the Inn: the followers and the dungeons (docs/masmorras.md §16)
 
-    Four tabs. Followers: a card for each one in a room (portrait, quality, level, abilities, what it is doing); a click
+    Five tabs. Followers: a card for each one in a room (portrait, quality, level, abilities, what it is doing); a click
     opens its sheet (abilities, traits, the next quality, the Journal). Ranking: the whole roster by Power, who is in a
-    room and who waits in the Lodging, and the buttons that swap them. Book: combos and trophies. Dungeons: the dungeons of WoW Forever by level, each with its
+    room and who waits in the Lodging, and the buttons that swap them. Work: who works at each building. Book: combos and trophies. Dungeons: the dungeons of WoW Forever by level, each with its
     threats and the chance of the best free group now; a click opens the run: the threats (the countered ones dim), the
     group slots, the free followers with "Recommended" and how much each adds, the suggested group, the chance with where
     every point comes from, the reward and Send.
@@ -14,6 +14,7 @@ local UI = KH.UI
 local P = UI.P
 local Kit, C, D, V, T = P.Kit, P.C, P.D, P.V, P.T
 local VDIR = P.VDIR
+local BuildingArt, BuildingName = P.BuildingArt, P.BuildingName
 local Reason, Notice, Screen, Tip = P.Reason, P.Notice, P.Screen, P.Tip
 
 local ICONS = "Interface\\Icons\\"
@@ -26,6 +27,7 @@ P.QUALITY = QUALITY
 UI.innTab = "followers"
 UI.innPage = 1
 UI.innRank = 1
+UI.innWorkPage = 1
 
 local function Hex(c) return string.format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255) end
 local function QName(q, text) return Hex(QUALITY[q] or C.text) .. text .. "|r" end
@@ -159,13 +161,17 @@ local function BuildInn(win)
 
     s.tabs = Kit.Segmented(s.frame, 440, {{value = "followers", label = T("innTabFollowers")},
         {value = "dungeons", label = T("innTabDungeons")}, {value = "ranking", label = T("innTabRanking")},
-        {value = "book", label = T("innTabBook")}},
+        {value = "work", label = T("innTabWork")}, {value = "book", label = T("innTabBook")}},
         function() return UI.innTab end,
-        function(v) UI.innTab = v; UI.innFollower, UI.innDungeon, UI.innSwap, UI.innOpts = nil, nil, nil, nil; UI:Refresh() end)
+        function(v)
+            UI.innTab = v
+            UI.innFollower, UI.innDungeon, UI.innSwap, UI.innOpts, UI.innWorkAt = nil, nil, nil, nil, nil
+            UI:Refresh()
+        end)
     s.tabs:SetPoint("TOPLEFT", 0, -58)
     s.back = Kit.Button(s.frame, 130, 28, "", function()
         local d = UI.innDungeon and Dg.Get(UI.innDungeon)
-        UI.innFollower, UI.innDungeon, UI.innParty, UI.innOpts = nil, nil, nil, nil
+        UI.innFollower, UI.innDungeon, UI.innParty, UI.innOpts, UI.innWorkAt = nil, nil, nil, nil, nil
         if d and d.call then UI:Show("visitors") else UI:Refresh() end
     end)
     s.back:SetPoint("TOPLEFT", 0, -58)
@@ -295,6 +301,61 @@ local function BuildInn(win)
     s.rnext:SetPoint("BOTTOMLEFT", 38, 4)
     s.rpage = Kit.Text(rank, 11, C.textSoft)
     s.rpage:SetPoint("BOTTOMLEFT", 80, 12)
+
+    -- the work tab (owner, 22/11): each building with a place of work, who works there and what it gives; a click on a
+    -- place lists who could work there (UI.innWorkAt), anyone at home, in a room or in the Lodging
+    local work = CreateFrame("Frame", nil, s.frame)
+    work:SetAllPoints(s.frame)
+    s.work = work
+    s.wrows = {}
+    local function WorkClick(row)
+        if UI.innWorkAt then
+            if row.fid then
+                local ok, why = In:Work(row.fid, UI.innWorkAt)
+                if not ok then Notice(Reason(why)) else UI.innWorkAt = nil end
+            end
+        elseif row.place and V:Level(row.place) > 0 then
+            UI.innWorkAt, UI.innWorkPage = row.place, 1
+        end
+        UI:Refresh()
+    end
+    for i = 1, DG_ROWS do
+        local row = CreateFrame("Button", nil, work)
+        row:SetSize(W, DG_H)
+        row:SetPoint("TOPLEFT", 0, -TOP - (i - 1) * (DG_H + 4))
+        row.surface, row.outline = Kit.Rounded(row, 10, 1, 1, 1, 0.045, 0.06)
+        row.disc = row:CreateTexture(nil, "ARTWORK")
+        row.disc:SetSize(32, 32)
+        row.disc:SetPoint("LEFT", 8, 0)
+        row.name = Kit.Text(row, 12, C.text)
+        row.name:SetPoint("TOPLEFT", 50, -5)
+        row.name:SetWidth(230)
+        row.name:SetWordWrap(false)
+        row.meta = Kit.Text(row, 10, C.textSoft)
+        row.meta:SetPoint("TOPLEFT", 50, -22)
+        row.meta:SetWidth(230)
+        row.meta:SetWordWrap(false)
+        row.gain = Kit.Text(row, 11, C.text)
+        row.gain:SetPoint("LEFT", 290, 0)
+        row.gain:SetWidth(W - 290 - 140)
+        row.gain:SetWordWrap(false)
+        row.button = Kit.Button(row, 120, 26, "", function() WorkClick(row) end)
+        row.button:SetPoint("RIGHT", -10, 0)
+        row:SetScript("OnClick", function() WorkClick(row) end)
+        s.wrows[i] = row
+    end
+    s.wprev = Kit.Button(work, 32, 28, "<", function() UI.innWorkPage = math.max(1, UI.innWorkPage - 1); UI:Refresh() end)
+    s.wprev:SetPoint("BOTTOMLEFT", 0, 4)
+    s.wnext = Kit.Button(work, 32, 28, ">", function() UI.innWorkPage = UI.innWorkPage + 1; UI:Refresh() end)
+    s.wnext:SetPoint("BOTTOMLEFT", 38, 4)
+    s.wpage = Kit.Text(work, 11, C.textSoft)
+    s.wpage:SetPoint("BOTTOMLEFT", 80, 12)
+    s.wstop = Kit.Button(work, 220, 36, "", function()
+        if UI.innWorkAt then In:Rest(UI.innWorkAt) end
+        UI.innWorkAt = nil
+        UI:Refresh()
+    end)
+    s.wstop:SetPoint("BOTTOMRIGHT", 0, 0)
 
     -- the book: combos and trophies
     local book = CreateFrame("Frame", nil, s.frame)
@@ -757,6 +818,84 @@ local function BuildInn(win)
             .. (nextDef and ("   |cff757a87" .. T("innNext", FName(nextDef.id), V:Level("inn") + 1) .. "|r") or ""), W - 240)
     end
 
+    -- what a worker gives at a place, in words ("plants 25% faster")
+    local function WorkFx(place, bonus) return T("workFx_" .. place, math.floor(bonus * 100 + 0.5)) end
+
+    local function RefreshWork()
+        local J = KH.Balance.JOBS
+        local at = UI.innWorkAt
+        s.wstop:Hide()
+        s.action:Hide()
+        s.note:SetText("")
+        if not at then
+            local working = 0
+            for _, place in ipairs(J.order) do if In:Worker(place) then working = working + 1 end end
+            s.head:SetText(T("workH"))
+            s.sub:SetText(T("workS", working, #J.order))
+            for i, row in ipairs(s.wrows) do
+                local place = J.order[i]
+                row:SetShown(place ~= nil)
+                row.place, row.fid = place, nil
+                if place then
+                    local level = V:Level(place)
+                    local fid = level > 0 and In:Worker(place)
+                    row.disc:SetTexture(BuildingArt(place))
+                    Kit.Fit(row.name, BuildingName(place) .. (level > 0 and ("  |cffa8adb8" .. T("folLevel", level) .. "|r") or ""), 230)
+                    if level == 0 then
+                        Kit.Fit(row.meta, T("workLocked"), 230)
+                        Kit.Fit(row.gain, "", 10)
+                    elseif fid then
+                        Kit.Fit(row.meta, T("workBy", FName(fid)), 230)
+                        Kit.Fit(row.gain, "|cff59d973" .. WorkFx(place, In.JobBonus(fid, place)) .. "|r", W - 430)
+                    else
+                        Kit.Fit(row.meta, "|cffa8adb8" .. T("workNobody") .. "|r", 230)
+                        Kit.Fit(row.gain, "|cffa8adb8" .. T("workUpTo", WorkFx(place, In.PlaceBonus(place, true)),
+                            T("job_" .. J[place])) .. "|r", W - 430)
+                    end
+                    row.button:SetShown(level > 0)
+                    if level > 0 then
+                        row.button:SetLabel(T(fid and "workChange" or "workChoose"))
+                        row.button:SetStyle(fid and "quiet" or "primary")
+                    end
+                end
+            end
+            s.wprev:Hide(); s.wnext:Hide(); s.wpage:SetText("")
+            return
+        end
+        -- who could work at that place: the trade first, then the Lodging
+        local list = In:Workers(at)
+        local fid = In:Worker(at)
+        s.head:SetText(T("workPickH", BuildingName(at)))
+        s.sub:SetText(T("workPickS", WorkFx(at, In.PlaceBonus(at, false)), T("job_" .. J[at]), WorkFx(at, In.PlaceBonus(at, true))))
+        local pages = math.max(1, math.ceil(#list / DG_ROWS))
+        if UI.innWorkPage > pages then UI.innWorkPage = pages end
+        local first = (UI.innWorkPage - 1) * DG_ROWS
+        for i, row in ipairs(s.wrows) do
+            local c = list[first + i]
+            row:SetShown(c ~= nil)
+            row.place, row.fid = nil, c and c.id
+            if c then
+                local f = In:Get(c.id)
+                local pro = In.Def(c.id).job == J[at]
+                row.disc:SetTexture(Portrait(c.id))
+                Kit.Fit(row.name, QName(f.quality, FName(c.id)) .. "  |cffa8adb8" .. T("folLevel", f.level) .. "|r", 230)
+                Kit.Fit(row.meta, (pro and ("|cff40d9c4" .. T("job_" .. J[at]) .. "|r · ") or "")
+                    .. T(c.room and "rankRoom" or "rankLodge"), 230)
+                Kit.Fit(row.gain, (pro and "|cff59d973" or "|cffa8adb8") .. WorkFx(at, c.bonus) .. "|r", W - 430)
+                row.button:Show()
+                row.button:SetLabel(T("workPut"))
+                row.button:SetStyle(pro and "primary" or "quiet")
+            end
+        end
+        s.wprev:SetShown(pages > 1); s.wnext:SetShown(pages > 1)
+        s.wpage:SetText(pages > 1 and (UI.innWorkPage .. " / " .. pages) or "")
+        s.wprev:SetEnabledState(UI.innWorkPage > 1)
+        s.wnext:SetEnabledState(UI.innWorkPage < pages)
+        if #list == 0 then s.note:SetText(T("workPickNone")) end
+        s.wstop:SetShown(fid ~= nil)
+        if fid then s.wstop:SetLabel(T("workStopWho", FName(fid))) end
+    end
+
     local function RefreshRanking()
         local list = In:Ranking()
         s.head:SetText(T("rankH"))
@@ -1135,21 +1274,25 @@ local function BuildInn(win)
         elseif UI.innDungeon and Dg.Get(UI.innDungeon) and Dg:Open(UI.innDungeon) then view = "run"
         elseif UI.innTab == "dungeons" then view = "dungeons"
         elseif UI.innTab == "ranking" then view = "ranking"
+        elseif UI.innTab == "work" then view = UI.innWorkAt and "workAt" or "work"
         elseif UI.innTab == "book" then view = "book" end
-        local inner = view == "sheet" or view == "run"
+        local inner = view == "sheet" or view == "run" or view == "workAt"
         self.tabs:SetShown(view ~= "none" and not inner)
         self.back:SetShown(inner)
-        self.back:SetLabel(view == "sheet" and T("backFollowers") or T("backDungeons"))
+        self.back:SetLabel(view == "sheet" and T("backFollowers") or (view == "workAt" and T("backWork") or T("backDungeons")))
         if view == "run" and Dg.Get(UI.innDungeon).call then self.back:SetLabel(T("backCalls")) end
         if inner then self.tabs:Hide() end
-        self.tabHint:SetShown(view == "list" or view == "dungeons" or view == "ranking")
+        self.tabHint:SetShown(view == "list" or view == "dungeons" or view == "ranking" or view == "work")
         self.book:SetShown(view == "book")
         self.rank:SetShown(view == "ranking")
         if view == "ranking" then
             self.tabHint:SetText(UI.innSwap and ("|cffffd24d" .. T("rankSwapH", FName(UI.innSwap)) .. "|r") or T("rankHint"))
+        elseif view == "work" then
+            self.tabHint:SetText(T("workHint"))
         else
             self.tabHint:SetText(view == "dungeons" and T("dgHint") or T("innHint"))
         end
+        self.work:SetShown(view == "work" or view == "workAt")
         self.list:SetShown(view == "list")
         self.dlist:SetShown(view == "dungeons")
         self.run:SetShown(view == "run")
@@ -1161,6 +1304,7 @@ local function BuildInn(win)
         elseif view == "dungeons" then RefreshDungeons()
         elseif view == "run" then RefreshRun()
         elseif view == "ranking" then RefreshRanking()
+        elseif view == "work" or view == "workAt" then RefreshWork()
         elseif view == "book" then RefreshBook()
         else RefreshSheet() end
         -- a group came back: its result first; then, if someone new came with it, the arrival card

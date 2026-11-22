@@ -331,11 +331,11 @@ B.FOLLOWERS = {
         epic = {{"swift"}, {"lucky"}}},
     {id = "tobin", job = "miner", portrait = 2, rarity = "uncommon", start = "hammer", rare = {"locks", "silver"}, trait = "ironhands",
         epic = {{"tough"}, {"likes", "fortress"}}},
-    {id = "elda", portrait = 3, rarity = "uncommon", start = "herbs", rare = {"holy", "balm"}, trait = "wise",
+    {id = "elda", job = "gardener", portrait = 3, rarity = "uncommon", start = "herbs", rare = {"holy", "balm"}, trait = "wise",
         epic = {{"quick"}, {"likes", "cave"}}},
     {id = "garrick", portrait = 4, rarity = "uncommon", start = "shield", rare = {"warcry", "whirl"}, trait = "fearsUndead",
         epic = {{"tough"}, {"partner", "elda"}}},
-    {id = "sela", portrait = 5, rarity = "uncommon", start = "counter", rare = {"fireball", "blizzard"}, trait = "curious",
+    {id = "sela", job = "trader", portrait = 5, rarity = "uncommon", start = "counter", rare = {"fireball", "blizzard"}, trait = "curious",
         epic = {{"lucky"}, {"likes", "crypt"}}},
     {id = "bram", job = "fisher", portrait = 6, rarity = "uncommon", start = "courage", rare = {"distract", "dissonant"}, trait = "company",
         epic = {{"swift"}, {"partner", "mira"}}},
@@ -347,7 +347,7 @@ B.FOLLOWERS = {
     -- Hargrim (Barrow Deeps).
     {id = "lyra", portrait = 7, rarity = "rare", start = "gust", second = "lightstep", trait = "quick",
         epic = {{"swift"}, {"partner", "ilyanna"}}, from = {rescue = "zephras"}},
-    {id = "hoderik", portrait = 8, rarity = "rare", start = "totem", second = "earthshield", trait = {"likes", "fortress"},
+    {id = "hoderik", job = "artisan", portrait = 8, rarity = "rare", start = "totem", second = "earthshield", trait = {"likes", "fortress"},
         epic = {{"tough"}, {"partner", "hargrim"}}, from = {dungeon = "thanes"}},
     {id = "aldric", portrait = 9, rarity = "rare", start = "unholy", second = "devotion", trait = {"likes", "crypt"},
         epic = {{"tough"}, {"likes", "ruins"}}, from = {dungeon = "lordaeron"}},
@@ -355,11 +355,11 @@ B.FOLLOWERS = {
         epic = {{"lucky"}, {"likes", "ruins"}}, from = {dungeon = "excavation"}},
     {id = "tazu", job = "fisher", portrait = 11, rarity = "rare", start = "voodoo", second = "barbed", trait = "forest",
         epic = {{"swift"}, {"quick"}}, from = {rescue = "drowned"}},
-    {id = "elandor", portrait = 12, rarity = "epic", start = "greatcounter", second = "teleport", trait = "wise",
+    {id = "elandor", job = "artisan", portrait = 12, rarity = "epic", start = "greatcounter", second = "teleport", trait = "wise",
         epic = {{"lucky"}, {"partner", "sela"}}, from = {rescue = "alcaz"}},
-    {id = "faelan", portrait = 13, rarity = "epic", start = "rejuv", second = "bear", trait = "forest",
+    {id = "faelan", job = "gardener", portrait = 13, rarity = "epic", start = "rejuv", second = "bear", trait = "forest",
         epic = {{"tough"}, {"partner", "shalendra"}}, from = {rescue = "blackmaw"}},
-    {id = "corvo", portrait = 14, rarity = "epic", start = "stealth", second = "cheapshot", trait = "lucky",
+    {id = "corvo", job = "trader", portrait = 14, rarity = "epic", start = "stealth", second = "cheapshot", trait = "lucky",
         epic = {{"swift"}, {"likes", "fortress"}}, from = {rescue = "alcaz"}},
     {id = "brakka", job = "fisher", portrait = 15, rarity = "epic", start = "frosttrap", second = "serene", trait = "company",
         epic = {{"tough"}, {"likes", "cave"}}, from = {rescue = "blackmaw"}},
@@ -367,7 +367,7 @@ B.FOLLOWERS = {
         epic = {{"swift"}, {"lucky"}}, from = {raid = "onyxia"}},
     {id = "hargrim", job = "miner", portrait = 17, rarity = "legendary", start = "bastion", trait = "ironhands",
         epic = {{"tough"}, {"likes", "fortress"}}, from = {dungeon = "thanes", legendary = true}},
-    {id = "shalendra", portrait = 18, rarity = "legendary", start = "ancestral", trait = "tough",
+    {id = "shalendra", job = "gardener", portrait = 18, rarity = "legendary", start = "ancestral", trait = "tough",
         epic = {{"lucky"}, {"likes", "crypt"}}, from = {rescue = "blackmaw", legendary = true}},
 }
 
@@ -384,7 +384,12 @@ B.NEWCOMER = {dungeon = {{upTo = 10, chance = 0.01}, {upTo = 20, chance = 0.02},
 -- Work (owner, 19/11): the Mine and the Pond have one place each for a follower at home. While it works there it does
 -- not go out; anyone adds `any` to what the building makes, who has the trade of the place (`job` of the follower) adds
 -- `skilled`.
-B.JOBS = {any = 0.10, skilled = 0.25, order = {"mine", "pond"}, mine = "miner", pond = "fisher"}
+-- one place of work in each building that makes or sells (owner, 22/11: everyone found is useful, rooms or Lodging):
+-- the Mine and the Pond make more, the Garden grows faster, the Workshop crafts faster, the Market pays more. Who has the
+-- trade of the place gives `skilled`, anyone else `any`; the Market's bonus is scaled down (it touches every sale).
+B.JOBS = {any = 0.10, skilled = 0.25, order = {"mine", "pond", "garden", "workshop", "market"},
+    mine = "miner", pond = "fisher", garden = "gardener", workshop = "artisan", market = "trader",
+    scale = {market = 0.4}}
 
 -- Power: one number for a follower, for the Ranking (level, quality and equipment)
 B.POWER = {level = 10, gear = 5, quality = {uncommon = 0, rare = 40, epic = 80, legendary = 150}}

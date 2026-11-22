@@ -417,6 +417,45 @@ class Work(Base):
         self.assertIsNone(self.ev("NS.Inn:Worker('mine')"))
 
 
+    def test_the_garden_the_workshop_and_the_market_have_a_place_too(self):
+        self.inn(level=6)
+        self.lua.execute("NS.db.buildings.workshop = 3; NS.db.buildings.market = 3; NS.db.coins = 100000")
+        seed = self.ev("NS.Data.PLANTS[1][1]")
+        grow = self.ev("NS.Data.Plant(%d).grow" % seed)
+        # the Garden: Elda is a Gardener, plants take 25% less (only what is planted after she starts)
+        self.assertTrue(self.ev("(NS.Inn:Work('elda', 'garden'))"))
+        self.assertTrue(self.ev("(NS.Farm:Plant(1, %d))" % seed))
+        self.assertEqual(self.lua.eval("function() local _, _, left = NS.Farm:Status(1); return left end")(), round(grow * 0.75))
+        # the Workshop: anyone makes a craft 10% shorter
+        pay = self.ev("NS.Village:PayBonus()")
+        self.assertTrue(self.ev("(NS.Inn:Work('mira', 'workshop'))"))
+        self.lua.execute("NS.db.goods.bar = 99; NS.db.goods.copper = 99")
+        self.assertTrue(self.ev("(NS.Workshop:Craft('gw1'))"))
+        self.assertEqual(self.ev("NS.db.queue[#NS.db.queue].time"), round(self.ev("NS.Workshop.Recipe('gw1').time") * 0.9))
+        # the Market: a trader adds 10% to what sales and orders pay; the level shown ahead stays plain
+        self.assertTrue(self.ev("(NS.Inn:Work('sela', 'market'))"))
+        self.assertAlmostEqual(self.ev("NS.Village:PayBonus()"), pay + 0.10)
+        self.assertAlmostEqual(self.ev("NS.Village:PayBonus(3)"), pay)
+        self.assertEqual(self.ev("NS.Inn:Working('elda')"), "garden")
+
+    def test_the_work_tab_of_the_inn_gives_a_place_with_two_clicks(self):
+        self.inn(level=6)
+        self.lua.execute("NS.UI.innTab = 'work'")
+        self.open("inn")
+        s = "NS.UI.screens.inn"
+        self.assertEqual(self.ev(s + ".wrows[3].place"), "garden")
+        self.assertEqual(self.ev(s + ".wrows[1].meta:GetText()"), "Build it first")    # no Mine yet
+        self.press(s + ".wrows[3]")
+        self.assertEqual(self.ev("NS.UI.innWorkAt"), "garden")
+        self.assertEqual(self.ev(s + ".wrows[1].fid"), "elda")                         # the Gardener first
+        self.press(s + ".wrows[1].button")
+        self.assertEqual(self.ev("NS.Inn:Worker('garden')"), "elda")
+        self.assertIsNone(self.ev("NS.UI.innWorkAt"))
+        self.assertIn("plants 25% faster", self.ev(s + ".wrows[3].gain:GetText()"))
+        self.press(s + ".wrows[3]")
+        self.press(s + ".wstop")
+        self.assertIsNone(self.ev("NS.Inn:Worker('garden')"))
+
 class Result(Base):
     def test_a_group_that_comes_back_shows_what_happened(self):
         self.inn(level=6, mira=4, tobin=5)

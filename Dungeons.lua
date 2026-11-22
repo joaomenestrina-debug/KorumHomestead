@@ -389,7 +389,7 @@ function I:Welcome(id, level)
     return "new"
 end
 
--- Work: one follower at home at the Mine and one at the Pond (B.JOBS). What the building made up to now is counted at the
+-- Work: one follower at home in each place of B.JOBS.order (the Mine, the Pond, the Garden, the Workshop, the Market). What the building made up to now is counted at the
 -- old pace before anyone comes or goes.
 local function Jobs()
     local db = KH.db
@@ -410,8 +410,13 @@ function I:Working(id)
     return nil
 end
 
+-- what a worker gives at a place: `skilled` with its trade, `any` without (scaled for the Market)
+function I.PlaceBonus(place, skilled)
+    return (skilled and B.JOBS.skilled or B.JOBS.any) * (B.JOBS.scale[place] or 1)
+end
+
 function I.JobBonus(id, place)
-    return I.Def(id).job == B.JOBS[place] and B.JOBS.skilled or B.JOBS.any
+    return I.PlaceBonus(place, I.Def(id).job == B.JOBS[place])
 end
 
 function I:WorkBonus(place)

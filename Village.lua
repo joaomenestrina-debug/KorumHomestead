@@ -288,7 +288,9 @@ end
 
 -- what sales and orders are multiplied by
 function V:PayBonus(level)
-    return 1 + B.MARKET_BONUS_PER_LEVEL * ((level or self:Level("market")) - 1)
+    -- the Market's level, and who works there now (only for the Market as it is, not for a level shown ahead)
+    local work = (not level and KH.Inn) and KH.Inn:WorkBonus("market") or 0
+    return 1 + B.MARKET_BONUS_PER_LEVEL * ((level or self:Level("market")) - 1) + work
 end
 
 -- Is there a building the player could start now?

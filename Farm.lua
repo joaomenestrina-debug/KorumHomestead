@@ -62,8 +62,9 @@ function F:Status(index)
     local plant = D.Plant(plot.plant)
     if not plant then return "empty", 0, 0 end
     local elapsed = KH.Now() - plot.at
-    if elapsed >= plant.grow then return "ready", 1, 0 end
-    return "growing", math.max(0, elapsed) / plant.grow, plant.grow - elapsed
+    local grow = plot.grow or plant.grow             -- a worker in the Garden at planting time made it shorter
+    if elapsed >= grow then return "ready", 1, 0 end
+    return "growing", math.max(0, elapsed) / grow, grow - elapsed
 end
 
 function F:ReadyCount()
@@ -96,8 +97,15 @@ function F:Plant(index, plantId)
     if plantId == D.PLANTS[1][1] and self:Stuck() then db.coins = plant.cost end
     if db.coins < plant.cost then return false, "coins" end
     db.coins = db.coins - plant.cost
-    db.plots[index] = {plant = plantId, at = KH.Now()}
+    local grow = self:GrowTime(plant)
+    db.plots[index] = {plant = plantId, at = KH.Now(), grow = grow ~= plant.grow and grow or nil}
     return true
+end
+
+-- how long a seed takes now: shorter while someone works in the Garden
+function F:GrowTime(plant)
+    local bonus = KH.Inn and KH.Inn:WorkBonus("garden") or 0
+    return math.max(1, math.floor(plant.grow * (1 - bonus) + 0.5))
 end
 
 function F:PlantAll(plantId)

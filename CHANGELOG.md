@@ -2,9 +2,11 @@
 
 ## 2.2.0-alpha2
 - The followers list shows the weapon and the armor each one wears, beside the abilities.
+- The Inn has a Work tab: the Garden (plants grow faster), the Workshop (crafts are faster) and the Market (sales and orders pay more) have a place of work too, like the Mine and the Pond. Gardeners, artisans and traders give more, and the followers in the Lodging can work.
 
 ### Em português
 - A lista de seguidores mostra a arma e a armadura que cada um usa, ao lado das habilidades.
+- A Estalagem tem a aba Trabalho: a Horta (plantas crescem mais rápido), a Oficina (fabricação mais rápida) e o Mercado (vendas e encomendas pagam mais) também têm uma vaga de trabalho, como a Mina e a Lagoa. Jardineiros, artesãos e negociantes dão mais, e quem está no Alojamento pode trabalhar.
 
 ## 2.2.0-alpha1
 The followers go to the dungeons of WoW Forever. Your village is carried over: nothing you have is lost.
