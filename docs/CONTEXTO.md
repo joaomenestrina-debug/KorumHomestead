@@ -3,7 +3,7 @@
 **Leia este arquivo antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 22/11/2026, revisão de textos T5.8 pronta para análise.*
+*Última atualização: 22/11/2026, por Korum (T5.8 revisada e no ramo `claude/masmorras`).*
 
 ---
 
@@ -69,7 +69,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** testar o T3.0 (`/kh debug`, `/kh eventos`: uma masmorra, uma fila, trocas de zona) até 29/11 e avisar o Claude. Jogar a 2.1.0 e relatar o que aparecer. A S3 (F3, Personagem) fica para a data do cronograma (07/12), por decisão de 18/11.
-- **Codex:** **T5.8 concluída** ([tarefas/T5.8.md](tarefas/T5.8.md)): revisão EN/ptBR dos 542 textos novos ou alterados desde a 2.1.0, na branch `codex/T5.8-texts`, aberta a partir de `origin/claude/masmorras`; pull request para `claude/masmorras` aguarda análise. Não escrever código.
+- **Codex:** **T5.8 concluída** ([tarefas/T5.8.md](tarefas/T5.8.md)): revisão EN/ptBR dos 542 textos novos ou alterados desde a 2.1.0, na branch `codex/T5.8-texts`, aberta a partir de `origin/claude/masmorras`; revisada e juntada ao `claude/masmorras` em 22/11 (pull request 23). Não escrever código.
 - **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11; `v2.1.0-alpha3` também, só para tirar o `/kh debug` e o `/kh evento` do zip (entre `--@debug@`, o empacotador comenta). Especificação das masmorras e seguidores escrita em 18/11 (`docs/masmorras.md`, com `docs/historia-forever.md`). Aprovada em 18/11; a Aventura (a vila reage ao que o personagem faz) e o Diário dos seguidores entraram depois (§12 e §13). Tag `v2.1.0-alpha4` criada em 19/11 (logo no minimapa, dica e número iguais aos do ícone, caminho do topo no inglês). Comando do T3.0 pronto: `/kh debug` e depois `/kh eventos` (`Probe.lua`, só na cópia do repositório). Briefings A7 e A8 escritos em 19/11. Próximo: o dono testa o T3.0 numa masmorra, numa fila e numa troca de zona; A7 no jogo e tag `v2.1.0-alpha5` em 19/11 (Véu de Inverno); tag `v2.1.0-alpha6` em 19/11 (pedidos só de itens da tela da Oficina, trenó maior); **2.1.0 publicada como Release em 19/11** a pedido do dono (as novidades das alphas aparecem sob um título só, "Versão 2.1.0").
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
