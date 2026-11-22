@@ -111,6 +111,14 @@ local function FollowerRow(parent, width)
         b:SetPoint("LEFT", 300 + (k - 1) * 30, 0)
         row.icons[k] = b
     end
+    -- what the follower wears (owner, 22/11): the weapon and the armor after the abilities, a faint mark when empty
+    row.gear = {}
+    for k, slot in ipairs({"weapon", "armor"}) do
+        local b = IconButton(row, 24)
+        b:SetPoint("LEFT", 380 + (k - 1) * 30, 0)
+        b.slot = slot
+        row.gear[k] = b
+    end
     row.right = Kit.Text(row, 11, C.textSoft, "RIGHT")
     row.right:SetPoint("RIGHT", -14, 0)
     row.right:SetWidth(230)
@@ -129,6 +137,18 @@ local function FillFollower(row, fid)
     local abs = In:Abilities(fid)
     for k, b in ipairs(row.icons) do
         if abs[k] then ShowAbility(b, abs[k]) else b:Hide() end
+    end
+    for _, b in ipairs(row.gear) do
+        local gid = f.gear and f.gear[b.slot]
+        local g = gid and In.Gear(gid)
+        if g then
+            b.tex:SetTexture(KH.Data.Icon(g.item)); b.tex:SetAlpha(1)
+            b:SetScript("OnEnter", function(self) Tip(self, T("good_" .. gid), {T("gearPower", g.power)}) end)
+        else
+            b.tex:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark"); b.tex:SetAlpha(0.25)
+            b:SetScript("OnEnter", function(self) Tip(self, T("slot_" .. b.slot), {T("gearNone")}) end)
+        end
+        b:Show()
     end
 end
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.0-alpha2
+- The followers list shows the weapon and the armor each one wears, beside the abilities.
+
+### Em português
+- A lista de seguidores mostra a arma e a armadura que cada um usa, ao lado das habilidades.
+
 ## 2.2.0-alpha1
 The followers go to the dungeons of WoW Forever. Your village is carried over: nothing you have is lost.
 

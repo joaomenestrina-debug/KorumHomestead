@@ -343,6 +343,16 @@ class Consumables(Base):
         both = self.lua.eval("function() return (NS.Dungeons:Chance('ragefire', {'tobin'}, {food = 'stew', potion = 'heal'})) end")()
         self.assertEqual((fed - plain, both - plain), (5, 15))
 
+    def test_the_followers_list_shows_what_each_one_wears(self):
+        self.inn(mira=1, tobin=1)
+        self.lua.execute("NS.db.goods.gw3 = 1; NS.Inn:Equip('mira', 'gw3')")
+        self.open("inn")
+        rows = self.lua.eval("NS.UI.screens.inn.rows")
+        mira = next(r for r in rows.values() if r.fid == "mira")
+        self.assertEqual(mira.gear[1].tex.GetAlpha(mira.gear[1].tex), 1)       # the weapon
+        self.assertLess(mira.gear[2].tex.GetAlpha(mira.gear[2].tex), 1)        # no armor: a faint mark
+        self.assertTrue(mira.gear[1].IsShown(mira.gear[1]))
+
     def test_the_parts_shown_always_add_up_to_the_chance(self):
         self.inn(mira=30, tobin=30, elda=30, garrick=30, sela=30, bram=30)
         self.lua.execute("for _, g in ipairs({'gw7', 'ga7', 'stew', 'heal'}) do NS.db.goods[g] = 9 end; "
