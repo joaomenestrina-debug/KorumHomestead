@@ -104,6 +104,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | 18/11 | **Todo evento tem relação com a história do WoW Forever.** Fonte única: `docs/historia-forever.md`; texto de evento só usa fato que está lá, confirmado no jogo ou em anúncio oficial. |
 | 18/11 | O `/kh debug` e o `/kh evento` ficam entre `--@debug@` e `--@end-debug@`: só existem na cópia do repositório. |
 | 17/11 | Toda mudança que o jogador percebe ganha linha na tela **Novidades** (`News.lua` + `news<id>_<n>` no `Locales.lua`). A tela abre sozinha uma vez ao logar depois da atualização; save novo não vê novidades antigas. A entrada 1 é a `2.0.0-alpha1`: as tarefas da S1 acrescentam linhas nela. |
+| 22/11 | **Sem ranking online** por enquanto (decisão do dono). Pesquisa feita: addon não acessa a internet; os caminhos seriam mensagens de addon (guilda; canal próprio a testar no Forever; contas trial não enviam), código de exportação para um site, ou programa no PC como o Raider.IO. Qualquer pontuação do save pode ser editada. Retomar só se o dono pedir. |
 
 ## 4. Mapa do código
 
