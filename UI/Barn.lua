@@ -7,8 +7,44 @@ local Reason, Notice, Screen = P.Reason, P.Notice, P.Screen
 local GoodTex, SetIcon = P.GoodTex, P.SetIcon
 local Tier, BuildingArt, BuildingName, Tip = P.Tier, P.BuildingArt, P.BuildingName, P.Tip
 
-local TOP = 98                                  -- under the tabs
+local TOP = 112                                 -- under the tabs and the legend
 UI.barnTab = "herbs"
+-- how many the middle button of a row sells (owner, 22/11): − and + walk these steps; never more than the row has
+local STEPS = {1, 5, 10, 20, 50, 100, 200, 500, 1000}
+local function Step(qty, dir, most)
+    if dir > 0 then
+        for _, n in ipairs(STEPS) do if n > qty and n <= most then return n end end
+        return math.max(qty, math.min(most, STEPS[#STEPS]))
+    end
+    for i = #STEPS, 1, -1 do if STEPS[i] < qty then return STEPS[i] end end
+    return 1
+end
+
+-- the "sell N" of a row: −, the number, +, and the button; `sell(id, n)` sells and returns the coins
+local function QuantitySeller(row, sell)
+    row.qty = 1
+    row.sell1 = Kit.Button(row, 92, 24, "", function()
+        local coins = sell(row.id, math.min(row.qty, row.have or 0))
+        if coins > 0 then Notice(T("soldFor", KH.Number(coins))) end
+        UI:Refresh()
+    end)
+    row.sell1:SetPoint("RIGHT", row.sellAll, "LEFT", -8, 0)
+    row.more = Kit.Button(row, 22, 24, "+", function()
+        row.qty = Step(row.qty, 1, row.have or 1)
+        UI:Refresh()
+    end)
+    row.more:SetPoint("RIGHT", row.sell1, "LEFT", -6, 0)
+    row.count = Kit.Text(row, 11, C.text, "CENTER")
+    row.count:SetPoint("RIGHT", row.more, "LEFT", -2, 0)
+    row.count:SetWidth(34)
+    row.less = Kit.Button(row, 22, 24, "−", function()
+        row.qty = Step(row.qty, -1, row.have or 1)
+        UI:Refresh()
+    end)
+    row.less:SetPoint("RIGHT", row.count, "LEFT", -2, 0)
+    row.info = Kit.Text(row, 11, C.textSoft, "RIGHT")
+    row.info:SetPoint("RIGHT", row.less, "LEFT", -14, 0)
+end
 
 local function BuildBarn(win)
     local s = Screen(win, "barn")
@@ -48,7 +84,16 @@ local function BuildBarn(win)
     end)
     s.btrack = track
     local LIST_W = W - BAR - 14
+    local SELLER_W = 96 + 8 + 92 + 6 + 22 + 2 + 34 + 2 + 22 + 14     -- the buttons of a row, from the right edge
     s.tabs:SetPoint("TOPLEFT", 0, -58)
+    -- the legend of the dot a row may have (owner, 22/11): instead of words beside each name
+    s.legendDot = s.frame:CreateTexture(nil, "ARTWORK")
+    s.legendDot:SetTexture(Kit.Icon("dot"))
+    s.legendDot:SetSize(8, 8)
+    s.legendDot:SetVertexColor(C.accent[1], C.accent[2], C.accent[3], 1)
+    s.legend = Kit.Text(s.frame, 10, C.textSoft, "RIGHT")
+    s.legend:SetPoint("TOPRIGHT", 0, -94)
+    s.legendDot:SetPoint("RIGHT", s.legend, "LEFT", -6, 0)
     s.empty = Kit.Text(s.frame, 12, C.textMuted)
     s.empty:SetPoint("TOPLEFT", 0, -TOP - 12)
     s.empty:SetWidth(W)
@@ -63,23 +108,19 @@ local function BuildBarn(win)
         row.icon:SetPoint("LEFT", 0, 0)
         row.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
         row.name = Kit.Text(row, 13, C.text)
-        row.name:SetPoint("LEFT", 42, 0)
-        row.wanted = Kit.Text(row, 10, C.accent)
-        row.wanted:SetPoint("LEFT", row.name, "RIGHT", 10, 0)
+        row.name:SetPoint("LEFT", 46, 0)
+        row.wanted = row:CreateTexture(nil, "OVERLAY")       -- the dot: an order or a work asks for it (the legend)
+        row.wanted:SetTexture(Kit.Icon("dot"))
+        row.wanted:SetSize(8, 8)
+        row.wanted:SetPoint("RIGHT", row.name, "LEFT", -6, 0)
+        row.wanted:SetVertexColor(C.accent[1], C.accent[2], C.accent[3], 1)
         row.sellAll = Kit.Button(row, 96, 24, "", function()
             local coins = KH.Farm:Sell(row.id)
             if coins > 0 then Notice(T("soldFor", KH.Number(coins))) end
             UI:Refresh()
         end)
         row.sellAll:SetPoint("RIGHT", 0, 0)
-        row.sell1 = Kit.Button(row, 80, 24, "", function()
-            local coins = KH.Farm:Sell(row.id, 1)
-            if coins > 0 then Notice(T("soldFor", KH.Number(coins))) end
-            UI:Refresh()
-        end)
-        row.sell1:SetPoint("RIGHT", row.sellAll, "LEFT", -8, 0)
-        row.info = Kit.Text(row, 11, C.textSoft, "RIGHT")
-        row.info:SetPoint("RIGHT", row.sell1, "LEFT", -18, 0)
+        QuantitySeller(row, function(id, n) return KH.Farm:Sell(id, n) end)
         s.rows[i] = row
     end
 
@@ -93,23 +134,19 @@ local function BuildBarn(win)
         row.icon = row:CreateTexture(nil, "ARTWORK")
         row.icon:SetPoint("LEFT", 0, 0)
         row.name = Kit.Text(row, 13, C.text)
-        row.name:SetPoint("LEFT", 42, 0)
-        row.wanted = Kit.Text(row, 10, C.accent)
-        row.wanted:SetPoint("LEFT", row.name, "RIGHT", 10, 0)
+        row.name:SetPoint("LEFT", 46, 0)
+        row.wanted = row:CreateTexture(nil, "OVERLAY")       -- the dot: an order or a work asks for it (the legend)
+        row.wanted:SetTexture(Kit.Icon("dot"))
+        row.wanted:SetSize(8, 8)
+        row.wanted:SetPoint("RIGHT", row.name, "LEFT", -6, 0)
+        row.wanted:SetVertexColor(C.accent[1], C.accent[2], C.accent[3], 1)
         row.sellAll = Kit.Button(row, 96, 24, "", function()
             local coins = KH.Village:SellGood(row.id)
             if coins > 0 then Notice(T("soldFor", KH.Number(coins))) end
             UI:Refresh()
         end)
         row.sellAll:SetPoint("RIGHT", 0, 0)
-        row.sell1 = Kit.Button(row, 80, 24, "", function()
-            local coins = KH.Village:SellGood(row.id, 1)
-            if coins > 0 then Notice(T("soldFor", KH.Number(coins))) end
-            UI:Refresh()
-        end)
-        row.sell1:SetPoint("RIGHT", row.sellAll, "LEFT", -8, 0)
-        row.info = Kit.Text(row, 11, C.textSoft, "RIGHT")
-        row.info:SetPoint("RIGHT", row.sell1, "LEFT", -18, 0)
+        QuantitySeller(row, function(id, n) return KH.Village:SellGood(id, n) end)
         s.rows[#s.rows + 1] = row
     end
 
@@ -195,14 +232,22 @@ local function BuildBarn(win)
                 if row.good then
                     row.icon:SetTexture(GoodTex(row.id))
                     row.name:SetText(T("good_" .. row.id))
-                    row.wanted:SetText(wanted[row.id] and T("onOrder") or (row.id == "ore" and T("forWorks") or ""))
+                    row.wanted:SetShown(wanted[row.id] or row.id == "ore")
                 else
                     SetIcon(row.icon, row.id)
                     row.name:SetText(D.Name(row.id))
-                    row.wanted:SetText(wanted[row.id] and T("onOrder") or "")
+                    row.wanted:SetShown(wanted[row.id] and true or false)
                 end
-                row.info:SetText(WHITE .. "× " .. n .. "|r     " .. T("worth", KH.Number(math.floor(sell * KH.Village:PayBonus()))))
-                row.sell1:SetLabel(T("sell1"))
+                row.info:SetText(WHITE .. "× " .. n .. "|r   " .. T("worth", KH.Number(math.floor(sell * KH.Village:PayBonus()))))
+                -- the name has what is left of the line before the numbers (the buttons take SELLER_W)
+                local infoW = Kit.TextWidth(row.info, row.info:GetText())
+                Kit.Fit(row.name, row.name:GetText(), math.max(40, LIST_W - 46 - SELLER_W - infoW - 14), 9)
+                row.have = n
+                row.qty = math.max(1, math.min(row.qty, n))
+                row.count:SetText(tostring(row.qty))
+                row.sell1:SetLabel(T("sellN", row.qty))
+                row.less:SetEnabledState(row.qty > 1)
+                row.more:SetEnabledState(row.qty < n)
                 row.sellAll:SetLabel(T("sellAll"))
             end
         end
@@ -216,6 +261,8 @@ local function BuildBarn(win)
         end
         self.total = total
         self.empty:SetText(total > 0 and here == 0 and T("barnTabEmpty") or "")
+        self.legend:SetText(here > 0 and T("barnLegend") or "")
+        self.legendDot:SetShown(here > 0)
         if total > 0 then
             self.head:SetText(herbs == total and (total == 1 and T("barnHeadOne") or T("barnHead", total)) or T("barnHeadMixed", total))
             self.sub:SetText(T("barnSub", KH.Number(worth)))

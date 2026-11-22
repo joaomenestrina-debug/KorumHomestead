@@ -381,6 +381,27 @@ class Homestead(unittest.TestCase):
         self.assertEqual(self.ev("NS.Village:Good('stew')"), 3)
         self.assertEqual(self.ev("NS.db.crops[2447]"), 5)
 
+    def test_the_barn_sells_a_chosen_quantity(self):
+        self.lua.execute("NS.db.goods.fish = 183; NS.db.tutorial.done = true; NS.UI.barnTab = 'raw'")
+        self.open("barn")
+        row = "NS.UI.screens.barn.rows[%d]" % (self.ev("#NS.Data.PLANTS") + 2)      # the fish, after ore
+        self.assertEqual(self.ev(row + ".name:GetText()"), "Fish")
+        self.assertEqual(self.ev(row + ".sell1.label:GetText()"), "Sell 1")
+        for _ in range(3):
+            self.press(row + ".more")                                               # 1 > 5 > 10 > 20
+        self.assertEqual(self.ev(row + ".count:GetText()"), "20")
+        self.press(row + ".less")
+        self.assertEqual(self.ev(row + ".sell1.label:GetText()"), "Sell 10")
+        coins = self.ev("NS.db.coins")
+        self.press(row + ".sell1")
+        self.assertEqual(self.ev("NS.Village:Good('fish')"), 173)
+        self.assertEqual(self.ev("NS.db.coins"), coins + 10 * self.ev("NS.Village:GoodSell('fish')"))
+        for _ in range(9):
+            self.press(row + ".more")                                               # never more than there is
+        self.assertEqual(self.ev(row + ".count:GetText()"), "173")
+        self.press(row + ".sell1")
+        self.assertEqual(self.ev("NS.Village:Good('fish')"), 0)
+
     def test_every_herb_of_the_barn_can_be_reached_by_scrolling(self):
         self.lua.execute("for _, p in ipairs(NS.Data.PLANTS) do NS.db.crops[p[1]] = 3 end; NS.db.tutorial.done = true; NS.UI.barnTab = 'herbs'")
         self.open("barn")
@@ -849,8 +870,9 @@ class Homestead(unittest.TestCase):
         """)
         barn = "NS.UI.screens.barn"
         self.assertEqual(self.ev(barn + ".head:GetText()"), f"{2 * self.ev('#NS.Data.PLANTS')} herbs in the barn")
-        self.assertEqual(self.ev(barn + ".rows[2].wanted:GetText()"), "on order")
-        self.assertEqual(self.ev(barn + ".rows[1].wanted:GetText()"), "")
+        self.assertTrue(self.ev(barn + ".rows[2].wanted:IsShown()"))           # the dot: an order asks for it
+        self.assertFalse(self.ev(barn + ".rows[1].wanted:IsShown()"))
+        self.assertEqual(self.ev(barn + ".legend:GetText()"), "an order or a work asks for it: keep it")
         self.assertIn("Sell these", self.ev(barn + ".action.label:GetText()"))
         # the rows that show fit in the window; the rest is reached by scrolling
         self.assertLessEqual(98 + self.ev(barn + ".bfit") * self.ev(barn + ".rows[1]:GetHeight()") + 40, self.ev("NS.UI.win.contentHeight"))
