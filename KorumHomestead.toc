@@ -27,7 +27,9 @@ Dungeons.lua
 Adventure.lua
 Events.lua
 Achievements.lua
+#@do-not-package@
 Probe.lua
+#@end-do-not-package@
 Advice.lua
 Away.lua
 UI/Common.lua

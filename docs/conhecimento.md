@@ -76,6 +76,9 @@ Tudo corre pelo relógio, mesmo com o jogo fechado. Addon independente, Lua 5.1,
 - **Um pacote por semana, no domingo.** Durante a semana tudo fica no ramo e na cópia do dono; nada vai ao CurseForge
   antes. Tag no meio da semana só se algo impedir de jogar. Merge na `main` e tag só com o ok do dono.
 - Tags `vX.Y.0-alphaN` viram Alpha no CurseForge; sem sufixo vira Release; nunca `-rc`.
+- **No zip dos jogadores vai só o que o addon usa no jogo:** o código (`.lua`), o `.toc` e `Media/`. Tudo o que é
+  da criação (docs, testes, ferramentas, arte-fonte, README, CHANGELOG, LICENSE, CLAUDE.md, AGENTS.md, `Probe.lua`)
+  fica fora pelo `ignore` do `.pkgmeta`; `tests/test_pacote.py` falha se algum arquivo novo escapar.
 - CHANGELOG: inglês e depois `### Em português`.
 - **Toda versão nova** tem uma fala do Mordomo Fenwick anunciando o patch (`say_patch<id>_1` em EN e PT, `<id>` da
   entrada nova de `News.lua`), escrita por Claude ou pelo Codex e revisada na semana.

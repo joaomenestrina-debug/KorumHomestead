@@ -1,15 +1,19 @@
 package-as: KorumHomestead
 
-# what is only for development stays out of the zip the players download
+# only what the addon uses in the game goes in the zip the players download (owner, 22/11): the code, the .toc and
+# Media/. Everything of the making of it stays out (tests/test_pacote.py checks it). Files starting with a dot are left
+# out by the packager itself. The manual changelog below is still read from the repository.
 ignore:
   - tests
   - ferramentas
   - arquivo
   - docs
-  - .gitignore
-  - .github
   - CLAUDE.md
   - AGENTS.md
+  - README.md
+  - CHANGELOG.md
+  - LICENSE
+  - Probe.lua
 
 # the "what's new" of each file on CurseForge comes from this file, not from the commit messages
 manual-changelog:
