@@ -68,7 +68,8 @@ class NewHomestead(Base):
         self.press("NS.UI.screens.settings.news")
         self.assertEqual(self.shown(), "news")
         self.assertEqual(self.ev("NS.UI.screens.news.pool[1].tag:GetText()"), "")
-        self.assertEqual(self.ev("NS.UI.screens.news.pool[2].text:GetText()"), self.ev("NS.T('news' .. NS.LatestNews() .. '_1')"))
+        self.assertIn("Butler Fenwick", self.ev("NS.UI.screens.news.pool[2].text:GetText()"))    # he announces the version
+        self.assertEqual(self.ev("NS.UI.screens.news.pool[3].text:GetText()"), self.ev("NS.T('news' .. NS.LatestNews() .. '_1')"))
 
 
 if __name__ == "__main__":
