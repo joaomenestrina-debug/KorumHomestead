@@ -56,6 +56,9 @@ function KH.VoiceLines(key)
     return count[key]
 end
 
+-- the portrait of who speaks (Media/Village/<who>.tga, A11)
+function KH.Portrait(who) return "Interface\\AddOns\\KorumHomestead\\Media\\Village\\" .. who end
+
 function KH.VoicesOn()
     return not KH.db or KH.db.mayor ~= false
 end

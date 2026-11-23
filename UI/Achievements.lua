@@ -15,16 +15,15 @@ local P = UI.P
 local Kit, C, D, T = P.Kit, P.C, P.D, P.T
 local Screen, Tip = P.Screen, P.Tip
 
-local ICONS = "Interface\\Icons\\"
 local TOP = 66
 local CAT_W, CAT_H = 140, 30
 local ROW_H, ROWS = 54, 6
 UI.achCat = "village"
 UI.achPage = 1
 
+-- one drawing per category (owner, 22/11; A11): grey while not done, in colour once done
 local function Icon(a)
-    if type(a.icon) == "number" then return D.Icon(a.icon) end
-    return ICONS .. a.icon
+    return P.VDIR .. "ach_" .. a.cat
 end
 
 local function Day(t)
@@ -145,7 +144,11 @@ local function Next()
     local a = KH.Achievements.Get(id)
     card.id = id
     card.icon:SetTexture(Icon(a))
-    card.title:SetText(KH.SayLine("achNew") or T("achNew"))
+    local line = KH.SayLine("achNew")
+    card.who:SetShown(line ~= nil)                     -- the Steward says it: his face before his words
+    card.title:ClearAllPoints()
+    card.title:SetPoint("TOPLEFT", line and 86 or 62, -12)
+    card.title:SetText(line or T("achNew"))
     Kit.Fit(card.name, T("ach_" .. id), 250, 9)
     card.pts:SetText(T("achPts", a.points))
     card.left = HOLD
@@ -162,6 +165,10 @@ local function Build()
     card.icon = card:CreateTexture(nil, "ARTWORK")
     card.icon:SetSize(40, 40)
     card.icon:SetPoint("LEFT", 12, 0)
+    card.who = card:CreateTexture(nil, "ARTWORK")
+    card.who:SetSize(18, 18)
+    card.who:SetPoint("TOPLEFT", 62, -9)
+    card.who:SetTexture(KH.Portrait("steward"))
     card.title = Kit.Text(card, 10, C.gold)
     card.title:SetPoint("TOPLEFT", 62, -12)
     card.name = Kit.Text(card, 13, C.text)

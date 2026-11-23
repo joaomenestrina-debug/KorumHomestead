@@ -41,7 +41,6 @@ def items():
         for _, i in pairs(NS.Village.ITEM) do out[#out + 1] = i end
         out[#out + 1] = NS.Balance.DAILY.rareItem
         for _, i in pairs(NS.Balance.TROPHIES) do out[#out + 1] = i end
-        for _, a in ipairs(NS.Achievements.LIST) do if type(a.icon) == "number" then out[#out + 1] = a.icon end end
         return table.concat(out, ",") end)()""")
     return sorted({int(i) for i in ids.split(",")})
 
@@ -56,7 +55,6 @@ def spell_icons():
         for _, a in pairs(NS.Balance.ABILITIES) do out[#out + 1] = a.icon end
         out[#out + 1] = NS.Balance.DUNGEON.meritIcon
         out[#out + 1] = NS.Balance.DUNGEON.epicIcon
-        for _, a in ipairs(NS.Achievements.LIST) do if type(a.icon) == "string" then out[#out + 1] = a.icon end end
         return table.concat(out, ",") end)()""")
     return sorted({n.lower() for n in names.split(",")})
 

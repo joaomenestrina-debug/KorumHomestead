@@ -25,13 +25,18 @@ NAMES = (["map", "works", "lot", "logo"]
          # the random events (arte_v4): the visitors' cart on the map and the three visitors
          + ["cart", "visitor_merchant", "visitor_caravan", "visitor_messenger"]
          # the Feast of Winter Veil (arte_v6, A7): the snowy map and three decorations
-         + ["map_winter", "winter_tree", "snowman", "gifts"])
+         + ["map_winter", "winter_tree", "snowman", "gifts"]
+         # the achievements, one icon per category, and the five characters who speak (arte_v7, A11)
+         + [f"ach_{c}" for c in ("village", "garden", "buildings", "market", "workshop", "followers", "dungeons", "visitors", "final")]
+         + ["steward", "foreman", "clerk", "butler", "advisor"])
 KEEP_WHOLE = {"map", "map_winter", "works"}
 # the logo shows at 24-44 px: the 32 px pixel drawing reads there, the detailed high-resolution one turns to mush
 OLD_GRID = {"logo": "arte_v3"}
 # the width each high-resolution drawing goes into the game at (the rest: 256)
 SIZE = {"map": 1024, "map_winter": 1024, "logo": 64, "visitor_merchant": 128, "visitor_caravan": 128, "visitor_messenger": 128,
-        **{f"follower{i}": 128 for i in range(1, 19)}}           # one piece by nature: nothing is a stray pixel there
+        **{f"follower{i}": 128 for i in range(1, 19)},
+        **{f"ach_{c}": 64 for c in ("village", "garden", "buildings", "market", "workshop", "followers", "dungeons", "visitors", "final")},
+        **{who: 128 for who in ("steward", "foreman", "clerk", "butler", "advisor")}}           # one piece by nature: nothing is a stray pixel there
 
 
 def pieces(alpha):

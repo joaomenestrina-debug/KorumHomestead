@@ -15,7 +15,7 @@ local P = UI.P
 local Kit, C, T = P.Kit, P.C, P.T
 
 local WIDTH, HEIGHT, HOLD = 372, 88, 30
-local TEXT_W = WIDTH - 38 - 12
+local TEXT_W = WIDTH - 50 - 12
 local card
 
 local function Close()
@@ -35,15 +35,14 @@ local function Build()
     card:EnableMouse(true)
     card.surface, card.outline = Kit.Rounded(card, 10, 0.07, 0.085, 0.095, 0.97, 0.18)
     card.logo = card:CreateTexture(nil, "ARTWORK")
-    card.logo:SetSize(18, 18)
-    card.logo:SetPoint("TOPLEFT", 12, -11)
-    card.logo:SetTexture(Kit.LOGO)
+    card.logo:SetSize(32, 32)                          -- the Steward asks (A11), or the logo with the voices off
+    card.logo:SetPoint("TOPLEFT", 10, -8)
     card.title = Kit.Text(card, 12, C.text)
-    card.title:SetPoint("TOPLEFT", 38, -10)
+    card.title:SetPoint("TOPLEFT", 50, -10)
     card.title:SetWidth(TEXT_W)
     card.title:SetWordWrap(false)
     card.sub = Kit.Text(card, 10, C.textSoft)
-    card.sub:SetPoint("TOPLEFT", 38, -29)
+    card.sub:SetPoint("TOPLEFT", 50, -29)
     card.sub:SetWidth(TEXT_W)
     card.sub:SetWordWrap(false)
 
@@ -90,6 +89,7 @@ function UI:Reminder(reason)
     if self.frame and self.frame:IsShown() then return false end      -- the village is already open
     if not card then Build() end
     local lines = self:AlertLines()
+    card.logo:SetTexture(KH.VoicesOn() and KH.Portrait("steward") or Kit.LOGO)
     Kit.Fit(card.title, T(reason == "flight" and "remFlight" or "remQueue"), TEXT_W)
     local first = lines[1] and lines[1][1]
     if first and #lines > 1 then first = T("remMore", first, #lines - 1) end
