@@ -21,7 +21,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | **A7** | Véu de Inverno **aprovado em 19/11** e na `main` (`arquivo/arte_v6/`: `map_winter`, `winter_tree`, `snowman`, `gifts`); **no jogo desde 19/11** (`Festivals.lua`: de 15/12 a 02/01 a vila usa `map_winter` e mostra o pinheiro, o boneco e o trenó; `/kh festa` com o debug ligado mostra fora da data) |
 | **A8** | Doze retratos dos novos seguidores **aprovados em 19/11** e na `main` (`arquivo/arte_v6/follower7..18@hd.png`); Claude importa para o jogo na S5, quando o código usar |
 | **T6.11** | Falas EN/ptBR dos cinco personagens prontas na branch `codex/T6.11-voices`; PR para `claude/masmorras` aguarda análise |
-| **A11** | 9 ícones de conquistas e 5 retratos em `arquivo/arte_v7/`, prontos na branch `codex/A11-achievements` para aprovação do dono |
+| **A11** | 9 ícones de conquistas e 5 retratos aprovados pelo dono e no jogo (22/11, PR 24) |
 
 ### Sprint 1: andamento (alpha1 em 29/11)
 

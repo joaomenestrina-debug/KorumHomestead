@@ -99,11 +99,11 @@ S5 confirmadas (22/11); cinco personagens no lugar de um prefeito (22/11).
 | # | Item | Quem | Depende de | Estado |
 |---|---|---|---|---|
 | 1 | Falas dos cinco personagens ([`tarefas/T6.11.md`](tarefas/T6.11.md)) | Codex | — | PR `codex/T6.11-voices` aguarda análise; duas verificações antigas foram registradas |
-| 2 | 9 ícones das conquistas e 5 retratos ([`tarefas/A11.md`](tarefas/A11.md)) | Codex | — | PR `codex/A11-achievements` aguarda aprovação do dono |
+| 2 | 9 ícones das conquistas e 5 retratos ([`tarefas/A11.md`](tarefas/A11.md)) | Codex | — | ✅ aprovado pelo dono e no jogo em 22/11 |
 | 3 | Revisão dos textos novos desde a alpha1 (trabalho, conquistas) | Codex | — | a pedir |
 | 4 | README e página do CurseForge (masmorras, trabalho, conquistas, personagens) | Claude | — | a fazer |
 | 5 | `masmorras.md` igual ao jogo (trabalho, Celeiro, lembrete, conquistas) | Claude | — | a fazer |
-| 6 | Importar ícones e retratos; retrato de quem fala no cartão das conquistas e no lembrete | Claude | 2 | a fazer |
+| 6 | Importar ícones e retratos; retrato de quem fala no cartão das conquistas e no lembrete | Claude | 2 | ✅ feito em 22/11 (retratos dos outros quatro: quando falarem num cartão) |
 | 7 | Momentos novos dos personagens (grupo que falhou, seguidor ferido, falta de moedas, volta depois de muito tempo) | Claude + Codex | 1 | a fazer |
 | 8 | **Amizade** entre seguidores (laço 1–3 com 5/15/30 idas, +2% por nível, combo +50% por nível, Diário, melhores amigos na ficha) | Claude | — | aprovada |
 | 9 | **Missão pessoal** etapa 1 (nível 10: ida ao lugar de origem, história, traço pessoal) | Claude + Codex (histórias) | — | aprovada |
