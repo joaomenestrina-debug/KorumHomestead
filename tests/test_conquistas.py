@@ -69,13 +69,15 @@ class Achievements(td.Base):
 
 class Voices(td.Base):
     def test_the_mayor_says_his_line_and_the_plain_text_when_he_has_none_or_is_off(self):
-        self.assertEqual(self.ev("NS.Say('levelUp', 7)"), self.ev("NS.T('levelUp', 7)"))
-        self.lua.execute("NS.L.enUS.say_craftDone_1 = 'Your %s is ready. Try not to break it.'")
-        said = self.ev("NS.Say('craftDone', 'Stew')")
-        self.assertIn("Foreman Dorota", said)            # the Workshop is hers
+        self.assertEqual(self.ev("NS.Say('harvestedN', 7)"), self.ev("NS.T('harvestedN', 7)"))     # a moment with no lines
+        self.lua.execute("NS.L.enUS.say_cleared_1 = 'Your %s is ready. Try not to break it.'")
+        said = self.ev("NS.Say('cleared', 'Stew')")
+        self.assertIn("Steward Ambrose", said)           # a moment of no one else's is the Steward's
         self.assertIn("Your Stew is ready. Try not to break it.", said)
         self.lua.execute("NS.db.mayor = false")
-        self.assertEqual(self.ev("NS.Say('craftDone', 'Stew')"), self.ev("NS.T('craftDone', 'Stew')"))
+        self.assertEqual(self.ev("NS.Say('cleared', 'Stew')"), self.ev("NS.T('cleared', 'Stew')"))
+        self.lua.execute("NS.db.mayor = nil")
+        self.assertIn("Foreman Dorota", self.ev("NS.Say('craftDone', 'Stew')"))     # the Workshop is hers
 
     def test_the_steward_teaches_the_first_steps_and_the_butler_announces_a_version(self):
         self.lua.execute("NS.L.enUS.say_tutPlantS_1 = 'Plant something. Anything. The soil is getting bored.'")

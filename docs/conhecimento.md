@@ -49,7 +49,7 @@ Tudo corre pelo relógio, mesmo com o jogo fechado. Addon independente, Lua 5.1,
 | **Trabalho** | uma vaga em Mina, Lagoa, Horta, Oficina e Mercado (aba Trabalho da Estalagem); qualquer um +10%, o ofício certo +25% (Mercado ×0,4); quem trabalha não sai | `CONTEXTO.md` §3 |
 | **Aventura** | chefe do personagem inspira seguidores; raide dá Insígnia Épica; zona visitada chama mais; lembrete pequeno no voo e na fila | `masmorras.md` §12 |
 | **Conquistas** | 55 em 9 categorias, todas visíveis com o que pedem e quanto falta; pontos; cartão ao conseguir; Mestre do Homestead pede todas | `Achievements.lua` |
-| **Personagens** | 5 vozes comentam os avisos (Intendente, Capataz, Escrivão, Mordomo, Conselheira) e têm retratos próprios preparados em A11; o Intendente ensina os primeiros passos; o Mordomo anuncia cada versão nas Novidades; desligável | [`personagens.md`](personagens.md) |
+| **Personagens** | 5 vozes comentam os avisos (Intendente, Capataz, Escrivão, Mordomo, Conselheira), com retratos e falas EN/ptBR variadas; o Intendente ensina os primeiros passos; o Mordomo anuncia cada versão nas Novidades; desligável | [`personagens.md`](personagens.md) |
 | **Resto** | Novidades, "Enquanto você esteve fora", Guia, Ajustes, ícone na tela com aviso, botão do minimapa, zoom 60–150%, Véu de Inverno, ptBR/EN | — |
 
 ## 4. Regras de texto
@@ -98,7 +98,7 @@ S5 confirmadas (22/11); cinco personagens no lugar de um prefeito (22/11).
 
 | # | Item | Quem | Depende de | Estado |
 |---|---|---|---|---|
-| 1 | Falas dos cinco personagens ([`tarefas/T6.11.md`](tarefas/T6.11.md)) | Codex | — | PR `codex/T6.11-voices` aguarda análise; duas verificações antigas foram registradas |
+| 1 | Falas dos cinco personagens ([`tarefas/T6.11.md`](tarefas/T6.11.md)) | Codex | — | avisos no ramo (22/11); faltam primeiros passos e `patch7`/`patch8` |
 | 2 | 9 ícones das conquistas e 5 retratos ([`tarefas/A11.md`](tarefas/A11.md)) | Codex | — | ✅ aprovado pelo dono e no jogo em 22/11 |
 | 3 | Revisão dos textos novos desde a alpha1 (trabalho, conquistas) | Codex | — | a pedir |
 | 4 | README e página do CurseForge (masmorras, trabalho, conquistas, personagens) | Claude | — | a fazer |

@@ -650,7 +650,16 @@ function Kit.Window(spec)
             notice:SetText("")
             return
         end
-        notice:SetText(text)
+        -- the room beside the path at the top (the window says it): a long line, like a character's, takes two lines
+        -- and a smaller letter before it ever runs over the path
+        local room = self.noticeRoom and self.noticeRoom()
+        if room and room > 40 then
+            notice:SetWidth(room)
+            notice:SetWordWrap(true)
+            Kit.Fit(notice, text, room * 2 - 24, 9)
+        else
+            notice:SetText(text)
+        end
         self.noticeAnim = Kit.Animate(3.4, function(p)
             if p < 0.06 then notice:SetAlpha(p / 0.06)
             elseif p > 0.8 then notice:SetAlpha(1 - (p - 0.8) / 0.2)

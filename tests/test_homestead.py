@@ -911,9 +911,9 @@ class Homestead(unittest.TestCase):
         self.assertAlmostEqual(self.ev("NS.UI.levelBox.bar.value"), self.ev("NS.Data.Plant(2447).xp / NS.Data.XPToNext(1)"))
         self.lua.execute("NS.Farm:AddXP(NS.Data.XPToNext(1) - NS.db.xp + NS.Data.XPToNext(2)); NS.UI:Refresh(); NS.Kit.Step(5)")
         self.assertEqual(self.ev("NS.UI.levelBox.label:GetText()"), "Village 3")
-        self.assertEqual(self.ev("NS.UI.msg"), self.ev("NS.T('newSeed', 3, 'Earthroot')"))
+        self.assertIn(self.ev("NS.T('newSeed', 3, 'Earthroot')"), self.ev("NS.UI.msg"))     # the Steward may add his words
         self.assertEqual(self.ev("NS.UI.levelBox.bar.value"), 0)
-        self.assertEqual(self.ev("NS.UI.win.notice:GetText()"), self.ev("NS.T('newSeed', 3, 'Earthroot')"))
+        self.assertIn(self.ev("NS.T('newSeed', 3, 'Earthroot')"), self.ev("NS.UI.win.notice:GetText()"))
 
     def test_the_map_marks_where_something_waits(self):
         self.lua.execute("NS.db.tutorial.done = true; NS.Farm:Plant(1, 2447); NOW = NOW + 60")

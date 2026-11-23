@@ -170,6 +170,11 @@ function UI:Create()
     self.home = home
     self.here = Kit.Text(row, 13, C.text)
     self.here:SetPoint("LEFT", home.label, "RIGHT", 0, 0)   -- after the word itself: its real width in any language
+    -- what is left of the row after the path: the notices of the window fit there
+    win.noticeRoom = function()
+        local used = Kit.TextWidth(home.label, home.label:GetText() or "") + Kit.TextWidth(self.here, self.here:GetText() or "")
+        return math.floor((row:GetWidth() or 0) - used - 24)
+    end
 end
 
 UI.ZOOM_MIN, UI.ZOOM_MAX = 0.6, 1.5
