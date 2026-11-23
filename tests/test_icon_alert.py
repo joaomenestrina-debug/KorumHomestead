@@ -34,6 +34,17 @@ class IconAlert(unittest.TestCase):
         self.lua.execute("local b = KorumHomesteadIcon; b:GetScript('OnUpdate')(b, 6.1)")
         self.assertNotEqual(self.alert(), first)
 
+    def test_the_icon_shows_the_face_of_who_speaks(self):
+        self.lua.execute("local Frame = getmetatable(UIParent); function Frame:SetTexture(t) self._tex = t end")
+        face = "KorumHomesteadIcon.logo._tex"
+        self.lua.execute("NS.db.tutorial.done = true; NS.db.seen.garden = true; NS.Farm:PlantAll(2447); NOW = NOW + 60; NS.UI:UpdateBadge()")
+        self.assertTrue(self.ev(face).endswith("foreman"))      # the Garden is the Foreman's
+        self.lua.execute("NS.db.mayor = false; NS.UI:UpdateAlert()")
+        self.assertTrue(self.ev(face).endswith("logo"))          # voices off: the logo
+        self.lua.execute("NS.db.mayor = nil")
+        self.lua.execute("NS.UI:Toast(NS.Say('innBackOne', 1))")
+        self.assertTrue(self.ev(face).endswith("advisor"))      # a line of the Advisor: her face
+
     def test_it_can_be_turned_off_in_the_settings(self):
         self.lua.execute("NS.Farm:PlantAll(2447); NOW = NOW + 60; NS.UI:UpdateBadge(); NS.db.tutorial.done = true")
         self.assertIsNotNone(self.alert())

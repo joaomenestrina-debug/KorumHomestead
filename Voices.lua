@@ -17,6 +17,7 @@
 
         KH.Say(key, ...)       one of the lines of that moment with the name of who says it, or T(key, ...)
         KH.SayLine(key)        only the words of a line (no name), or nil: for a title, like the achievement card's
+        KH.SaidBy(text)        who said a text KH.Say gave, or nil: the icon on the screen shows that face
         KH.Speaker(key)        who says that moment ("steward", "foreman"...)
         KH.VoiceLines(key)     how many lines that moment has
         KH.VoicesOn()
@@ -75,8 +76,25 @@ function KH.SayLine(key, ...)
     return KH.T("say_" .. key .. "_" .. pick, ...)
 end
 
+-- who said each text KH.Say gave, so the icon on the screen shows that face while the text is on it (owner, 23/11)
+local said, saidCount = {}, 0
+
 function KH.Say(key, ...)
     local line = KH.SayLine(key, ...)
     if not line then return KH.T(key, ...) end
-    return "|cffffd24d" .. KH.T("who_" .. KH.Speaker(key)) .. ":|r " .. line
+    local who = KH.Speaker(key)
+    local text = "|cffffd24d" .. KH.T("who_" .. who) .. ":|r " .. line
+    if saidCount >= 40 then said, saidCount = {}, 0 end
+    if not said[text] then saidCount = saidCount + 1 end
+    said[text] = who
+    return text
 end
+
+-- who said a text, or nil when no one of the village did (a plain text, or the voices off)
+function KH.SaidBy(text)
+    if not KH.VoicesOn() then return nil end
+    return text and said[text]
+end
+
+-- who looks after each screen, for the alert growing out of the icon: what waits there is that person's business
+KH.PLACE_SPEAKER = {barn = "foreman", garden = "foreman", orders = "clerk", visitors = "butler", inn = "advisor"}

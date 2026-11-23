@@ -55,15 +55,22 @@ local function PlaceToast()
     end
 end
 
+-- the icon is the logo, or the face of who of the village speaks on it now (owner, 23/11)
+local function Face(who)
+    bubble.logo:SetTexture(who and KH.VoicesOn() and KH.Portrait(who) or Kit.LOGO)
+end
+
 local function NextToast()
     local toast = bubble.toast
     local text = table.remove(bubble.queue, 1)
     if not text then
         bubble.showing = nil
+        Face(nil)
         UI:UpdateAlert()                          -- the alert comes back when the notifications are over
         return
     end
     bubble.showing = true
+    Face(KH.SaidBy(text))
     if bubble.alert then bubble.alert:Hide() end
     toast.text:SetText(text)
     toast:SetWidth(Kit.TextWidth(toast.text, text) + 28)
@@ -191,13 +198,14 @@ function UI:CreateBubble()
     self:UpdateBadge()
 end
 
--- what waits, most useful first: {text, the screen it is on}
+-- what waits, most useful first: {text, the screen it is on, who of the village looks after it}
 function UI:AlertLines()
     local out = {}
     for _, e in ipairs(KH.Events:Open()) do                -- a visitor waits: it goes away when its time is over
         local name = e.key and UI.VisitorName and UI.VisitorName(e.key) or ""
         if e.def then name = KH.Dungeons.Name(e.def) end      -- a call: what it is and where
-        out[#out + 1] = {T("alertEv_" .. e.kind, name, KH.Duration(KH.Events:Left(e))), "visitors"}
+        out[#out + 1] = {T("alertEv_" .. e.kind, name, KH.Duration(KH.Events:Left(e))), "visitors",
+            e.def and "advisor" or "butler"}
     end
     -- the Barn about to stop the Garden, the Mine or the Pond: said before it happens
     local fill = KH.Village:Fill()
@@ -211,6 +219,7 @@ function UI:AlertLines()
     if ready > 0 then out[#out + 1] = {T(ready == 1 and "headReadyOne" or "headReadyMany", ready), "garden"} end
     local back = KH.Inn:BackCount()
     if back > 0 then out[#out + 1] = {T(back == 1 and "awayBackOne" or "awayBackMany", back), "inn"} end
+    for _, line in ipairs(out) do line[3] = line[3] or KH.PLACE_SPEAKER[line[2]] end
     return out
 end
 
@@ -242,8 +251,13 @@ function UI:UpdateAlert()
     if not b or not b.alert then return end
     local alert = b.alert
     local lines = (KH.db.bubble.label ~= false and not b.showing) and self:AlertLines() or {}
-    if #lines == 0 then alert:Hide(); alert.current = nil; return end
+    if #lines == 0 then
+        alert:Hide(); alert.current = nil
+        if not b.showing then Face(nil) end
+        return
+    end
     local line = lines[((b.cycle - 1) % #lines) + 1]
+    Face(line[3])
     if alert:IsShown() and alert.current == line[1] then return end
     alert.current, alert.view = line[1], line[2]
     alert.text:SetText(line[1])
