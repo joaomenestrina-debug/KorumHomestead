@@ -98,7 +98,7 @@ S5 confirmadas (22/11); cinco personagens no lugar de um prefeito (22/11).
 
 | # | Item | Quem | Depende de | Estado |
 |---|---|---|---|---|
-| 1 | Falas dos cinco personagens ([`tarefas/T6.11.md`](tarefas/T6.11.md)) | Codex | — | avisos no ramo (22/11); faltam primeiros passos e `patch7`/`patch8` |
+| 1 | Falas dos cinco personagens ([`tarefas/T6.11.md`](tarefas/T6.11.md)) | Codex | — | PR #25: avisos, primeiros passos e `patch7`/`patch8` completos; 267 testes passam, 1 teste antigo de Novidades ainda espera texto sem a fala do Mordomo |
 | 2 | 9 ícones das conquistas e 5 retratos ([`tarefas/A11.md`](tarefas/A11.md)) | Codex | — | ✅ aprovado pelo dono e no jogo em 22/11 |
 | 3 | Revisão dos textos novos desde a alpha1 (trabalho, conquistas) | Codex | — | a pedir |
 | 4 | README e página do CurseForge (masmorras, trabalho, conquistas, personagens) | Claude | — | a fazer |

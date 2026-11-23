@@ -3,7 +3,7 @@
 **Leia antes [`conhecimento.md`](conhecimento.md) (a base de conhecimento) e depois este arquivo, antes de qualquer trabalho no Korum Homestead.** Ele existe para ninguém precisar reler o projeto
 inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pull request.
 
-*Última atualização: 22/11/2026, por Korum (falas T6.11 e arte A11 no ramo `claude/masmorras`).*
+*Última atualização: 22/11/2026, por Korum (falas T6.11 concluídas no PR #25; A11 integrada no PR #24).*
 
 ---
 
@@ -20,9 +20,8 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 | **T2.8** | Textos EN/ptBR de eventos revisados; PR aguardando revisão |
 | **A7** | Véu de Inverno **aprovado em 19/11** e na `main` (`arquivo/arte_v6/`: `map_winter`, `winter_tree`, `snowman`, `gifts`); **no jogo desde 19/11** (`Festivals.lua`: de 15/12 a 02/01 a vila usa `map_winter` e mostra o pinheiro, o boneco e o trenó; `/kh festa` com o debug ligado mostra fora da data) |
 | **A8** | Doze retratos dos novos seguidores **aprovados em 19/11** e na `main` (`arquivo/arte_v6/follower7..18@hd.png`); Claude importa para o jogo na S5, quando o código usar |
-| **T6.11** | Falas EN/ptBR dos cinco personagens prontas na branch `codex/T6.11-voices`; PR para `claude/masmorras` aguarda análise |
+| **T6.11** | Falas EN/ptBR dos cinco personagens, primeiros passos e anúncios `patch7`/`patch8`; PR #25 para `claude/masmorras` aguarda análise |
 | **A11** | 9 ícones de conquistas e 5 retratos aprovados pelo dono e no jogo (22/11, PR 24) |
-| **T6.11** | Falas dos cinco personagens no ramo (22/11); faltam as do tutorial e as do Mordomo para as versões |
 
 ### Sprint 1: andamento (alpha1 em 29/11)
 
@@ -72,7 +71,7 @@ inteiro. Quem terminar uma tarefa atualiza as seções 1 e 2 no mesmo commit/pul
 ## 2. O que fazer agora (por pessoa)
 
 - **Eu:** 28/11: testar a alpha2 na sua cópia; até 05/12: o teste do T3.0 (`/kh debug`, `/kh eventos`). Respostas de 25/11 já dadas (sim para tudo).
-- **Codex:** **Agora:** completar a T6.11 com as falas que entraram no briefing depois (primeiros passos `tut...`/`vil...` e `patch7`/`patch8` do Mordomo), até 27/11. Falas dos avisos e arte A11 já no ramo (22/11). Não escrever código.
+- **Codex:** T6.11 concluída no PR #25 (falas de avisos, primeiros passos e `patch7`/`patch8`); A11 aprovada e integrada no PR #24. A única falha de teste restante é uma asserção antiga de Novidades que espera texto sem a fala do Mordomo; registrada no PR, sem alterar testes.
 - **Claude:** T2.10 feita (teto de 20 min de Horta no pedido urgente e no mercador, `docs/eventos.md` §8). T2.8 integrada, com "XP" padronizado e o peixe raro com chave própria (`firefin`). Tag `v2.1.0-alpha2` criada em 18/11; `v2.1.0-alpha3` também, só para tirar o `/kh debug` e o `/kh evento` do zip (entre `--@debug@`, o empacotador comenta). Especificação das masmorras e seguidores escrita em 18/11 (`docs/masmorras.md`, com `docs/historia-forever.md`). Aprovada em 18/11; a Aventura (a vila reage ao que o personagem faz) e o Diário dos seguidores entraram depois (§12 e §13). Tag `v2.1.0-alpha4` criada em 19/11 (logo no minimapa, dica e número iguais aos do ícone, caminho do topo no inglês). Comando do T3.0 pronto: `/kh debug` e depois `/kh eventos` (`Probe.lua`, só na cópia do repositório). Briefings A7 e A8 escritos em 19/11. Próximo: o dono testa o T3.0 numa masmorra, numa fila e numa troca de zona; A7 no jogo e tag `v2.1.0-alpha5` em 19/11 (Véu de Inverno); tag `v2.1.0-alpha6` em 19/11 (pedidos só de itens da tela da Oficina, trenó maior); **2.1.0 publicada como Release em 19/11** a pedido do dono (as novidades das alphas aparecem sob um título só, "Versão 2.1.0").
 
 ## 3. Decisões tomadas (não reabrir sem motivo novo)
