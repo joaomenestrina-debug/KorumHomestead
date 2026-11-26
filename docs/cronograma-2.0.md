@@ -115,6 +115,7 @@ gantt
 | T7.2 | **Missão pessoal**, etapa 1 (nível 10): uma ida ao lugar de origem, história no Diário, traço pessoal | Claude | 02–04/12 | 18 histórias; depende do T6.4 |
 | T7.3 | Conquistas novas da amizade e da missão pessoal | Claude | 04/12 | o Mestre do Homestead passa a pedir também essas |
 | T7.10 | Importar os ícones das conquistas e os retratos (A11); retrato de quem fala no cartão das conquistas e no lembrete; momentos novos dos personagens | Claude | 05/12 | capturas |
+| T7.11 | **Balanço:** masmorras como maior fonte de XP e Oficina como maior fonte de ouro ([`economia.md`](economia.md) §7) | Claude | 01–03/12 | simulação: a ordem das fontes nas vilas 30, 45 e 58; vila inteira em ~250 h |
 | T7.4 | Datas das festas pelo calendário do jogo (`C_Calendar`), no lugar das datas fixas | Claude | 03/12 | Véu de Inverno abre e fecha com o jogo |
 | T7.5 | Teste do T3.0 (`/kh debug` e `/kh eventos`: uma masmorra, uma fila, trocas de zona) | **Eu** | até 05/12 | registro dos eventos |
 | T7.6 | Ajustar a §12 de `masmorras.md` ao que o Forever oferece | Claude | depois do T7.5 | especificação atualizada |

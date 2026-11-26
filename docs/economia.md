@@ -111,3 +111,30 @@ Tudo isso é a **F2.0 (Economia)**, antes dos Serviços. Proposta de divisão, d
 | Aprovar os números e testar no jogo | **Eu** |
 
 A alpha1 pode sair antes (com a economia atual e a encomenda do dia já corrigida), ou esperar a F2.0 e sair junto.
+
+## 7. Revisão de 26/11: masmorras dão o XP, a Oficina dá o ouro
+
+Pedido do dono em 26/11: "as masmorras deveriam ser a maior fonte de XP, craft a maior de ouro". Aprovado para a
+**alpha3** (06/12).
+
+Medido nos números da alpha2, por hora, jogador ativo, 6 seguidores nas masmorras (vila 30):
+
+| Fonte | XP/h | Moedas/h |
+|---|---|---|
+| Mercado (encomendas de ervas) | 2.006 | 36.206 |
+| Horta | 669 | 14.818 |
+| Oficina | 653 | 7.932 |
+| Masmorras | 180 | 4.001 |
+
+As mudanças aprovadas:
+
+1. **XP da vila nas masmorras:** `DUNGEON.xpShare` de 0,5% para **5%** do XP do nível por seguidor por hora (6 seguidores:
+   ~1.800 XP/h na vila 30).
+2. **XP das encomendas de ervas:** `ORDERS.xpFactor` de 3 para **2** (~1.340 XP/h na vila 30).
+3. **Ouro da Oficina:** o tempo de fabricação deixa de pagar 2 moedas fixas por minuto e passa a pagar **~0,7 hora da
+   renda da Horta** no nível da vila que a receita pede, por hora de fabricação. As encomendas de itens sobem junto.
+4. **Encomendas de ervas:** `ORDERS.payMultiplier` de 1,6 para **1,3**, para o ouro total não disparar.
+
+Efeitos esperados: depois da vila 30 a subida fica ~27% mais rápida; antes da vila 30 (sem masmorras), ~17% mais lenta.
+Refazer o teste de simulação (vila inteira em ~250 h de Horta) e conferir a ordem das fontes nos níveis 30, 45 e 58.
+

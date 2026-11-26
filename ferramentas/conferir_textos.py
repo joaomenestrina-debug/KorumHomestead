@@ -66,6 +66,8 @@ def check(game, frame_name):
     if shown:
         game.lua.execute("KorumHomesteadIcon:Show()")
     fx, fy, fw, fh = game.lua.eval(f"function() local r = SIM.Rect({frame_name}) return r[1], r[2], r[3], r[4] end")()
+    if frame_name == "KorumHomesteadAchievement":       # the tab with the name of the addon sits on its top edge
+        fh = fh + 20                                    # (y grows upward)
     texts = []
 
     def say(what, t):
@@ -131,7 +133,7 @@ original = S.Game.shot
 
 def shot(self, path, frame_name=None, **kw):
     scene_name[0] = pathlib.Path(path).stem
-    if frame_name in ("KorumHomesteadFrame", "KorumHomesteadReminder"):
+    if frame_name in ("KorumHomesteadFrame", "KorumHomesteadReminder", "KorumHomesteadAchievement"):
         check(self, frame_name)
     return original(self, path, frame_name, **kw)
 
@@ -311,6 +313,16 @@ def extras(out):
         for reason in ("flight", "queue"):
             S.reminder(out / f"x-lembrete-{reason}-vazio-{locale}.png", locale, "{tutorial = {done = true}, newsSeen = 1000}", reason)
             S.reminder(out / f"x-lembrete-{reason}-cheio-{locale}.png", locale, rich, reason, busy)
+        # the card of a new achievement: each line of the Steward, with the longest name, and with the voices off
+        for n in (0, 1, 2, 3):
+            g = S.Game(locale, S.PT_NAMES if locale == "ptBR" else None)
+            g.run("KorumHomesteadDB = {tutorial = {done = true}, newsSeen = 1000" + (", mayor = false" if n == 0 else "") + "}")
+            g.load("KorumHomestead", S.HOMESTEAD)
+            g.run(f"math.random = function() return {max(n, 1)} end; local best, id = 0; "
+                  "for _, a in ipairs(NS.Achievements.LIST) do local t = NS.T('ach_' .. a.id); "
+                  "if #t > best then best, id = #t, a.id end end; NS.UI:AchievementCard({id})")
+            g.advance(1)
+            g.shot(out / f"x-conquista-{n}-{locale}.png", "KorumHomesteadAchievement", margin=30)
     places = ("zephras", "thanes", "lordaeron", "excavation", "drowned", "kroldok", "alcaz", "blackmaw")
     for kind in ("defense", "attack", "escort", "rescue", "recon"):
         for place in places:

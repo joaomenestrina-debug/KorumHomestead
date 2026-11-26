@@ -92,7 +92,7 @@ Tudo corre pelo relógio, mesmo com o jogo fechado. Addon independente, Lua 5.1,
 
 Estão na seção 3 do [`CONTEXTO.md`](CONTEXTO.md), com data. As mais recentes: sem ranking online (22/11); trabalho em
 todas as construções (22/11); conquistas (22/11); missão pessoal e amizade aprovadas (22/11); decisões provisórias da
-S5 confirmadas (22/11); cinco personagens no lugar de um prefeito (22/11).
+S5 confirmadas (22/11); cinco personagens no lugar de um prefeito (22/11); masmorras dão o XP e a Oficina dá o ouro (26/11).
 
 ## 8. O que falta (a fonte do cronograma)
 
@@ -119,4 +119,5 @@ S5 confirmadas (22/11); cinco personagens no lugar de um prefeito (22/11).
 | 19 | `instalar.py` volta para a pasta principal; pasta principal na `main` | Claude | Release 2.2.0 | a fazer |
 | 20 | Social na guilda ("Lendário encontrado!", ver a vila dos outros) | Claude | testar mensagens de addon no Forever | depois |
 | 21 | Atributos do personagem, temporadas, mais festas, som e animação | Claude | — | depois |
+| 22 | **Balanço:** masmorras como maior fonte de XP, Oficina como maior fonte de ouro ([`economia.md`](economia.md) §7) | Claude | — | aprovado em 26/11 para a alpha3 |
 | sempre | Conteúdo novo do Forever (masmorras, chamados, seguidores) quando aparecer no Wowhead | Claude | o jogo | contínuo |

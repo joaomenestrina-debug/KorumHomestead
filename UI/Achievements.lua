@@ -135,6 +135,9 @@ P.builders.achievements = BuildAchievements
 -- The card of a new achievement: at the top of the screen, a few seconds, one after the other
 -- ----------------------------------------------------------------------------
 local card
+local CARD_W = 380
+local TEXT_X = 68
+local TEXT_W = CARD_W - TEXT_X - 62       -- up to the ring of the points
 local waiting = {}
 local HOLD = 6
 
@@ -144,12 +147,15 @@ local function Next()
     local a = KH.Achievements.Get(id)
     card.id = id
     card.icon:SetTexture(Icon(a))
+    -- what it is, then its name; the Steward says his line below, with his face (A11)
     local line = KH.SayLine("achNew")
-    card.who:SetShown(line ~= nil)                     -- the Steward says it: his face before his words
-    card.title:ClearAllPoints()
-    card.title:SetPoint("TOPLEFT", line and 86 or 62, -12)
-    card.title:SetText(line or T("achNew"))
-    Kit.Fit(card.name, T("ach_" .. id), 250, 9)
+    card:SetHeight(line and 90 or 64)
+    card.title:SetText(T("achNew"))
+    Kit.Fit(card.name, T("ach_" .. id), TEXT_W, 9)
+    card.who:SetShown(line ~= nil)
+    card.line:SetShown(line ~= nil)
+    card.rule:SetShown(line ~= nil)
+    if line then Kit.Fit(card.line, line, CARD_W - 46, 8) end
     card.pts:SetText(T("achPts", a.points))
     card.left = HOLD
     card:Show()
@@ -157,26 +163,60 @@ end
 
 local function Build()
     card = CreateFrame("Button", "KorumHomesteadAchievement", UIParent)
-    card:SetSize(340, 64)
+    card:SetSize(CARD_W, 90)
     card:SetPoint("TOP", UIParent, "TOP", 0, -120)
     if card.SetFrameStrata then card:SetFrameStrata("DIALOG") end
     card.surface, card.outline = Kit.Rounded(card, 10, 0.07, 0.085, 0.095, 0.97, 0.18)
     card.outline:SetColor(C.gold[1], C.gold[2], C.gold[3], 0.6)
     card.icon = card:CreateTexture(nil, "ARTWORK")
-    card.icon:SetSize(40, 40)
-    card.icon:SetPoint("LEFT", 12, 0)
-    card.who = card:CreateTexture(nil, "ARTWORK")
-    card.who:SetSize(18, 18)
-    card.who:SetPoint("TOPLEFT", 62, -9)
-    card.who:SetTexture(KH.Portrait("steward"))
+    card.icon:SetSize(44, 44)
+    card.icon:SetPoint("TOPLEFT", 12, -10)
     card.title = Kit.Text(card, 10, C.gold)
-    card.title:SetPoint("TOPLEFT", 62, -12)
-    card.name = Kit.Text(card, 13, C.text)
-    card.name:SetPoint("TOPLEFT", 62, -30)
-    card.name:SetWidth(250)
+    card.title:SetPoint("TOPLEFT", TEXT_X, -13)
+    card.name = Kit.Text(card, 14, C.text)
+    card.name:SetPoint("TOPLEFT", TEXT_X, -29)
+    card.name:SetWidth(TEXT_W)
     card.name:SetWordWrap(false)
-    card.pts = Kit.Text(card, 14, C.gold, "RIGHT")
-    card.pts:SetPoint("RIGHT", -14, 0)
+    -- the line of the Steward, apart from the facts, under a thin rule
+    card.rule = card:CreateTexture(nil, "ARTWORK")
+    card.rule:SetHeight(1)
+    card.rule:SetPoint("TOPLEFT", 12, -63)
+    card.rule:SetPoint("TOPRIGHT", -12, -63)
+    card.rule:SetColorTexture(C.gold[1], C.gold[2], C.gold[3], 0.18)
+    card.who = card:CreateTexture(nil, "ARTWORK")
+    card.who:SetSize(16, 16)
+    card.who:SetPoint("TOPLEFT", 12, -66)
+    card.who:SetTexture(KH.Portrait("steward"))
+    card.line = Kit.Text(card, 10, C.textSoft)
+    card.line:SetPoint("LEFT", card.who, "RIGHT", 6, 0)
+    card.line:SetWidth(CARD_W - 46)
+    card.line:SetWordWrap(false)
+    -- the points, in a gold ring
+    local ring = CreateFrame("Frame", nil, card)
+    ring:SetSize(38, 38)
+    ring:SetPoint("TOPRIGHT", -12, -13)
+    ring.surface, ring.outline = Kit.Rounded(ring, 19, 0.11, 0.10, 0.06, 1, 0.18)
+    ring.outline:SetColor(C.gold[1], C.gold[2], C.gold[3], 0.8)
+    card.pts = Kit.Text(ring, 13, C.gold, "CENTER")
+    card.pts:SetPoint("CENTER", 0, 0)
+    card.ring = ring
+    -- whose card it is (owner, 26/11): a tab with the logo and the name of the addon, set on the top edge
+    local tab = CreateFrame("Frame", nil, card)
+    tab:SetHeight(18)
+    tab:SetPoint("BOTTOM", card, "TOP", 0, -8)
+    tab:SetFrameLevel(card:GetFrameLevel() + 2)
+    tab.surface, tab.outline = Kit.Rounded(tab, 8, 0.07, 0.085, 0.095, 1, 0.18)
+    tab.outline:SetColor(C.gold[1], C.gold[2], C.gold[3], 0.6)
+    tab.logo = tab:CreateTexture(nil, "ARTWORK")
+    tab.logo:SetSize(14, 14)
+    tab.logo:SetPoint("LEFT", 8, 0)
+    tab.logo:SetTexture(Kit.LOGO)
+    tab.text = Kit.Text(tab, 9, C.text)
+    tab.text:SetPoint("LEFT", tab.logo, "RIGHT", 4, 0)
+    local brand = "|cff40d9c4Korum|r Homestead"
+    tab.text:SetText(brand)
+    tab:SetWidth(8 + 14 + 4 + Kit.TextWidth(tab.text, brand) + 10)
+    card.tab = tab
     card:SetScript("OnClick", function()
         card:Hide()
         local a = card.id and KH.Achievements.Get(card.id)
