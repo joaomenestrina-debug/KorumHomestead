@@ -26,7 +26,7 @@ Este documento diz **quem faz o quê e quando**, a partir da lista do que falta 
 | **2.0.0** | Fundação, retorno diário, economia nova (Vila 1–60, 27 ervas, Mercado 4 + 4, Oficina) | ✅ Release 17/11 |
 | **2.1.0** | Visitantes, arte nova, Véu de Inverno, logo no minimapa | ✅ Release 19/11 |
 | **2.2.0-alpha1** | S3 + S4 + S5 juntas: masmorras, níveis, equipamento, combos, Onyxia, Aventura, 12 seguidores novos, quartos e Ranking, chamados, trabalho na Mina e na Lagoa, Celeiro com abas, lembrete no voo e na fila; textos revisados (T5.8) | ✅ Alpha 22/11 |
-| **2.2.0-alpha2** | Equipamento na lista de seguidores, aba **Trabalho** (Horta, Oficina e Mercado), **Conquistas** | domingo **29/11** |
+| **2.3.0-alpha1** (era 2.2.0-alpha2; a alpha1 virou a Release 2.2.0 em 27/11) | Equipamento na lista de seguidores, aba **Trabalho** (Horta, Oficina e Mercado), **Conquistas** | domingo **29/11** |
 | **2.2.0-alpha3** | Amizade entre seguidores e a primeira etapa da **missão pessoal** (se aprovadas), datas das festas pelo calendário do jogo | domingo **06/12** |
 | **2.2.0** | Release do que estiver testado | domingo **13/12**, se o teste do dono não tiver falha aberta |
 | **2.3.0** | Missão pessoal completa (níveis 20 e 30), herbário, decorações no mapa, seguidores no mapa | 14/12 a 10/01 (festas no meio) |
@@ -90,7 +90,7 @@ gantt
 
 ## 4. As próximas semanas
 
-### Semana 1 (seg 23/11 a dom 29/11) → `v2.2.0-alpha2`
+### Semana 1 (seg 23/11 a dom 29/11) → `v2.3.0-alpha1`
 
 | ID | Tarefa | Quem | Data | Entrega / aceite |
 |---|---|---|---|---|
