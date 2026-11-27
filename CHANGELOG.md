@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2.0-alpha1
+## 2.2.0
 The followers go to the dungeons of WoW Forever. Your village is carried over: nothing you have is lost.
 
 **Followers and dungeons**
